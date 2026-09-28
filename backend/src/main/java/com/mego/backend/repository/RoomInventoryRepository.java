@@ -1,6 +1,6 @@
 package com.mego.backend.repository;
 
-import com.mego.backend.model.entity.RoomInventory;
+import com.mego.backend.model.RoomInventory;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;

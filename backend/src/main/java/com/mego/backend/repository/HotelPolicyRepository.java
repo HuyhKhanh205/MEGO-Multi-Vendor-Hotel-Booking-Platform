@@ -1,6 +1,6 @@
 package com.mego.backend.repository;
 
-import com.mego.backend.model.entity.HotelPolicy;
+import com.mego.backend.model.HotelPolicy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

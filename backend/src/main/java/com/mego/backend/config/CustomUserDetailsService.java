@@ -1,5 +1,6 @@
 package com.mego.backend.config;
 
+import com.mego.backend.domain.RoleName;
 import com.mego.backend.model.entity.User;
 import com.mego.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import java.util.List;
  * đăng nhập (username ở đây là email). Method này load {@link User} từ DB
  * và bọc vào {@link UserDetails} mà Security framework hiểu được.</p>
  *
- * <p>Authorities được map từ {@link com.mego.backend.model.enums.RoleName}
+ * <p>Authorities được map từ {@link RoleName}
  * với prefix {@code ROLE_} (chuẩn Spring Security).<br>
  * Ví dụ: {@code ROLE_CUSTOMER}, {@code ROLE_PARTNER}, {@code ROLE_ADMIN}.</p>
  */

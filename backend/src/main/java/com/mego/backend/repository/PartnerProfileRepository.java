@@ -1,7 +1,7 @@
 package com.mego.backend.repository;
 
-import com.mego.backend.model.entity.PartnerProfile;
-import com.mego.backend.model.enums.ApprovalStatus;
+import com.mego.backend.model.PartnerProfile;
+import com.mego.backend.domain.ApprovalStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

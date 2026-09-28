@@ -1,6 +1,6 @@
 package com.mego.backend.repository;
 
-import com.mego.backend.model.entity.RoomTypeImage;
+import com.mego.backend.model.RoomTypeImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,8 +1,9 @@
 package com.mego.backend.model.entity;
 
+import com.mego.backend.model.MemberTier;
 import com.mego.backend.model.base.BaseEntity;
-import com.mego.backend.model.enums.RoleName;
-import com.mego.backend.model.enums.UserStatus;
+import com.mego.backend.domain.RoleName;
+import com.mego.backend.domain.UserStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;

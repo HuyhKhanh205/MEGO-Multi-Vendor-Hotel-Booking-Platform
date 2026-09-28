@@ -1,6 +1,6 @@
 package com.mego.backend.repository;
 
-import com.mego.backend.model.entity.MemberTier;
+import com.mego.backend.model.MemberTier;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

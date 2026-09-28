@@ -1,7 +1,7 @@
 package com.mego.backend.repository;
 
-import com.mego.backend.model.entity.Amenity;
-import com.mego.backend.model.enums.AmenityScope;
+import com.mego.backend.model.Amenity;
+import com.mego.backend.domain.AmenityScope;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
