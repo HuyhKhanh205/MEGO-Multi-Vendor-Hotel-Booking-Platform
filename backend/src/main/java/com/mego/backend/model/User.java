@@ -23,7 +23,8 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+// name="LegacyUser" để Hibernate không bị conflict với model.entity.User (cùng tên "User")
+@Entity(name = "LegacyUser")
 // QUAN TRỌNG: "user" là reserved word trong MariaDB → phải đặt tên bảng khác.
 // Đặt legacy_users để tránh xung đột với bảng "users" của model.entity.User.
 @Table(name = "legacy_users")
