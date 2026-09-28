@@ -13,12 +13,20 @@ import java.util.Set;
  * @MSSV 23640731
  * @Class DHKTPM19ATT
  * @since 9/21/2026
+ *
+ * @deprecated Entity cũ từ dự án e-commerce – chỉ còn được tham chiếu bởi
+ *             {@link VerificationCode}. Sẽ được xóa sau khi VerificationCode
+ *             được refactor sang dùng {@link com.mego.backend.model.entity.User}.
+ *             Mọi logic mới dùng {@code com.mego.backend.model.entity.User}.
  */
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+// QUAN TRỌNG: "user" là reserved word trong MariaDB → phải đặt tên bảng khác.
+// Đặt legacy_users để tránh xung đột với bảng "users" của model.entity.User.
+@Table(name = "legacy_users")
 public class User {
 
     @Id
