@@ -1,61 +1,106 @@
 package com.mego.backend.controller;
 
-import iuh.fit.backend.domain.UserRole;
-import iuh.fit.backend.repository.UserRepository;
-import iuh.fit.backend.request.LoginOtpRequest;
-import iuh.fit.backend.request.LoginRequest;
-import iuh.fit.backend.response.ApiResponse;
-import iuh.fit.backend.response.AuthResponse;
-import iuh.fit.backend.response.SignupRequest;
-import iuh.fit.backend.service.AuthService;
+import com.mego.backend.dto.request.LoginRequest;
+import com.mego.backend.dto.request.RegisterRequest;
+import com.mego.backend.dto.request.ResendOtpRequest;
+import com.mego.backend.dto.request.VerifyOtpRequest;
+import com.mego.backend.dto.response.AuthResponse;
+import com.mego.backend.dto.response.MessageResponse;
+import com.mego.backend.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
- * @author TrungNguyen
- * @created 4/15/2026
- * @description
+ * Controller xử lý các API xác thực (Authentication) của MeGo.
+ *
+ * <p>Base path: {@code /api/auth} – toàn bộ endpoint trong class này
+ * được cấu hình {@code permitAll()} trong {@link com.mego.backend.config.AppConfig}.</p>
+ *
+ * <table border="1">
+ *   <tr><th>Method</th><th>Path</th><th>Mô tả</th></tr>
+ *   <tr><td>POST</td><td>/api/auth/register</td><td>Đăng ký tài khoản, gửi OTP</td></tr>
+ *   <tr><td>POST</td><td>/api/auth/verify-otp</td><td>Xác minh OTP, kích hoạt + trả JWT</td></tr>
+ *   <tr><td>POST</td><td>/api/auth/resend-otp</td><td>Gửi lại OTP</td></tr>
+ *   <tr><td>POST</td><td>/api/auth/login</td><td>Đăng nhập, trả JWT</td></tr>
+ * </table>
  */
-
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserRepository userRepository;
     private final AuthService authService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> createUserHandler(@RequestBody SignupRequest req) throws Exception {
-        String jwt = authService.createUser(req);
+    // -----------------------------------------------------------------------
+    // POST /api/auth/register
+    // -----------------------------------------------------------------------
 
-        AuthResponse res = new AuthResponse();
-        res.setJwt(jwt);
-        res.setMessage("Register success");
-        res.setRole(UserRole.CUSTOMER);
-
-        return ResponseEntity.ok(res);
+    /**
+     * Đăng ký tài khoản mới.
+     *
+     * <p>Request body: {@link RegisterRequest} – email, password, fullName, phone.<br>
+     * Kết quả: tạo user {@code PENDING_VERIFICATION} + gửi OTP tới email.</p>
+     *
+     * <p>Response: 201 Created + message hướng dẫn nhập OTP.</p>
+     */
+    @PostMapping("/register")
+    public ResponseEntity<MessageResponse> register(@Valid @RequestBody RegisterRequest req) {
+        authService.register(req);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new MessageResponse(
+                        "Đăng ký thành công! Vui lòng kiểm tra email " + req.getEmail()
+                        + " và nhập mã OTP để kích hoạt tài khoản."));
     }
 
-    @PostMapping("/sent/login-signup-otp")
-    public ResponseEntity<ApiResponse> sendOtpHandler(@RequestBody LoginOtpRequest req) throws Exception {
-        authService.sentLoginOtp(req.getEmail(), req.getRole());
+    // -----------------------------------------------------------------------
+    // POST /api/auth/verify-otp
+    // -----------------------------------------------------------------------
 
-        ApiResponse res = new ApiResponse();
-        res.setMessage("otp sent successfully");
-
-
-        return ResponseEntity.ok(res);
+    /**
+     * Xác minh OTP đăng ký.
+     *
+     * <p>Request body: email + otp (6 chữ số).<br>
+     * Nếu đúng → kích hoạt tài khoản + trả JWT (đăng nhập luôn).</p>
+     */
+    @PostMapping("/verify-otp")
+    public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest req) {
+        AuthResponse response = authService.verifyOtp(req);
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/signing")
-    public ResponseEntity<AuthResponse> loginHandler(@RequestBody LoginRequest req) throws Exception {
-        AuthResponse authResponse = authService.signing(req);
+    // -----------------------------------------------------------------------
+    // POST /api/auth/resend-otp
+    // -----------------------------------------------------------------------
 
-        return ResponseEntity.ok(authResponse);
+    /**
+     * Gửi lại OTP xác minh email (khi OTP cũ hết hạn).
+     *
+     * <p>Vô hiệu OTP cũ → tạo và gửi OTP mới.</p>
+     */
+    @PostMapping("/resend-otp")
+    public ResponseEntity<MessageResponse> resendOtp(@Valid @RequestBody ResendOtpRequest req) {
+        authService.resendOtp(req.getEmail());
+        return ResponseEntity.ok(new MessageResponse(
+                "Đã gửi lại mã OTP tới " + req.getEmail() + ". Mã có hiệu lực trong 10 phút."));
+    }
+
+    // -----------------------------------------------------------------------
+    // POST /api/auth/login
+    // -----------------------------------------------------------------------
+
+    /**
+     * Đăng nhập bằng email + password.
+     *
+     * <p>Request body: {@link LoginRequest} – email, password.<br>
+     * Response: JWT token + thông tin user.</p>
+     */
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) {
+        AuthResponse response = authService.login(req);
+        return ResponseEntity.ok(response);
     }
 }

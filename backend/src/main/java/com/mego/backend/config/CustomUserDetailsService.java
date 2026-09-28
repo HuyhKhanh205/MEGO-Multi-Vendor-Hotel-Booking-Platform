@@ -1,7 +1,7 @@
 package com.mego.backend.config;
 
 import com.mego.backend.domain.RoleName;
-import com.mego.backend.model.entity.User;
+import com.mego.backend.model.User;
 import com.mego.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,6 +1,6 @@
 package com.mego.backend.repository;
 
-import com.mego.backend.model.entity.User;
+import com.mego.backend.model.User;
 import com.mego.backend.domain.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,7 +1,6 @@
 package com.mego.backend.model;
 
 import com.mego.backend.model.base.BaseEntity;
-import com.mego.backend.model.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
