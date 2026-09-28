@@ -1,0 +1,12 @@
+# Quy ước dự án MeGo (Spring Boot 4.1, Java 21, JPA/Hibernate, MariaDB)
+- Package gốc: com.mego.backend; entity ở `model.entity`, enum ở `model.enums`, base ở `model.base`, repository ở `repository`.
+- Dùng jakarta.persistence.*, Lombok (@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder). KHÔNG dùng @Data trên entity.
+- Mọi entity kế thừa BaseEntity (id Long IDENTITY, createdAt, updatedAt qua JPA Auditing).
+- @ManyToOne/@OneToOne luôn FetchType.LAZY. Collection dùng Set khởi tạo new HashSet<>(), có helper addX/removeX.
+- equals/hashCode theo id; toString không được kéo lazy field.
+- Enum lưu @Enumerated(EnumType.STRING).
+- Tiền: BigDecimal precision=15, scale=2. Ngày lưu trú: LocalDate. Thời điểm: LocalDateTime.
+- Bảng và cột snake_case, tên bảng số nhiều. Khai báo @Table với indexes và uniqueConstraints.
+- Không CascadeType.REMOVE/orphanRemoval với entity liên quan Booking. Hotel, RoomType, User, Voucher chỉ xóa mềm.
+- Có comment tiếng Việt ngắn cho entity và field nghiệp vụ. Thêm Bean Validation phù hợp.
+- Code phải hoàn chỉnh, không để TODO/placeholder. Chỉ làm đúng nhóm được yêu cầu trong mỗi lượt.
