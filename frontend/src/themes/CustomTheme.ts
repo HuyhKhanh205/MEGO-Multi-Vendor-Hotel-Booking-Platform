@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme, type Shadows } from "@mui/material";
 
 const CustomTheme = createTheme({
   palette: {
@@ -102,7 +102,7 @@ const CustomTheme = createTheme({
     "0 10px 24px rgba(201,169,110,0.12)",
     "0 14px 34px rgba(201,169,110,0.14)",
     ...Array(20).fill("0 14px 34px rgba(201,169,110,0.14)"),
-  ],
+  ] as unknown as Shadows,
 
   components: {
     MuiCssBaseline: {
@@ -198,7 +198,7 @@ const CustomTheme = createTheme({
             color: "#fff",
           },
         },
-      },
+      } as unknown as Record<string, unknown>,
     },
 
     MuiTextField: {
