@@ -1,0 +1,161 @@
+{
+  "customer": {
+    "id": "customer-001",
+    "accountId": "account-001",
+    "fullName": "Nguyễn Văn An",
+    "email": "nguyenvan.trang@mego.vn",
+    "phone": "+84 912 345 678",
+    "avatarUrl": "",
+    "role": "CUSTOMER",
+    "isVerified": true,
+    "memberSince": "2024-09-15",
+    "membership": {
+      "name": "MeGo Club",
+      "tier": "GOLD",
+      "points": 1250,
+      "pointsUsed": 500
+    }
+  },
+  "booking": {
+    "id": "booking-001",
+    "bookingCode": "MEGO-2025-001",
+    "status": "PENDING_PAYMENT",
+    "createdAt": "2025-10-10T09:30:00+07:00",
+    "checkIn": "2025-10-15",
+    "checkOut": "2025-10-17",
+    "numberOfNights": 2,
+    "numberOfRooms": 1,
+    "numberOfGuests": 2,
+    "guestType": "PRIMARY_GUEST",
+    "contact": {
+      "fullName": "Nguyễn Văn An",
+      "email": "nguyenvan.trang@mego.vn",
+      "phone": "+84 912 345 678"
+    },
+    "additionalGuests": [
+      {
+        "id": "guest-002",
+        "fullName": "Trần Thị Mai",
+        "type": "ACCOMPANYING_GUEST"
+      }
+    ],
+    "specialRequests": [
+      "Phòng tầng cao yên tĩnh",
+      "1 giường đôi lớn (King Bed)",
+      "Phòng không hút thuốc"
+    ],
+    "note": "",
+    "room": {
+      "hotelId": "hotel-001",
+      "hotelName": "Grand Sunrise Boutique Hotel Da Nang",
+      "hotelRating": 5,
+      "hotelAddress": "Đường Võ Nguyên Giáp, Sơn Trà, Đà Nẵng",
+      "hotelImageUrl": "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=800&q=80",
+      "roomId": "room-001",
+      "roomType": "DELUXE_OCEAN_VIEW_DOUBLE",
+      "roomName": "Deluxe Ocean View Double Room",
+      "description": "Phòng hướng biển với 1 giường King, phù hợp cho 2 khách.",
+      "bedType": "KING",
+      "guestCapacity": 2,
+      "quantity": 1,
+      "amenities": [
+        "Wi-Fi miễn phí",
+        "Bữa sáng mỗi ngày",
+        "Không hút thuốc",
+        "Phòng tắm riêng",
+        "Hướng biển"
+      ],
+      "cancellationPolicy": "Miễn phí hủy trước 24 giờ so với thời gian nhận phòng"
+    },
+    "price": {
+      "roomPricePerNight": 1450000,
+      "roomSubtotal": 2900000,
+      "serviceFee": 290000,
+      "vat": 290000,
+      "originalSubtotal": 3480000,
+      "promotion": {
+        "code": "MEGOSEA",
+        "name": "Ưu đãi mùa biển",
+        "discountAmount": 450000
+      },
+      "pointsDiscount": {
+        "pointsUsed": 500,
+        "discountAmount": 50000
+      },
+      "totalDiscount": 500000,
+      "totalAmount": 2980000,
+      "currency": "VND"
+    },
+    "payment": {
+      "status": "UNPAID",
+      "method": null,
+      "provider": null,
+      "transactionId": null,
+      "paidAt": null
+    },
+    "checkInOptions": {
+      "requestedEarlyCheckIn": false,
+      "requestedLateCheckOut": false,
+      "earlyCheckInTime": null,
+      "lateCheckOutTime": null
+    }
+  },
+  "availableRooms": [
+    {
+      "id": "room-001",
+      "hotelId": "hotel-001",
+      "hotelName": "Grand Sunrise Boutique Hotel Da Nang",
+      "roomType": "DELUXE_OCEAN_VIEW_DOUBLE",
+      "name": "Deluxe Ocean View Double Room",
+      "imageUrl": "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=800&q=80",
+      "bedType": "KING",
+      "maxGuests": 2,
+      "availableQuantity": 3,
+      "pricePerNight": 1450000,
+      "currency": "VND",
+      "amenities": [
+        "Hướng biển",
+        "Bữa sáng miễn phí",
+        "Wi-Fi miễn phí",
+        "Không hút thuốc"
+      ],
+      "policies": {
+        "freeCancellation": true,
+        "freeCancellationUntil": "2025-10-14T14:00:00+07:00",
+        "payAtHotel": false
+      }
+    },
+    {
+      "id": "room-002",
+      "hotelId": "hotel-001",
+      "hotelName": "Grand Sunrise Boutique Hotel Da Nang",
+      "roomType": "PREMIER_FAMILY",
+      "name": "Premier Family Room",
+      "imageUrl": "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80",
+      "bedType": "TWIN",
+      "maxGuests": 4,
+      "availableQuantity": 2,
+      "pricePerNight": 2200000,
+      "currency": "VND",
+      "amenities": [
+        "Ban công riêng",
+        "Bữa sáng miễn phí",
+        "Wi-Fi miễn phí",
+        "Bồn tắm"
+      ],
+      "policies": {
+        "freeCancellation": true,
+        "freeCancellationUntil": "2025-10-14T14:00:00+07:00",
+        "payAtHotel": false
+      }
+    }
+  ],
+  "bookingFormDefaults": {
+    "guestType": "PRIMARY_GUEST",
+    "specialRequests": [],
+    "promotionCode": "",
+    "useMeGoPoints": true,
+    "numberOfGuests": 2,
+    "numberOfRooms": 1
+  }
+}

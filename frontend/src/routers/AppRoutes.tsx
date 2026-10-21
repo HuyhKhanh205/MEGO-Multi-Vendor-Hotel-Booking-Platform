@@ -18,10 +18,10 @@ const AppRoutes = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <ScrollToTop />
       {routing}
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };
