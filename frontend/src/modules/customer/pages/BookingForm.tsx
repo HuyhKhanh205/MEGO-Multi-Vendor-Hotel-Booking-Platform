@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import CheckIcon from "@mui/icons-material/Check";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
@@ -11,13 +12,29 @@ import {
   updateBookingDraft,
   type BookingDraftPayload,
 } from "../services/customerApi";
+import { saveBookingCheckoutSession } from "../services/bookingSession";
 
 type GuestType = "myself" | "other";
 
 const selectedBooking = customerData.booking;
 const selectedRoom = selectedBooking.room;
+const holdExpiryStorageKey = `mego-booking-hold-expiry-${selectedBooking.id}`;
+const holdDurationSeconds = customerData.paymentPage.holdDurationSeconds;
+
+const getRemainingHoldSeconds = () => {
+  const storedExpiry = window.sessionStorage.getItem(holdExpiryStorageKey);
+  const expiry = storedExpiry ? Number(storedExpiry) : Date.now() + holdDurationSeconds * 1000;
+
+  if (!storedExpiry || !Number.isFinite(expiry)) {
+    window.sessionStorage.setItem(holdExpiryStorageKey, String(Date.now() + holdDurationSeconds * 1000));
+    return holdDurationSeconds;
+  }
+
+  return Math.max(Math.ceil((expiry - Date.now()) / 1000), 0);
+};
 
 const BookingForm = () => {
+  const navigate = useNavigate();
   const [guestType, setGuestType] = useState<GuestType>("myself");
   const [promoCode, setPromoCode] = useState(selectedBooking.price.promotion.code);
   const [promoApplied, setPromoApplied] = useState(false);
@@ -33,7 +50,7 @@ const BookingForm = () => {
   const [accompanyingPhone, setAccompanyingPhone] = useState("");
   const [accompanyingCitizenId, setAccompanyingCitizenId] = useState("");
   const [note, setNote] = useState("");
-  const [remainingSeconds, setRemainingSeconds] = useState(15 * 60);
+  const [remainingSeconds, setRemainingSeconds] = useState(getRemainingHoldSeconds);
   const [formError, setFormError] = useState("");
   const [apiStatus, setApiStatus] = useState<"loading" | "connected" | "offline">("loading");
   const [isSaving, setIsSaving] = useState(false);
@@ -42,7 +59,7 @@ const BookingForm = () => {
     if (remainingSeconds === 0) return;
 
     const timer = window.setInterval(() => {
-      setRemainingSeconds((current) => Math.max(current - 1, 0));
+      setRemainingSeconds(getRemainingHoldSeconds());
     }, 1000);
 
     return () => window.clearInterval(timer);
@@ -154,7 +171,15 @@ const BookingForm = () => {
       useMeGoPoints: clubMember,
     };
 
+    saveBookingCheckoutSession({
+      ...payload,
+      promotionDiscount: discount,
+      pointsDiscount: clubDiscount,
+      total,
+      paymentMethodId: customerData.paymentOptions[0].id,
+    });
     setIsSaving(true);
+    navigate("/customer/payment");
     try {
       await updateBookingDraft(payload);
       setFormError("Đã lưu thông tin đặt phòng. Có thể chuyển sang bước thanh toán.");

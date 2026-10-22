@@ -151,5 +151,60 @@
     "useMeGoPoints": true,
     "numberOfGuests": 2,
     "numberOfRooms": 1
+  },
+  "paymentOptions": [
+    {
+      "id": "vnpay",
+      "name": "Cổng VNPAY",
+      "description": "Quét mã QR / App Ngân hàng",
+      "badge": "Khuyến dùng · Nhanh nhất",
+      "provider": "VNPAY",
+      "instruction": "Sau khi xác nhận, bạn sẽ được chuyển đến cổng VNPAY để hoàn tất thanh toán.",
+      "enabled": true
+    },
+    {
+      "id": "international-card",
+      "name": "Thẻ Quốc Tế (Credit / Debit Card)",
+      "description": "Chấp nhận Visa, Mastercard, JCB, American Express.",
+      "badge": "Miễn phí giao dịch quốc tế",
+      "provider": "VISA · MC · JCB",
+      "instruction": "Thông tin thẻ được bảo mật theo chuẩn PCI-DSS Level 1.",
+      "enabled": true
+    },
+    {
+      "id": "ewallet",
+      "name": "Ví Điện Tử (MoMo / ZaloPay)",
+      "description": "Liên kết tài khoản và thanh toán nhanh, hỗ trợ hoàn tiền.",
+      "badge": "Hoàn 2% MeGo Club",
+      "provider": "MoMo · ZaloPay",
+      "instruction": "Bạn sẽ được chuyển đến ứng dụng ví để xác nhận thanh toán.",
+      "enabled": true
+    },
+    {
+      "id": "hotel",
+      "name": "Thanh toán tại khách sạn khi nhận phòng",
+      "description": "Quý khách sẽ thanh toán toàn bộ chi phí trực tiếp tại khách sạn khi nhận phòng.",
+      "badge": "Không cần trả trước",
+      "provider": "Tại khách sạn",
+      "instruction": "Không cần thanh toán ngay. Thanh toán trực tiếp khi nhận phòng.",
+      "enabled": true
+    }
+  ],
+  "paymentPage": {
+    "holdDurationSeconds": 900,
+    "currency": "VND",
+    "securityNote": "Bảo chứng giá tốt nhất hệ thống MeGo",
+    "cardSaveNote": "Lưu thông tin thẻ an toàn cho các kỳ nghỉ tiếp theo (chuẩn bảo mật mã hóa PCI-DSS Level 1).",
+    "supportNote": "Bạn có thể kiểm tra lại thông tin trước khi xác nhận thanh toán."
+  },
+  "paymentResult": {
+    "bookingCode": "MEGO-889922",
+    "status": "PAID",
+    "statusLabel": "Đã xác nhận thanh toán từ cổng VNPAY",
+    "emailMessage": "Email xác nhận và vé điện tử đã được gửi đến nguyenvan.trang@mego.vn.",
+    "checkInCode": "MEGO-CHECKIN-889922",
+    "pointsEarned": 428,
+    "paymentMethod": "Cổng VNPAY",
+    "supportPhone": "(+84) 236 3847 343"
   }
 }
