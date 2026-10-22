@@ -38,8 +38,14 @@ export interface DestinationItem {
   name: string;
   cityKey: string;
   tagline: string;
+  /** Nhãn viết hoa hiển thị trong card (VD: "THÀNH PHỐ ĐÁNG SỐNG") */
+  badgeLabel: string;
+  /** Số chỗ lưu trú tham khảo hiển thị badge top-left (VD: "1,240 khách sạn") */
+  accommodationBadge: string;
   hotelCount: number;
   imageUrl: string;
+  /** Giá tham khảo mỗi đêm — dữ liệu demo, chưa xác minh từ API */
+  startingPrice?: string;
 }
 
 export interface TestimonialItem {

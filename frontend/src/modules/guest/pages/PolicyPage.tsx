@@ -40,6 +40,12 @@ const POLICIES_META: Record<
     description:
       "Cách thức MeGo sử dụng cookie để tối ưu trải nghiệm duyệt web và ghi nhớ tùy chọn tiền tệ, ngôn ngữ.",
   },
+  "mego-club": {
+    title: "Chính sách quyền lợi MeGo Club",
+    category: "Chương trình thành viên",
+    description:
+      "Quyền lợi và điều kiện áp dụng cho Hội viên MeGo Club: giảm giá 15% đơn đặt đầu tiên, tích điểm đổi đêm nghỉ, nâng hạng VIP và check-in sớm miễn phí tại các resort đối tác.",
+  },
 };
 
 export const PolicyPage = () => {

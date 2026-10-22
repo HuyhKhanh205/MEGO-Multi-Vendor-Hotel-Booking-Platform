@@ -158,7 +158,10 @@ export const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: "Đà Nẵng",
     cityKey: "Da Nang",
     tagline: "Thành phố đáng sống với biển xanh & cầu Rồng",
+    badgeLabel: "THÀNH PHỐ ĐÁNG SỐNG",
+    accommodationBadge: "1.240 khách sạn",
     hotelCount: 340,
+    startingPrice: "650.000đ/đêm",
     imageUrl:
       "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80",
   },
@@ -167,7 +170,10 @@ export const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: "Phú Quốc",
     cityKey: "Phu Quoc",
     tagline: "Thiên đường hoàng hôn & resort đẳng cấp",
+    badgeLabel: "ĐẢO NGỌC THIÊN ĐƯỜNG",
+    accommodationBadge: "880 resort & villa",
     hotelCount: 280,
+    startingPrice: "890.000đ/đêm",
     imageUrl:
       "https://images.unsplash.com/photo-1589394815804-964ed0be2eb5?auto=format&fit=crop&w=600&q=80",
   },
@@ -176,7 +182,10 @@ export const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: "Nha Trang",
     cityKey: "Nha Trang",
     tagline: "Vịnh biển ngọc ngà & thể thao biển sôi động",
+    badgeLabel: "VỊNH BIỂN QUYẾN RŨ",
+    accommodationBadge: "950 khách sạn",
     hotelCount: 310,
+    startingPrice: "720.000đ/đêm",
     imageUrl:
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",
   },
@@ -185,7 +194,10 @@ export const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: "Đà Lạt",
     cityKey: "Da Lat",
     tagline: "Xứ sở ngàn hoa giữa sương mờ thông reo",
+    badgeLabel: "THÀNH PHỐ NGÀN HOA",
+    accommodationBadge: "1.420 homestay & resort",
     hotelCount: 260,
+    startingPrice: "550.000đ/đêm",
     imageUrl:
       "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
   },
@@ -194,7 +206,10 @@ export const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: "Vũng Tàu",
     cityKey: "Vung Tau",
     tagline: "Điểm hẹn cuối tuần tuyệt vời ven biển miền Nam",
+    badgeLabel: "BÃI BIỂN MIỀN NAM",
+    accommodationBadge: "620 khách sạn",
     hotelCount: 220,
+    startingPrice: "480.000đ/đêm",
     imageUrl:
       "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80",
   },
@@ -203,11 +218,22 @@ export const POPULAR_DESTINATIONS: DestinationItem[] = [
     name: "Hà Nội",
     cityKey: "Ha Noi",
     tagline: "Nét trầm mặc ngàn năm văn hiến và ẩm thực tinh hoa",
+    badgeLabel: "THỦ ĐÔ NGÀN NĂM",
+    accommodationBadge: "1.180 khách sạn",
     hotelCount: 420,
+    startingPrice: "700.000đ/đêm",
     imageUrl:
       "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80",
   },
 ];
+
+/** Cấu hình cho TopDestinationsSection — dễ cập nhật nội dung */
+export const TOP_DESTINATIONS_CONFIG = {
+  /** Số tỉnh thành hiển thị trong link "Khám phá tất cả" */
+  totalProvinces: 63,
+  /** Số card hiển thị trên trang chủ */
+  displayCount: 4,
+} as const;
 
 export const TESTIMONIALS_DATA: TestimonialItem[] = [
   {

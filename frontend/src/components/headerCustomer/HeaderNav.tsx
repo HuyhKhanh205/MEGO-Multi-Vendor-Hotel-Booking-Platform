@@ -21,6 +21,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
         <NavLink
           key={item.id}
           to={item.path}
+          end={item.path === "/"}
           className={({ isActive }) =>
             `relative py-5 px-2.5 lg:px-3 text-[13.5px] transition-colors duration-150 inline-flex items-center select-none font-sans whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded-md ${
               isActive

@@ -1,7 +1,7 @@
 import type { NavItem, NotificationItem, SupportContact } from "./types";
 
 export const NAV_ITEMS: NavItem[] = [
-  { id: "explore", label: "Khám phá", path: "/explore" },
+  { id: "explore", label: "Khám phá", path: "/" },
   { id: "hotels", label: "Khách sạn", path: "/hotels" },
   { id: "offers", label: "Ưu đãi", path: "/offers" },
   { id: "my-bookings", label: "Đặt chỗ của tôi", path: "/my-bookings" },

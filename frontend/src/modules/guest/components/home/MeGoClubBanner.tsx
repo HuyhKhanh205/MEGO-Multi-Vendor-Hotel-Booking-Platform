@@ -1,61 +1,110 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../../../stores/store";
+import { ChevronRight } from "../../../../components/common/Icons";
+
+// ─── Config (dễ cập nhật khi chính sách thay đổi) ────────────────────────────
+const CLUB_CONFIG = {
+  discountPercent: 15,
+  badge: "ĐẶC QUYỀN HỘI VIÊN MEGO CLUB",
+  title: "Đăng ký thành viên MeGo Club – Nhận ngay giảm 15%",
+  description:
+    "Giảm ngay 15% cho lần đặt đầu tiên. Nâng hạng VIP, miễn phí check-in sớm.",
+  perks: ["Giảm thêm tới 15%", "Nhận phòng sớm miễn phí", "Hỗ trợ VIP 24/7"],
+  registerPath: "/register",
+  loginPath: "/login",
+  policyPath: "/policies/mego-club",
+} as const;
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export const MeGoClubBanner: React.FC = () => {
-  return (
-    <section aria-label="Đặc quyền Hội viên MeGo Club" className="py-10 sm:py-14 bg-[#F9F9FF]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#004CCD] via-[#0f62d4] to-[#00A389] p-8 sm:p-12 text-white shadow-xl">
-          {/* Subtle Decorative Circles */}
-          <div className="absolute -top-12 -right-12 w-64 h-64 rounded-full bg-white/10 blur-xl pointer-events-none" />
-          <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-cyan-400/20 blur-2xl pointer-events-none" />
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 sm:gap-8">
-            {/* Left Content */}
-            <div className="max-w-2xl space-y-3">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-amber-300 text-xs font-bold uppercase tracking-wider">
-                <span>👑</span>
-                <span>Đặc quyền Hội viên MeGo Club</span>
+  const handleActivate = () => {
+    if (isAuthenticated) {
+      // Người dùng đã đăng nhập → trang quản lý thành viên / quyền lợi
+      navigate("/my-bookings");
+    } else {
+      navigate(CLUB_CONFIG.registerPath);
+    }
+  };
+
+  return (
+    <section
+      aria-label="Đặc quyền Hội viên MeGo Club"
+      className="py-6 sm:py-8 bg-[#F9F9FF]"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0039B3] via-[#1055D4] to-[#0099A8] shadow-lg">
+          {/* ── Decorative light blobs ── */}
+          <div className="absolute inset-0 pointer-events-none">
+            {/* Centre glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-32 rounded-full bg-white/8 blur-3xl" />
+            {/* Top-right accent */}
+            <div className="absolute -top-10 -right-10 w-56 h-56 rounded-full bg-cyan-400/15 blur-2xl" />
+            {/* Bottom-left accent */}
+            <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-blue-200/10 blur-2xl" />
+          </div>
+
+          {/* ── Content ── */}
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5 px-6 sm:px-8 py-6 sm:py-7">
+            {/* Left — text */}
+            <div className="flex-1 min-w-0 space-y-2">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
+                <span className="text-amber-300 text-[10px] font-black uppercase tracking-widest leading-none">
+                  {CLUB_CONFIG.badge}
+                </span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-                Gia nhập MeGo Club — Mở khóa giá phòng bí mật &amp; tích điểm từng kỳ nghỉ
+              {/* Title */}
+              <h2 className="text-lg sm:text-xl lg:text-[22px] font-extrabold text-white tracking-tight leading-snug max-w-xl">
+                {CLUB_CONFIG.title}
               </h2>
 
-              <p className="text-sm sm:text-base text-blue-100 leading-relaxed font-normal">
-                Đăng ký thành viên hoàn toàn miễn phí. Nhận ngay voucher giảm thêm 15% cho đơn đầu tiên, tích điểm đổi đêm nghỉ và ưu tiên nâng hạng phòng tại các resort đối tác.
+              {/* Description */}
+              <p className="text-xs sm:text-sm text-blue-100/90 leading-relaxed max-w-lg">
+                {CLUB_CONFIG.description}
               </p>
 
-              {/* Perks Highlights */}
-              <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-white/90 font-medium">
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                  Giảm thêm tới 15%
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                  Nhận phòng sớm miễn phí
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                  Hỗ trợ VIP 24/7
-                </span>
+              {/* Perks row */}
+              <div className="hidden sm:flex flex-wrap items-center gap-3 pt-0.5">
+                {CLUB_CONFIG.perks.map((perk) => (
+                  <span
+                    key={perk}
+                    className="inline-flex items-center gap-1.5 text-[11px] text-white/85 font-medium"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                    {perk}
+                  </span>
+                ))}
               </div>
             </div>
 
-            {/* Right CTA */}
-            <div className="shrink-0 flex flex-col sm:flex-row lg:flex-col gap-3">
-              <Link
-                to="/register"
-                className="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-amber-400 hover:bg-amber-300 text-gray-950 font-extrabold text-sm sm:text-base shadow-lg transition-all active:scale-95 text-center cursor-pointer"
+            {/* Right — CTAs */}
+            <div className="shrink-0 flex flex-row md:flex-col lg:flex-row gap-2.5">
+              {/* Primary button */}
+              <button
+                type="button"
+                onClick={handleActivate}
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-white hover:bg-blue-50 active:scale-[0.97] text-[#1055D4] font-bold text-sm shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 whitespace-nowrap"
               >
-                Đăng ký thành viên ngay
-              </Link>
+                <span>
+                  {isAuthenticated
+                    ? "Xem quyền lợi của tôi"
+                    : "Kích hoạt MeGo Club Ngay"}
+                </span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+
+              {/* Secondary button */}
               <Link
-                to="/login"
-                className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-semibold transition-all text-center border border-white/20"
+                to={CLUB_CONFIG.policyPath}
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-[0.97] border border-white/25 text-white font-semibold text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 whitespace-nowrap"
               >
-                Đã có tài khoản? Đăng nhập
+                Xem chính sách quyền lợi
               </Link>
             </div>
           </div>
