@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SEARCH_SUGGESTION_TAGS } from "../data/homeData";
+import { SEARCH_SUGGESTION_TAGS } from "../../data/homeData";
 
 interface HotelSearchFormProps {
   className?: string;

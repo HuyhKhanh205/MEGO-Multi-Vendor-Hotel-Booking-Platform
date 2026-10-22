@@ -1,4 +1,4 @@
-import type { NavItem, Language , NotificationItem, SupportContact } from "./types";
+import type { NavItem, NotificationItem, SupportContact } from "./types";
 
 export const NAV_ITEMS: NavItem[] = [
   { id: "explore", label: "Khám phá", path: "/explore" },
@@ -7,12 +7,10 @@ export const NAV_ITEMS: NavItem[] = [
   { id: "my-bookings", label: "Đặt chỗ của tôi", path: "/my-bookings" },
 ];
 
-
 export const LANGUAGES = [
   { code: "VI", name: "Tiếng Việt", flag: "🇻🇳" },
   { code: "EN", name: "English", flag: "🇬🇧" },
 ];
-
 
 export const SUPPORT_INFO: SupportContact = {
   hotline: "1900 6868",

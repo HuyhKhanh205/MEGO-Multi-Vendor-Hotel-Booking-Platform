@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import type { FeaturedHotel } from "../types/homeTypes";
+import type { FeaturedHotel } from "../../types/homeTypes";
 
 interface HotelCardProps {
   hotel: FeaturedHotel;
@@ -15,15 +15,17 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
     <div className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-xs hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col group">
       {/* Hotel Image with Badges */}
       <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
-        <img
-          src={hotel.imageUrl}
-          alt={hotel.name}
-          loading="lazy"
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-        />
+        <Link to={`/hotels/${hotel.id}`} className="block w-full h-full cursor-pointer">
+          <img
+            src={hotel.imageUrl}
+            alt={hotel.name}
+            loading="lazy"
+            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+          />
+        </Link>
 
         {/* Top Badges */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 pointer-events-none">
           {hotel.badge && (
             <span className="px-2.5 py-1 rounded-full text-[10.5px] font-bold bg-[#1677FF] text-white shadow-xs">
               {hotel.badge}
@@ -38,7 +40,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
         {/* Distance Badge */}
         {hotel.distanceToBeach && (
-          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-gray-950/70 backdrop-blur-md text-white flex items-center gap-1">
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-gray-950/70 backdrop-blur-md text-white flex items-center gap-1 pointer-events-none">
             <span>📍</span>
             <span>{hotel.distanceToBeach}</span>
           </div>
@@ -62,7 +64,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
 
           {/* Hotel Name */}
           <h3 className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-[#1677FF] transition-colors line-clamp-1">
-            {hotel.name}
+            <Link to={`/hotels/${hotel.id}`}>{hotel.name}</Link>
           </h3>
 
           {/* Rating Summary */}
@@ -106,7 +108,7 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
           </div>
 
           <Link
-            to={`/hotels?keyword=${encodeURIComponent(hotel.name)}`}
+            to={`/hotels/${hotel.id}`}
             className="px-4 py-2 text-xs font-bold text-white bg-[#1677FF] hover:bg-blue-700 active:scale-95 rounded-xl shadow-xs transition-all"
           >
             Đặt ngay

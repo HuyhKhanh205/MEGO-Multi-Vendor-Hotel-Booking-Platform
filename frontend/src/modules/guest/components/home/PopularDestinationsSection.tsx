@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { POPULAR_DESTINATIONS } from "../data/homeData";
+import { POPULAR_DESTINATIONS } from "../../data/homeData";
 
 export const PopularDestinationsSection: React.FC = () => {
   return (

@@ -1,11 +1,11 @@
 import React from "react";
-import HeroSection from "../components/HeroSection";
-import BenefitsSection from "../components/BenefitsSection";
-import FeaturedHotelsSection from "../components/FeaturedHotelsSection";
-import MeGoRadarSection from "../components/MeGoRadarSection";
-import MeGoClubBanner from "../components/MeGoClubBanner";
-import PopularDestinationsSection from "../components/PopularDestinationsSection";
-import TestimonialsSection from "../components/TestimonialsSection";
+import HeroSection from "../components/home/HeroSection";
+import BenefitsSection from "../components/home/BenefitsSection";
+import FeaturedHotelsSection from "../components/home/FeaturedHotelsSection";
+import MeGoRadarSection from "../components/home/MeGoRadarSection";
+import MeGoClubBanner from "../components/home/MeGoClubBanner";
+import PopularDestinationsSection from "../components/home/PopularDestinationsSection";
+import TestimonialsSection from "../components/home/TestimonialsSection";
 
 export const GuestHome: React.FC = () => {
   return (

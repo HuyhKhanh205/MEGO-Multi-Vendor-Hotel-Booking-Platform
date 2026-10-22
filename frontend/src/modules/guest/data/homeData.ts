@@ -46,7 +46,7 @@ export const BENEFITS_DATA: BenefitItem[] = [
 
 export const FEATURED_HOTELS_DATA: FeaturedHotel[] = [
   {
-    id: "hotel-1",
+    id: "furama-resort-da-nang",
     name: "Furama Resort Đà Nẵng",
     city: "Đà Nẵng",
     area: "Bãi biển Bắc Mỹ An",
@@ -64,7 +64,7 @@ export const FEATURED_HOTELS_DATA: FeaturedHotel[] = [
     distanceToBeach: "Cách biển 50m",
   },
   {
-    id: "hotel-2",
+    id: "vinpearl-resort-spa-nha-trang",
     name: "Vinpearl Resort & Spa Nha Trang",
     city: "Nha Trang",
     area: "Đảo Hòn Tre",
@@ -82,7 +82,7 @@ export const FEATURED_HOTELS_DATA: FeaturedHotel[] = [
     distanceToBeach: "Mặt biển",
   },
   {
-    id: "hotel-3",
+    id: "jw-marriott-phu-quoc",
     name: "JW Marriott Emerald Bay Phú Quốc",
     city: "Phú Quốc",
     area: "Bãi Khem",
@@ -100,7 +100,7 @@ export const FEATURED_HOTELS_DATA: FeaturedHotel[] = [
     distanceToBeach: "Sát bờ cát trắng",
   },
   {
-    id: "hotel-4",
+    id: "the-imperial-hotel-vung-tau",
     name: "The Imperial Hotel Vũng Tàu",
     city: "Vũng Tàu",
     area: "Bãi Sau",
@@ -117,7 +117,7 @@ export const FEATURED_HOTELS_DATA: FeaturedHotel[] = [
     distanceToBeach: "Cách biển 100m",
   },
   {
-    id: "hotel-5",
+    id: "dalat-edensee-lake-resort",
     name: "Dalat Edensee Lake Resort & Spa",
     city: "Đà Lạt",
     area: "Hồ Tuyền Lâm",
@@ -134,7 +134,7 @@ export const FEATURED_HOTELS_DATA: FeaturedHotel[] = [
     distanceToBeach: "Ven hồ Tuyền Lâm",
   },
   {
-    id: "hotel-6",
+    id: "intercontinental-danang-sun-peninsula",
     name: "InterContinental Danang Sun Peninsula",
     city: "Đà Nẵng",
     area: "Bán đảo Sơn Trà",

@@ -16,13 +16,14 @@ const ExplorePage = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           {["Hà Nội", "Đà Nẵng", "Nha Trang", "Phú Quốc"].map((dest) => (
-            <div
+            <Link
               key={dest}
-              className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-300 transition-colors"
+              to={`/hotels?destination=${encodeURIComponent(dest)}`}
+              className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-400 hover:bg-blue-50/30 transition-all block group"
             >
-              <h3 className="font-bold text-gray-800">{dest}</h3>
-              <p className="text-xs text-gray-500 mt-1">Hơn 120+ khách sạn đối tác</p>
-            </div>
+              <h3 className="font-bold text-gray-800 group-hover:text-[#1677FF] transition-colors">{dest}</h3>
+              <p className="text-xs text-gray-500 mt-1">Khám phá các khách sạn hàng đầu &rarr;</p>
+            </Link>
           ))}
         </div>
 
