@@ -20,16 +20,16 @@ const selectedRoom = selectedBooking.room;
 const BookingForm = () => {
   const [guestType, setGuestType] = useState<GuestType>("myself");
   const [promoCode, setPromoCode] = useState(selectedBooking.price.promotion.code);
-  const [promoApplied, setPromoApplied] = useState(true);
-  const [clubMember, setClubMember] = useState(true);
-  const [specialRequests, setSpecialRequests] = useState<string[]>(selectedBooking.specialRequests);
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [clubMember, setClubMember] = useState(false);
+  const [specialRequests, setSpecialRequests] = useState<string[]>([]);
   const [checkIn, setCheckIn] = useState(selectedBooking.checkIn);
   const [checkOut, setCheckOut] = useState(selectedBooking.checkOut);
   const [fullName, setFullName] = useState(selectedBooking.contact.fullName);
   const [email, setEmail] = useState(selectedBooking.contact.email);
   const [phone, setPhone] = useState(selectedBooking.contact.phone);
   const [citizenId, setCitizenId] = useState(selectedBooking.contact.citizenId);
-  const [accompanyingGuest, setAccompanyingGuest] = useState(selectedBooking.additionalGuests[0]?.fullName ?? "");
+  const [accompanyingGuest, setAccompanyingGuest] = useState("");
   const [accompanyingPhone, setAccompanyingPhone] = useState("");
   const [accompanyingCitizenId, setAccompanyingCitizenId] = useState("");
   const [note, setNote] = useState("");
@@ -69,7 +69,7 @@ const BookingForm = () => {
         setSpecialRequests(draft.specialRequests);
         setNote(draft.note);
         setPromoCode(draft.promotionCode ?? "");
-        setClubMember(draft.useMeGoPoints);
+        setClubMember(false);
         setApiStatus("connected");
       } catch {
         if (isMounted) setApiStatus("offline");
@@ -195,14 +195,11 @@ const BookingForm = () => {
                 Xác nhận để đảm bảo thông tin chính xác cho việc đặt phòng.
               </p>
 
-              <div className="mb-4 flex items-center justify-between rounded-lg bg-[#eef3ff] px-3 py-3 text-xs">
+              <div className="mb-4 rounded-lg border border-[#8adfd0] bg-[#e9fbf7] px-3 py-3 text-xs">
                 <div>
-                  <p className="font-semibold text-[#263b68]">Đã liên kết tài khoản: {email || "chưa cập nhật email"}</p>
-                  <p className="mt-1 text-[10px] text-[#7181a1]">Thành viên MeGo từ 15/09/2024</p>
+                  <p className="font-semibold text-[#176b61]">Đã liên kết tài khoản</p>
+                  <p className="mt-1 text-[10px] text-[#43847d]">{email || "chưa cập nhật email"}</p>
                 </div>
-                <button className="rounded-md bg-[#dce8ff] px-3 py-1.5 text-[11px] font-semibold text-[#1677ff]">
-                  Thay đổi
-                </button>
               </div>
 
               <label className="mb-1 block text-xs font-semibold text-[#4b556b]">Họ và Tên đầy đủ <span className="text-[#ed4d65]">*</span></label>
@@ -230,19 +227,9 @@ const BookingForm = () => {
                 <GuestChoice active={guestType === "myself"} onClick={() => setGuestType("myself")} title="Tôi là người lưu trú chính" description="Thông tin phòng sẽ gửi đến email của bạn" />
                 <GuestChoice active={guestType === "other"} onClick={() => setGuestType("other")} title="Đặt phòng hộ người khác" description="Cần điền thêm thông tin khách" />
               </div>
-              {guestType === "myself" ? (
-                <div className="mt-3 flex items-center justify-between rounded-lg bg-[#eef3ff] px-3 py-3 text-xs">
-                  <label className="flex min-w-0 flex-1 items-center gap-2">
-                    <strong className="rounded-full bg-[#dbe8ff] px-2 py-1 text-[#4167ad]">2</strong>
-                    <span className="shrink-0">Khách 2 (Người đi cùng):</span>
-                    <input aria-label="Tên khách đi cùng" className="min-w-0 flex-1 bg-transparent font-semibold text-[#4167ad] outline-none" value={accompanyingGuest} onChange={(event) => setAccompanyingGuest(event.target.value)} />
-                  </label>
-                  <button type="button" onClick={() => setAccompanyingGuest("")} className="font-semibold text-[#1677ff]">Đổi tên khách</button>
-                </div>
-              ) : (
+              {guestType === "other" && (
                 <div className="mt-3 rounded-lg border border-[#d8e3f8] bg-[#f7f9ff] p-3">
                   <div className="mb-3 flex items-center gap-2 text-xs font-bold text-[#263b68]">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1677ff] text-white">2</span>
                     Thông tin người lưu trú
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
@@ -285,16 +272,18 @@ const BookingForm = () => {
               <label className="mb-1 mt-4 block text-xs font-semibold text-[#56627c]">Mã ưu đãi đặc quyền</label>
               <div className="flex rounded-lg bg-[#eef2fc] p-1">
                 <LocalOfferOutlinedIcon className="m-2 text-[#7381a2]" sx={{ fontSize: 15 }} />
-                <input value={promoCode} onChange={(event) => setPromoCode(event.target.value)} placeholder="MEGOSEA" className="min-w-0 flex-1 bg-transparent text-xs outline-none placeholder:text-[#516995]" />
-                <button onClick={() => setPromoApplied(promoCode.trim().length > 0)} className="rounded-md bg-[#1677ff] px-4 text-xs font-semibold text-white">{promoApplied ? "Đã áp dụng" : "Áp dụng"}</button>
+                <input value={promoCode} onChange={(event) => { setPromoCode(event.target.value); setPromoApplied(false); }} placeholder="MEGOSEA" className="min-w-0 flex-1 bg-transparent text-xs outline-none placeholder:text-[#516995]" />
+                <button type="button" onClick={() => setPromoApplied(promoCode.trim().length > 0)} className="rounded-md bg-[#1677ff] px-4 text-xs font-semibold text-white">{promoApplied ? "Đã áp dụng" : "Áp dụng"}</button>
               </div>
               {promoApplied && <div className="mt-2 flex items-center justify-between rounded-lg bg-[#dce9ff] px-3 py-2 text-[11px] text-[#5070ad]">
                 <span>◉ {promoCode.toUpperCase()} đã áp dụng - 450.000</span><button onClick={() => setPromoApplied(false)} className="font-semibold">Gỡ bỏ</button>
               </div>}
-              <button onClick={() => setClubMember(!clubMember)} className="mt-3 flex w-full items-center justify-between rounded-lg bg-[#e0f7f4] px-3 py-3 text-left">
-                <span><strong className="block text-xs text-[#3f596d]">MeGo Club Points <small className="rounded bg-white px-1 text-[9px] text-[#00a389]">Đang dùng</small></strong><small className="text-[10px] text-[#527a7b]">Sử dụng 500 MeGo Points bạn được giảm trực tiếp <b className="text-[#00a389]">50.000 VND</b></small></span>
-                <span className={`relative h-5 w-9 rounded-full ${clubMember ? "bg-[#1677ff]" : "bg-[#b8c2d0]"}`}><span className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${clubMember ? "right-0.5" : "left-0.5"}`} /></span>
-              </button>
+              <div className="mt-3 flex items-center justify-between rounded-lg bg-[#e0f7f4] px-3 py-3">
+                <span><strong className="block text-xs text-[#3f596d]">MeGo Club Points {clubMember && <small className="rounded bg-white px-1 text-[9px] text-[#00a389]">Đang dùng</small>}</strong><small className="text-[10px] text-[#527a7b]">Sử dụng 500 MeGo Points bạn được giảm trực tiếp <b className="text-[#00a389]">50.000 VND</b></small></span>
+                <button type="button" onClick={() => setClubMember((current) => !current)} className={`rounded-md px-3 py-1.5 text-[11px] font-semibold ${clubMember ? "bg-white text-[#008f7b]" : "bg-[#00a389] text-white"}`}>
+                  {clubMember ? "Bỏ áp dụng" : "Áp dụng"}
+                </button>
+              </div>
             </section>
           </div>
 

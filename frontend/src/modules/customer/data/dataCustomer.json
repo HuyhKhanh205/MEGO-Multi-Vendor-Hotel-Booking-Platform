@@ -33,13 +33,6 @@
       "phone": "+84 912 345 678",
       "citizenId": "079201001234"
     },
-    "additionalGuests": [
-      {
-        "id": "guest-002",
-        "fullName": "Trần Thị Mai",
-        "type": "ACCOMPANYING_GUEST"
-      }
-    ],
     "specialRequests": [
       "Phòng tầng cao yên tĩnh",
       "1 giường đôi lớn (King Bed)",
