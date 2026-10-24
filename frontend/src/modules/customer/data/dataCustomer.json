@@ -1,0 +1,210 @@
+{
+  "customer": {
+    "id": "customer-001",
+    "accountId": "account-001",
+    "fullName": "Nguyễn Văn An",
+    "email": "nguyenvan.trang@mego.vn",
+    "phone": "+84 912 345 678",
+    "avatarUrl": "",
+    "role": "CUSTOMER",
+    "isVerified": true,
+    "memberSince": "2024-09-15",
+    "membership": {
+      "name": "MeGo Club",
+      "tier": "GOLD",
+      "points": 1250,
+      "pointsUsed": 500
+    }
+  },
+  "booking": {
+    "id": "booking-001",
+    "bookingCode": "MEGO-2025-001",
+    "status": "PENDING_PAYMENT",
+    "createdAt": "2025-10-10T09:30:00+07:00",
+    "checkIn": "2025-10-15",
+    "checkOut": "2025-10-17",
+    "numberOfNights": 2,
+    "numberOfRooms": 1,
+    "numberOfGuests": 2,
+    "guestType": "PRIMARY_GUEST",
+    "contact": {
+      "fullName": "Nguyễn Văn An",
+      "email": "nguyenvan.trang@mego.vn",
+      "phone": "+84 912 345 678",
+      "citizenId": "079201001234"
+    },
+    "specialRequests": [
+      "Phòng tầng cao yên tĩnh",
+      "1 giường đôi lớn (King Bed)",
+      "Phòng không hút thuốc"
+    ],
+    "note": "",
+    "room": {
+      "hotelId": "hotel-001",
+      "hotelName": "Grand Sunrise Boutique Hotel Da Nang",
+      "hotelRating": 5,
+      "hotelAddress": "Đường Võ Nguyên Giáp, Sơn Trà, Đà Nẵng",
+      "hotelImageUrl": "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=800&q=80",
+      "roomId": "room-001",
+      "roomType": "DELUXE_OCEAN_VIEW_DOUBLE",
+      "roomName": "Deluxe Ocean View Double Room",
+      "description": "Phòng hướng biển với 1 giường King, phù hợp cho 2 khách.",
+      "bedType": "KING",
+      "guestCapacity": 2,
+      "quantity": 1,
+      "amenities": [
+        "Wi-Fi miễn phí",
+        "Bữa sáng mỗi ngày",
+        "Không hút thuốc",
+        "Phòng tắm riêng",
+        "Hướng biển"
+      ],
+      "cancellationPolicy": "Miễn phí hủy trước 24 giờ so với thời gian nhận phòng"
+    },
+    "price": {
+      "roomPricePerNight": 1450000,
+      "roomSubtotal": 2900000,
+      "serviceFee": 290000,
+      "vat": 290000,
+      "originalSubtotal": 3480000,
+      "promotion": {
+        "code": "MEGOSEA",
+        "name": "Ưu đãi mùa biển",
+        "discountAmount": 450000
+      },
+      "pointsDiscount": {
+        "pointsUsed": 500,
+        "discountAmount": 50000
+      },
+      "totalDiscount": 500000,
+      "totalAmount": 2980000,
+      "currency": "VND"
+    },
+    "payment": {
+      "status": "UNPAID",
+      "method": null,
+      "provider": null,
+      "transactionId": null,
+      "paidAt": null
+    },
+    "checkInOptions": {
+      "requestedEarlyCheckIn": false,
+      "requestedLateCheckOut": false,
+      "earlyCheckInTime": null,
+      "lateCheckOutTime": null
+    }
+  },
+  "availableRooms": [
+    {
+      "id": "room-001",
+      "hotelId": "hotel-001",
+      "hotelName": "Grand Sunrise Boutique Hotel Da Nang",
+      "roomType": "DELUXE_OCEAN_VIEW_DOUBLE",
+      "name": "Deluxe Ocean View Double Room",
+      "imageUrl": "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=800&q=80",
+      "bedType": "KING",
+      "maxGuests": 2,
+      "availableQuantity": 3,
+      "pricePerNight": 1450000,
+      "currency": "VND",
+      "amenities": [
+        "Hướng biển",
+        "Bữa sáng miễn phí",
+        "Wi-Fi miễn phí",
+        "Không hút thuốc"
+      ],
+      "policies": {
+        "freeCancellation": true,
+        "freeCancellationUntil": "2025-10-14T14:00:00+07:00",
+        "payAtHotel": false
+      }
+    },
+    {
+      "id": "room-002",
+      "hotelId": "hotel-001",
+      "hotelName": "Grand Sunrise Boutique Hotel Da Nang",
+      "roomType": "PREMIER_FAMILY",
+      "name": "Premier Family Room",
+      "imageUrl": "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80",
+      "bedType": "TWIN",
+      "maxGuests": 4,
+      "availableQuantity": 2,
+      "pricePerNight": 2200000,
+      "currency": "VND",
+      "amenities": [
+        "Ban công riêng",
+        "Bữa sáng miễn phí",
+        "Wi-Fi miễn phí",
+        "Bồn tắm"
+      ],
+      "policies": {
+        "freeCancellation": true,
+        "freeCancellationUntil": "2025-10-14T14:00:00+07:00",
+        "payAtHotel": false
+      }
+    }
+  ],
+  "bookingFormDefaults": {
+    "guestType": "PRIMARY_GUEST",
+    "specialRequests": [],
+    "promotionCode": "",
+    "useMeGoPoints": true,
+    "numberOfGuests": 2,
+    "numberOfRooms": 1
+  },
+  "paymentOptions": [
+    {
+      "id": "vnpay",
+      "name": "Cổng VNPAY",
+      "description": "Quét mã QR / App Ngân hàng",
+      "badge": "Khuyến dùng · Nhanh nhất",
+      "provider": "VNPAY",
+      "instruction": "Sau khi xác nhận, bạn sẽ được chuyển đến cổng VNPAY để hoàn tất thanh toán.",
+      "enabled": true
+    },
+    {
+      "id": "international-card",
+      "name": "Thẻ Quốc Tế (Credit / Debit Card)",
+      "description": "Chấp nhận Visa, Mastercard, JCB, American Express.",
+      "badge": "Miễn phí giao dịch quốc tế",
+      "provider": "VISA · MC · JCB",
+      "instruction": "Thông tin thẻ được bảo mật theo chuẩn PCI-DSS Level 1.",
+      "enabled": true
+    },
+    {
+      "id": "ewallet",
+      "name": "Ví Điện Tử (MoMo / ZaloPay)",
+      "description": "Liên kết tài khoản và thanh toán nhanh, hỗ trợ hoàn tiền.",
+      "badge": "Hoàn 2% MeGo Club",
+      "provider": "MoMo · ZaloPay",
+      "instruction": "Bạn sẽ được chuyển đến ứng dụng ví để xác nhận thanh toán.",
+      "enabled": true
+    },
+    {
+      "id": "hotel",
+      "name": "Thanh toán tại khách sạn khi nhận phòng",
+      "description": "Quý khách sẽ thanh toán toàn bộ chi phí trực tiếp tại khách sạn khi nhận phòng.",
+      "badge": "Không cần trả trước",
+      "provider": "Tại khách sạn",
+      "instruction": "Không cần thanh toán ngay. Thanh toán trực tiếp khi nhận phòng.",
+      "enabled": true
+    }
+  ],
+  "paymentPage": {
+    "holdDurationSeconds": 900,
+    "currency": "VND",
+    "securityNote": "Bảo chứng giá tốt nhất hệ thống MeGo",
+    "cardSaveNote": "Lưu thông tin thẻ an toàn cho các kỳ nghỉ tiếp theo (chuẩn bảo mật mã hóa PCI-DSS Level 1).",
+    "supportNote": "Bạn có thể kiểm tra lại thông tin trước khi xác nhận thanh toán."
+  },
+  "paymentResult": {
+    "bookingCode": "MEGO-889922",
+    "status": "PAID",
+    "statusLabel": "Đã xác nhận thanh toán từ cổng VNPAY",
+    "emailMessage": "Email xác nhận và vé điện tử đã được gửi đến nguyenvan.trang@mego.vn.",
+    "checkInCode": "MEGO-CHECKIN-889922",
+    "pointsEarned": 428,
+    "paymentMethod": "Cổng VNPAY",
+    "supportPhone": "(+84) 236 3847 343"
+  }
+}
