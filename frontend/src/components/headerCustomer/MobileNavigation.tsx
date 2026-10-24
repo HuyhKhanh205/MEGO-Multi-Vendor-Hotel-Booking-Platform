@@ -196,7 +196,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                 </div>
 
                 <Link
-                  to="/customer"
+                  to="/customer/profile"
                   onClick={handleClose}
                   className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
                 >
