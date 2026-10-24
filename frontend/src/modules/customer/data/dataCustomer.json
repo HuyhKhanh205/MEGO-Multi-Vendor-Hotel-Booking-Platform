@@ -5,6 +5,7 @@
     "fullName": "Nguyễn Văn An",
     "email": "nguyenvan.trang@mego.vn",
     "phone": "+84 912 345 678",
+    "birthDate": "1994-06-18",
     "avatarUrl": "",
     "role": "CUSTOMER",
     "isVerified": true,
@@ -206,5 +207,40 @@
     "pointsEarned": 428,
     "paymentMethod": "Cổng VNPAY",
     "supportPhone": "(+84) 236 3847 343"
-  }
+  },
+  "bookings": [
+    {"id":"bk-001","bookingCode":"MEGO-2026-001","status":"PENDING_PAYMENT","createdAt":"2026-10-20T08:30:00+07:00","checkIn":"2026-11-20","checkOut":"2026-11-23","numberOfNights":3,"numberOfRooms":1,"numberOfGuests":2,"hotelId":"hotel-001","hotelName":"Grand Sunrise Boutique Hotel","hotelAddress":"Võ Nguyên Giáp, Sơn Trà, Đà Nẵng","hotelImageUrl":"https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=900&q=80","roomName":"Deluxe hướng biển","pricePerNight":1450000,"taxes":435000,"discount":200000,"total":4585000,"paymentMethod":"VNPay","paymentStatus":"UNPAID","cancellationPolicy":"Hoàn 100% nếu hủy trước ngày nhận phòng 3 ngày","holdUntil":"2026-10-25T23:59:00+07:00","reviewed":false,"contactName":"Nguyễn Văn An","contactEmail":"nguyenvan.trang@mego.vn","contactPhone":"0912345678","guestName":"Nguyễn Văn An","specialRequest":"Phòng tầng cao, không hút thuốc","payAtHotel":false},
+    {"id":"bk-002","bookingCode":"MEGO-2026-002","status":"CONFIRMED","createdAt":"2026-10-12T10:00:00+07:00","checkIn":"2026-12-04","checkOut":"2026-12-06","numberOfNights":2,"numberOfRooms":1,"numberOfGuests":2,"hotelId":"hotel-002","hotelName":"La Siesta Premium Hàng Bè","hotelAddress":"Hàng Bè, Hoàn Kiếm, Hà Nội","hotelImageUrl":"https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=900&q=80","roomName":"Premium Suite","pricePerNight":2300000,"taxes":460000,"discount":150000,"total":4910000,"paymentMethod":"Chuyển khoản","paymentStatus":"PAID","cancellationPolicy":"Hoàn 50% nếu hủy trước 24 giờ","holdUntil":null,"reviewed":false,"contactName":"Nguyễn Văn An","contactEmail":"nguyenvan.trang@mego.vn","contactPhone":"0912345678","guestName":"Nguyễn Văn An","specialRequest":"","payAtHotel":false},
+    {"id":"bk-003","bookingCode":"MEGO-2026-003","status":"CHECKED_IN","createdAt":"2026-10-22T11:00:00+07:00","checkIn":"2026-10-23","checkOut":"2026-10-27","numberOfNights":4,"numberOfRooms":1,"numberOfGuests":2,"hotelId":"hotel-003","hotelName":"Mường Thanh Luxury Nha Trang","hotelAddress":"Phạm Văn Đồng, Nha Trang","hotelImageUrl":"https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=900&q=80","roomName":"Ocean Deluxe","pricePerNight":1800000,"taxes":720000,"discount":0,"total":7920000,"paymentMethod":"Thanh toán tại khách sạn","paymentStatus":"PENDING","cancellationPolicy":"Không thể hủy sau khi nhận phòng","holdUntil":null,"reviewed":false,"contactName":"Nguyễn Văn An","contactEmail":"nguyenvan.trang@mego.vn","contactPhone":"0912345678","guestName":"Nguyễn Văn An","specialRequest":"","payAtHotel":true},
+    {"id":"bk-004","bookingCode":"MEGO-2026-004","status":"COMPLETED","createdAt":"2026-08-02T09:00:00+07:00","checkIn":"2026-09-10","checkOut":"2026-09-12","numberOfNights":2,"numberOfRooms":1,"numberOfGuests":2,"hotelId":"hotel-004","hotelName":"Anantara Quy Nhơn Villas","hotelAddress":"Bãi Dài, Quy Nhơn","hotelImageUrl":"https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=900&q=80","roomName":"Pool Villa","pricePerNight":5200000,"taxes":1040000,"discount":500000,"total":10940000,"paymentMethod":"VNPay","paymentStatus":"PAID","cancellationPolicy":"Đã hoàn tất kỳ lưu trú","holdUntil":null,"reviewed":false,"contactName":"Nguyễn Văn An","contactEmail":"nguyenvan.trang@mego.vn","contactPhone":"0912345678","guestName":"Nguyễn Văn An","specialRequest":"","payAtHotel":false},
+    {"id":"bk-005","bookingCode":"MEGO-2026-005","status":"CANCELLED","createdAt":"2026-07-01T09:00:00+07:00","checkIn":"2026-07-20","checkOut":"2026-07-22","numberOfNights":2,"numberOfRooms":1,"numberOfGuests":1,"hotelId":"hotel-005","hotelName":"Silk Path Grand Huế","hotelAddress":"Lê Lợi, thành phố Huế","hotelImageUrl":"https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=80","roomName":"Deluxe King","pricePerNight":1600000,"taxes":320000,"discount":0,"total":3520000,"paymentMethod":"VNPay","paymentStatus":"REFUNDED","cancellationPolicy":"Đã hủy theo yêu cầu khách","holdUntil":null,"reviewed":false,"contactName":"Nguyễn Văn An","contactEmail":"nguyenvan.trang@mego.vn","contactPhone":"0912345678","guestName":"Nguyễn Văn An","specialRequest":"","payAtHotel":false},
+    {"id":"bk-006","bookingCode":"MEGO-2026-006","status":"CONFIRMED","createdAt":"2026-05-15T09:00:00+07:00","checkIn":"2026-12-22","checkOut":"2026-12-25","numberOfNights":3,"numberOfRooms":2,"numberOfGuests":4,"hotelId":"hotel-006","hotelName":"InterContinental Phú Quốc","hotelAddress":"Bãi Trường, Phú Quốc","hotelImageUrl":"https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=900&q=80","roomName":"Garden View Twin","pricePerNight":3900000,"taxes":1170000,"discount":300000,"total":12570000,"paymentMethod":"Visa •••• 4242","paymentStatus":"PAID","cancellationPolicy":"Miễn phí hủy trước 19/12/2026","holdUntil":null,"reviewed":false,"contactName":"Nguyễn Văn An","contactEmail":"nguyenvan.trang@mego.vn","contactPhone":"0912345678","guestName":"Trần Minh Anh","specialRequest":"","payAtHotel":false}
+  ],
+  "wishlist": [
+    {"id":"wish-1","hotelId":"hotel-1","name":"Fusion Resort Đà Nẵng","location":"Đà Nẵng","stars":5,"rating":9.2,"priceFrom":3200000,"imageUrl":"https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=900&q=80","addedAt":"2026-10-20"},
+    {"id":"wish-2","hotelId":"hotel-2","name":"La Siesta Premium Hàng Bè","location":"Hà Nội","stars":4,"rating":9.0,"priceFrom":2100000,"imageUrl":"https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=900&q=80","addedAt":"2026-10-17"},
+    {"id":"wish-3","hotelId":"hotel-3","name":"Mường Thanh Luxury","location":"Nha Trang","stars":5,"rating":8.8,"priceFrom":1800000,"imageUrl":"https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=900&q=80","addedAt":"2026-10-12"},
+    {"id":"wish-4","hotelId":"hotel-4","name":"Silk Path Grand Huế","location":"Huế","stars":5,"rating":9.1,"priceFrom":1600000,"imageUrl":"https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=80","addedAt":"2026-10-01"}
+  ],
+  "promoCodes": [
+    {"code":"MEGO10","description":"Giảm 10% tối đa 500.000₫","minValue":1000000,"discount":300000,"expiresAt":"2027-12-31","usesLeft":25},
+    {"code":"HETHAN","description":"Mã đã hết hạn","minValue":0,"discount":100000,"expiresAt":"2020-01-01","usesLeft":10},
+    {"code":"HETLUOT","description":"Mã đã hết lượt","minValue":0,"discount":100000,"expiresAt":"2027-12-31","usesLeft":0},
+    {"code":"VIP500","description":"Giảm 500.000₫ cho đơn từ 8 triệu","minValue":8000000,"discount":500000,"expiresAt":"2027-12-31","usesLeft":5}
+  ],
+  "savedPaymentMethods": [
+    {"id":"pm-1","brand":"Visa","last4":"4242","holderName":"NGUYEN VAN AN","expiry":"08/28","isDefault":true,"pendingBookingId":null},
+    {"id":"pm-2","brand":"Mastercard","last4":"8841","holderName":"NGUYEN VAN AN","expiry":"03/27","isDefault":false,"pendingBookingId":"bk-001"},
+    {"id":"pm-3","brand":"ATM nội địa","last4":"1029","holderName":"NGUYEN VAN AN","expiry":"12/29","isDefault":false,"pendingBookingId":null}
+  ],
+  "vouchers": [
+    {"id":"v-1","name":"Giảm 100.000₫","condition":"Đơn từ 1.000.000₫","points":500,"expiresAt":"2027-06-30","discount":100000},
+    {"id":"v-2","name":"Giảm 250.000₫","condition":"Đơn từ 2.500.000₫","points":1000,"expiresAt":"2027-06-30","discount":250000},
+    {"id":"v-3","name":"Giảm 500.000₫","condition":"Đơn từ 5.000.000₫","points":2000,"expiresAt":"2027-06-30","discount":500000},
+    {"id":"v-4","name":"Nâng hạng phòng miễn phí","condition":"Áp dụng tại khách sạn đối tác","points":3000,"expiresAt":"2027-06-30","discount":0},
+    {"id":"v-5","name":"Giảm 1.000.000₫","condition":"Đơn từ 10.000.000₫","points":5000,"expiresAt":"2027-06-30","discount":1000000}
+  ],
+  "myVouchers": [{"code":"MEGO-AN-100","name":"Giảm 100.000₫","expiresAt":"2027-01-31","status":"ACTIVE"},{"code":"MEGO-AN-250","name":"Giảm 250.000₫","expiresAt":"2026-08-31","status":"USED"}],
+  "loyalty": {"points":2750,"tier":"GOLD","nextTierPoints":5000,"tierBenefits":[{"tier":"BRONZE","name":"Đồng","minPoints":0,"benefits":["Tích 1 điểm mỗi 10.000₫"]},{"tier":"SILVER","name":"Bạc","minPoints":1000,"benefits":["Ưu đãi sinh nhật","Hỗ trợ ưu tiên"]},{"tier":"GOLD","name":"Vàng","minPoints":2500,"benefits":["Tích điểm x1,5","Ưu đãi phòng độc quyền"]},{"tier":"DIAMOND","name":"Kim cương","minPoints":5000,"benefits":["Tích điểm x2","Nâng hạng phòng ưu tiên","Trả phòng muộn"]}],"pointHistory":[{"id":"ph-1","date":"2026-10-20","reason":"Đặt phòng MEGO-2026-001","points":450,"bookingCode":"MEGO-2026-001"},{"id":"ph-2","date":"2026-10-10","reason":"Đổi voucher","points":-500,"bookingCode":"—"},{"id":"ph-3","date":"2026-09-12","reason":"Hoàn tất kỳ nghỉ","points":320,"bookingCode":"MEGO-2026-004"},{"id":"ph-4","date":"2026-08-04","reason":"Thưởng đánh giá","points":100,"bookingCode":"MEGO-2026-008"},{"id":"ph-5","date":"2026-07-10","reason":"Đặt phòng cuối tuần","points":260,"bookingCode":"MEGO-2026-005"},{"id":"ph-6","date":"2026-06-01","reason":"Đổi ưu đãi","points":-300,"bookingCode":"—"},{"id":"ph-7","date":"2026-05-16","reason":"Ưu đãi thành viên","points":180,"bookingCode":"MEGO-2026-006"},{"id":"ph-8","date":"2026-04-20","reason":"Thưởng sinh nhật","points":500,"bookingCode":"—"}]},
+  "bankTransferInfo": {"bankName":"Vietcombank","accountName":"CONG TY MEGO VIET NAM","accountNumber":"0123456789","branch":"Chi nhánh Đà Nẵng"}
 }
