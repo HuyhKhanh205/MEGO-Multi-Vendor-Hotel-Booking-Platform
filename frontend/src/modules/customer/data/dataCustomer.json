@@ -223,6 +223,7 @@
     {"id":"wish-4","hotelId":"hotel-4","name":"Silk Path Grand Huế","location":"Huế","stars":5,"rating":9.1,"priceFrom":1600000,"imageUrl":"https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=900&q=80","addedAt":"2026-10-01"}
   ],
   "promoCodes": [
+    {"code":"MEGOSEA","description":"Ưu đãi mùa biển giảm 450.000₫","minValue":1000000,"discount":450000,"expiresAt":"2027-12-31","usesLeft":25},
     {"code":"MEGO10","description":"Giảm 10% tối đa 500.000₫","minValue":1000000,"discount":300000,"expiresAt":"2027-12-31","usesLeft":25},
     {"code":"HETHAN","description":"Mã đã hết hạn","minValue":0,"discount":100000,"expiresAt":"2020-01-01","usesLeft":10},
     {"code":"HETLUOT","description":"Mã đã hết lượt","minValue":0,"discount":100000,"expiresAt":"2027-12-31","usesLeft":0},

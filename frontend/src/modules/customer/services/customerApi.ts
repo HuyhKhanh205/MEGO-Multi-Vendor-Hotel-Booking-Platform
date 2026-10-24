@@ -17,6 +17,7 @@ export interface BookingDraftPayload {
 }
 export interface CheckoutInput extends BookingSelection {
   fullName: string; email: string; phone: string; guestName: string; specialRequest: string; promoCode: string;
+  useMeGoPoints?: boolean;
   hotelName?: string; hotelAddress?: string; hotelImageUrl?: string; roomName?: string; roomPricePerNight?: number;
 }
 
@@ -59,9 +60,30 @@ export const customerApiMethods = {
       const code = `MEGO-${new Date().getFullYear()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
       const subtotal = room.pricePerNight * nights * input.rooms;
       const tax = Math.round(subtotal * (data.pricingConfig?.taxRate ?? 0.1));
-      const promo = data.promoCodes.find((item) => item.code.toUpperCase() === input.promoCode.toUpperCase() && item.usesLeft > 0 && Date.parse(item.expiresAt) >= Date.now() && subtotal >= item.minValue);
+      const promoCode = input.promoCode.trim().toUpperCase();
+      const promo = promoCode
+        ? data.promoCodes.find((item) => item.code.toUpperCase() === promoCode)
+        : undefined;
+      if (promoCode && !promo) throw new Error("Mã khuyến mãi không tồn tại.");
+      if (promo && promo.usesLeft < 1) throw new Error("Mã khuyến mãi đã hết lượt.");
+      if (promo && Date.parse(promo.expiresAt) < Date.now()) throw new Error("Mã khuyến mãi đã hết hạn.");
+      if (promo && subtotal < promo.minValue) throw new Error(`Đơn tối thiểu ${promo.minValue.toLocaleString("vi-VN")}₫.`);
+      if (input.useMeGoPoints && data.loyalty.points < 500) throw new Error("Bạn không đủ 500 điểm MeGo Club.");
       if (promo) promo.usesLeft -= 1;
-      const booking: CustomerBooking = { id: crypto.randomUUID(), bookingCode: code, status: "PENDING_PAYMENT", createdAt: new Date().toISOString(), checkIn: input.checkIn, checkOut: input.checkOut, numberOfNights: nights, numberOfRooms: input.rooms, numberOfGuests: input.adults + input.children, hotelId: room.hotelId, hotelName: room.hotelName, hotelAddress: room.hotelAddress, hotelImageUrl: room.hotelImageUrl, roomName: room.roomName, pricePerNight: room.pricePerNight, taxes: tax, discount: promo?.discount ?? 0, total: subtotal + tax - (promo?.discount ?? 0), paymentMethod: "Chưa chọn", paymentStatus: "UNPAID", cancellationPolicy: room.freeCancellation ? "Miễn phí hủy trước 3 ngày nhận phòng; sau đó áp dụng phí hủy." : "Áp dụng chính sách hủy của khách sạn.", holdUntil: new Date(Date.now() + (data.pricingConfig?.holdMinutes ?? 10) * 60000).toISOString(), reviewed: false, contactName: input.fullName, contactEmail: input.email, contactPhone: input.phone, guestName: input.guestName || input.fullName, specialRequest: input.specialRequest, payAtHotel: room.payAtHotel };
+      const promoDiscount = Math.min(promo?.discount ?? 0, subtotal);
+      const pointsDiscount = input.useMeGoPoints ? 50000 : 0;
+      if (input.useMeGoPoints) {
+        data.loyalty.points -= 500;
+        data.loyalty.pointHistory.unshift({
+          id: crypto.randomUUID(),
+          date: new Date().toISOString().slice(0, 10),
+          reason: "Sử dụng MeGo Club Points khi đặt phòng",
+          points: -500,
+          bookingCode: code,
+        });
+      }
+      const totalDiscount = promoDiscount + pointsDiscount;
+      const booking: CustomerBooking = { id: crypto.randomUUID(), bookingCode: code, status: "PENDING_PAYMENT", createdAt: new Date().toISOString(), checkIn: input.checkIn, checkOut: input.checkOut, numberOfNights: nights, numberOfRooms: input.rooms, numberOfGuests: input.adults + input.children, hotelId: room.hotelId, hotelName: room.hotelName, hotelAddress: room.hotelAddress, hotelImageUrl: room.hotelImageUrl, roomName: room.roomName, pricePerNight: room.pricePerNight, taxes: tax, discount: totalDiscount, total: Math.max(0, subtotal + tax - totalDiscount), paymentMethod: "Chưa chọn", paymentStatus: "UNPAID", cancellationPolicy: room.freeCancellation ? "Miễn phí hủy trước 3 ngày nhận phòng; sau đó áp dụng phí hủy." : "Áp dụng chính sách hủy của khách sạn.", holdUntil: new Date(Date.now() + (data.pricingConfig?.holdMinutes ?? 10) * 60000).toISOString(), reviewed: false, contactName: input.fullName, contactEmail: input.email, contactPhone: input.phone, guestName: input.guestName || input.fullName, specialRequest: input.specialRequest, payAtHotel: room.payAtHotel };
       data.bookings.unshift(booking); data.bookingDraft = input; return booking;
     });
   },
