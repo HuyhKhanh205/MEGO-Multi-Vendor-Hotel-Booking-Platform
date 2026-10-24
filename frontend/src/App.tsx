@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import AppRoutes from "./routers/AppRoutes";
 
 function App() {
@@ -7,6 +9,15 @@ function App() {
 
   return (
     <>
+      {/* Toast Notification Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+      />
+
       {/* Main Application Routing with Header */}
       <AppRoutes />
 
@@ -25,7 +36,9 @@ function App() {
         ) : (
           <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-3 shadow-xl w-64 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-150">
             <div className="flex items-center justify-between pb-1 border-b border-gray-100">
-              <span className="text-xs font-bold text-gray-800">🏨 Chuyển vai trò test</span>
+              <span className="text-xs font-bold text-gray-800">
+                🏨 Chuyển vai trò test
+              </span>
               <button
                 type="button"
                 onClick={() => setShowDevPanel(false)}

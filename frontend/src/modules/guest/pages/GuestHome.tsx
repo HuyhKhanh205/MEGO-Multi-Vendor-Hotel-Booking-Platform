@@ -1,11 +1,11 @@
 import React from "react";
-import HeroSection from "../components/HeroSection";
-import BenefitsSection from "../components/BenefitsSection";
-import FeaturedHotelsSection from "../components/FeaturedHotelsSection";
-import MeGoRadarSection from "../components/MeGoRadarSection";
-import MeGoClubBanner from "../components/MeGoClubBanner";
-import PopularDestinationsSection from "../components/PopularDestinationsSection";
-import TestimonialsSection from "../components/TestimonialsSection";
+import HeroSection from "../components/home/HeroSection";
+import BenefitsSection from "../components/home/BenefitsSection";
+import FeaturedHotelsSection from "../components/home/FeaturedHotelsSection";
+import MeGoRadarSection from "../components/home/MeGoRadarSection";
+import MeGoClubBanner from "../components/home/MeGoClubBanner";
+import PopularDestinationsSection from "../components/home/PopularDestinationsSection";
+import TestimonialsSection from "../components/home/TestimonialsSection";
 
 export const GuestHome: React.FC = () => {
   return (
@@ -16,19 +16,19 @@ export const GuestHome: React.FC = () => {
       {/* Section 2: Các lợi ích nổi bật của MeGo */}
       <BenefitsSection />
 
-      {/* Section 3: Khách sạn và ưu đãi nổi bật */}
-      <FeaturedHotelsSection />
-
-      {/* Section 4: MeGo Radar – Bản đồ và khám phá vị trí */}
-      <MeGoRadarSection />
-
-      {/* Section 5: Banner Đặc quyền Hội viên MeGo Club */}
+      {/* Section 3: Banner Đặc quyền Hội viên MeGo Club */}
       <MeGoClubBanner />
 
-      {/* Section 6.1: Điểm đến nghỉ dưỡng phổ biến */}
+      {/* Section 4: Điểm đến hàng đầu Việt Nam */}
       <PopularDestinationsSection />
 
-      {/* Section 6.2: Đánh giá thực tế từ khách hàng */}
+      {/* Section 5: Khách sạn và ưu đãi nổi bật */}
+      <FeaturedHotelsSection />
+
+      {/* Section 6: MeGo Radar – Bản đồ và khám phá vị trí */}
+      <MeGoRadarSection />
+
+      {/* Section 7: Đánh giá thực tế từ khách hàng */}
       <TestimonialsSection />
     </div>
   );

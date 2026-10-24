@@ -5,8 +5,6 @@ import { adminRoutes } from "./AdminRoutes";
 import { customerRoutes } from "./CustomerRoutes";
 import { partnerRoutes } from "./PartnerRoutes";
 import { guestRoutes } from "./GuestRoutes";
-import Header from "../components/header/Header";
-import Footer from "../components/footer/Footer";
 
 const AppRoutes = () => {
   const routing = useRoutes([
@@ -18,6 +16,8 @@ const AppRoutes = () => {
 
   return (
     <>
+      <ScrollToTop />
+      {routing}
       {/* <Header /> */}
       <ScrollToTop />
       {routing}

@@ -3,7 +3,7 @@ export { HeaderLogo } from "./HeaderLogo";
 export { HeaderNav } from "./HeaderNav";
 export { HeaderSearch } from "./HeaderSearch";
 export { HeaderActions } from "./HeaderActions";
-export { CurrencyDropdown } from "./LanguageDropdown";
+export { LanguageDropdown } from "./LanguageDropdown";
 export { SupportPopover } from "./SupportPopover";
 export { NotificationPopover } from "./NotificationPopover";
 export { MobileNavigation } from "./MobileNavigation";

@@ -14,11 +14,28 @@ export interface AuthState {
   token?: string | null;
 }
 
-const initialState: AuthState = {
-  isAuthenticated: false,
-  user: null,
-  token: null,
+const getInitialAuthState = (): AuthState => {
+  try {
+    const savedUser = localStorage.getItem("mego_auth_user");
+    const savedToken = localStorage.getItem("mego_auth_token");
+    if (savedUser && savedToken) {
+      return {
+        isAuthenticated: true,
+        user: JSON.parse(savedUser),
+        token: savedToken,
+      };
+    }
+  } catch {
+    // Ignore error in SSR / restricted environments
+  }
+  return {
+    isAuthenticated: false,
+    user: null,
+    token: null,
+  };
 };
+
+const initialState: AuthState = getInitialAuthState();
 
 export const authSlice = createSlice({
   name: "auth",
@@ -31,15 +48,32 @@ export const authSlice = createSlice({
       state.isAuthenticated = true;
       state.user = action.payload.user;
       state.token = action.payload.token;
+      try {
+        localStorage.setItem("mego_auth_user", JSON.stringify(action.payload.user));
+        localStorage.setItem("mego_auth_token", action.payload.token);
+      } catch {
+        // Storage unavailable
+      }
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
+      try {
+        localStorage.removeItem("mego_auth_user");
+        localStorage.removeItem("mego_auth_token");
+      } catch {
+        // Storage unavailable
+      }
     },
     updateProfile: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
+        try {
+          localStorage.setItem("mego_auth_user", JSON.stringify(state.user));
+        } catch {
+          // Storage unavailable
+        }
       }
     },
   },

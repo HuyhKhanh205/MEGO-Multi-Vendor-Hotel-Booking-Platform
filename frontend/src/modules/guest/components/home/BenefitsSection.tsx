@@ -1,5 +1,5 @@
 import React from "react";
-import { BENEFITS_DATA } from "../data/homeData";
+import { BENEFITS_DATA } from "../../data/homeData";
 
 export const BenefitsSection: React.FC = () => {
   const renderIcon = (iconName: string) => {

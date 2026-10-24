@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import HotelCard from "./HotelCard";
-import { FEATURED_HOTELS_DATA } from "../data/homeData";
+import { FEATURED_HOTELS_DATA } from "../../data/homeData";
 
 export const FeaturedHotelsSection: React.FC = () => {
   const [selectedCity, setSelectedCity] = useState<string>("Tất cả");

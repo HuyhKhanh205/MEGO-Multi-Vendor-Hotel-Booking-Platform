@@ -1,5 +1,5 @@
 import React from "react";
-import { TESTIMONIALS_DATA } from "../data/homeData";
+import { TESTIMONIALS_DATA } from "../../data/homeData";
 
 export const TestimonialsSection: React.FC = () => {
   return (

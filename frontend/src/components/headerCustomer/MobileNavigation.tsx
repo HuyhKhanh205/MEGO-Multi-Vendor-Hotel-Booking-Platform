@@ -134,6 +134,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                 <NavLink
                   key={item.id}
                   to={item.path}
+                  end={item.path === "/"}
                   onClick={handleClose}
                   className={({ isActive }) =>
                     `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
