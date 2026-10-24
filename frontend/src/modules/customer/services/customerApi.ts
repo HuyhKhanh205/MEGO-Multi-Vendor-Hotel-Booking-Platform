@@ -83,12 +83,34 @@ export const customerApiMethods = {
         });
       }
       const totalDiscount = promoDiscount + pointsDiscount;
-      const booking: CustomerBooking = { id: crypto.randomUUID(), bookingCode: code, status: "PENDING_PAYMENT", createdAt: new Date().toISOString(), checkIn: input.checkIn, checkOut: input.checkOut, numberOfNights: nights, numberOfRooms: input.rooms, numberOfGuests: input.adults + input.children, hotelId: room.hotelId, hotelName: room.hotelName, hotelAddress: room.hotelAddress, hotelImageUrl: room.hotelImageUrl, roomName: room.roomName, pricePerNight: room.pricePerNight, taxes: tax, discount: totalDiscount, total: Math.max(0, subtotal + tax - totalDiscount), paymentMethod: "Chưa chọn", paymentStatus: "UNPAID", cancellationPolicy: room.freeCancellation ? "Miễn phí hủy trước 3 ngày nhận phòng; sau đó áp dụng phí hủy." : "Áp dụng chính sách hủy của khách sạn.", holdUntil: new Date(Date.now() + (data.pricingConfig?.holdMinutes ?? 10) * 60000).toISOString(), reviewed: false, contactName: input.fullName, contactEmail: input.email, contactPhone: input.phone, guestName: input.guestName || input.fullName, specialRequest: input.specialRequest, payAtHotel: room.payAtHotel };
+      const requestedHoldUntil = input.holdUntil ? Date.parse(input.holdUntil) : NaN;
+      const holdUntil = Number.isFinite(requestedHoldUntil) && requestedHoldUntil > Date.now()
+        ? input.holdUntil!
+        : new Date(Date.now() + (data.pricingConfig?.holdMinutes ?? 10) * 60000).toISOString();
+      const booking: CustomerBooking = { id: crypto.randomUUID(), bookingCode: code, status: "PENDING_PAYMENT", createdAt: new Date().toISOString(), checkIn: input.checkIn, checkOut: input.checkOut, numberOfNights: nights, numberOfRooms: input.rooms, numberOfGuests: input.adults + input.children, hotelId: room.hotelId, hotelName: room.hotelName, hotelAddress: room.hotelAddress, hotelImageUrl: room.hotelImageUrl, roomName: room.roomName, pricePerNight: room.pricePerNight, taxes: tax, discount: totalDiscount, total: Math.max(0, subtotal + tax - totalDiscount), paymentMethod: "Chưa chọn", paymentStatus: "UNPAID", cancellationPolicy: room.freeCancellation ? "Miễn phí hủy trước 3 ngày nhận phòng; sau đó áp dụng phí hủy." : "Áp dụng chính sách hủy của khách sạn.", holdUntil, reviewed: false, contactName: input.fullName, contactEmail: input.email, contactPhone: input.phone, guestName: input.guestName || input.fullName, specialRequest: input.specialRequest, payAtHotel: room.payAtHotel };
       data.bookings.unshift(booking); data.bookingDraft = input; return booking;
     });
   },
   cancelBooking: async (id: string) => { await delay(); return updateCustomerData((data) => { const item = data.bookings.find((booking) => booking.id === id || booking.bookingCode === id); if (!item) throw new Error("Không tìm thấy đơn đặt phòng."); if (!["PENDING_PAYMENT", "CONFIRMED"].includes(item.status)) throw new Error("Trạng thái đơn đã thay đổi, không thể hủy."); item.status = "CANCELLED"; if (item.paymentStatus === "PAID") item.paymentStatus = "REFUNDED"; return item; }); },
-  confirmPayment: async (id: string, method: string) => { await delay(); const result = updateCustomerData((data) => { const item = data.bookings.find((booking) => booking.id === id || booking.bookingCode === id); if (!item) throw new Error("Không tìm thấy đơn đặt phòng."); if (item.holdUntil && Date.parse(item.holdUntil) < Date.now()) { item.status = "CANCELLED"; return { item, expired: true }; } item.paymentMethod = method; item.paymentStatus = method.includes("Chuyển khoản") ? "PENDING" : "PAID"; if (item.paymentStatus === "PAID") item.status = "CONFIRMED"; return { item, expired: false }; }); if (result.expired) throw new Error("Đơn đã hết hạn giữ chỗ."); return result.item; },
+  confirmPayment: async (id: string, method: string) => {
+    await delay();
+    const result = updateCustomerData((data) => {
+      const item = data.bookings.find((booking) => booking.id === id || booking.bookingCode === id);
+      if (!item) throw new Error("Booking not found.");
+      if (item.holdUntil && Date.parse(item.holdUntil) < Date.now()) {
+        item.status = "CANCELLED";
+        return { item, expired: true };
+      }
+      item.paymentMethod = method;
+      const isPayAtHotel = method.toLowerCase().includes("kh");
+      const isBankTransfer = method.toLowerCase().includes("chuy");
+      item.paymentStatus = isPayAtHotel || isBankTransfer ? "PENDING" : "PAID";
+      item.status = isPayAtHotel || item.paymentStatus === "PAID" ? "CONFIRMED" : "PENDING_PAYMENT";
+      return { item, expired: false };
+    });
+    if (result.expired) throw new Error("Booking hold has expired.");
+    return result.item;
+  },
   getPaymentMethods: () => read((data) => data.savedPaymentMethods),
   addPaymentMethod: async (method: SavedPaymentMethod) => { await delay(); updateCustomerData((data) => { data.savedPaymentMethods.push(method); }); },
   setDefaultPaymentMethod: async (id: string) => { await delay(); updateCustomerData((data) => { data.savedPaymentMethods = data.savedPaymentMethods.map((item) => ({ ...item, isDefault: item.id === id })); }); },

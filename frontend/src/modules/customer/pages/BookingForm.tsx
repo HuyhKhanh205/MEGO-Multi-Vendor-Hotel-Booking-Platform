@@ -2,14 +2,14 @@
 import {  Link, useLocation, useNavigate, useSearchParams,} from "react-router-dom";
 import { CircularProgress, TextField } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import ShieldOutlinedIcon from "@mui/icons-material/ShieldOutlined";
 import LocalOfferOutlinedIcon from "@mui/icons-material/LocalOfferOutlined";
 import Switch from "@mui/material/Switch";
 import { customerApiMethods, getPricingConfig, getRoomSelection, saveBookingSelection,} from "../services/customerApi";
 import type { BookingSelection, CustomerProfile, PromoCode, RoomSelection,} from "../types/customer.types";
 import { formatVnd } from "../utils/formatters";
 import BookingSummary from "../components/BookingSummary";
+import BookingHoldTimer from "../components/BookingHoldTimer";
+import { useBookingHold } from "../components/useBookingHold";
 
 type LocationState = Partial<BookingSelection> & {
   roomId?: string;
@@ -115,7 +115,8 @@ export default function BookingForm() {
   const [availablePoints, setAvailablePoints] = useState(0);
   const [availablePromos, setAvailablePromos] = useState<PromoCode[]>([]);
   const [selectedRequests, setSelectedRequests] = useState<string[]>([]);
-  const [remainingSeconds, setRemainingSeconds] = useState(600);
+  const [holdUntil, setHoldUntil] = useState<string | null>(null);
+  const { remainingSeconds } = useBookingHold(holdUntil);
   const invalidSelection =
     !selection.hotelId ||
     !selection.roomTypeId ||
@@ -151,6 +152,15 @@ export default function BookingForm() {
         setPhone(customer.phone);
         setTaxRate(pricing.taxRate);
         const customerData = await customerApiMethods.getData();
+        const savedHoldUntil = selection.holdUntil;
+        const savedHoldTime = savedHoldUntil ? Date.parse(savedHoldUntil) : NaN;
+        const nextHoldUntil: string =
+          Number.isFinite(savedHoldTime) && savedHoldTime > Date.now()
+            ? savedHoldUntil!
+            : new Date(
+                Date.now() + (pricing.holdMinutes ?? 10) * 60000,
+              ).toISOString();
+        setHoldUntil(nextHoldUntil);
         setAvailablePoints(customerData.loyalty.points);
         setAvailablePromos(
           customerData.promoCodes.filter(
@@ -158,7 +168,7 @@ export default function BookingForm() {
               item.usesLeft > 0 && Date.parse(item.expiresAt) >= Date.now(),
           ),
         );
-        await saveBookingSelection(selection);
+        await saveBookingSelection({ ...selection, holdUntil: nextHoldUntil });
       })
       .catch(() => {
         if (active)
@@ -171,14 +181,6 @@ export default function BookingForm() {
       active = false;
     };
   }, [selection, invalidSelection]);
-  useEffect(() => {
-    if (remainingSeconds === 0) return;
-    const timer = window.setInterval(
-      () => setRemainingSeconds((current) => Math.max(current - 1, 0)),
-      1000,
-    );
-    return () => window.clearInterval(timer);
-  }, [remainingSeconds]);
   const nights = Math.max(
     0,
     Math.floor(
@@ -190,10 +192,6 @@ export default function BookingForm() {
   const taxes = Math.round(subtotal * taxRate);
   const pointsDiscount = clubMember ? 50000 : 0;
   const total = Math.max(0, subtotal + taxes - discount - pointsDiscount);
-  const minutes = Math.floor(remainingSeconds / 60)
-    .toString()
-    .padStart(2, "0");
-  const seconds = (remainingSeconds % 60).toString().padStart(2, "0");
   const date = (value: string) =>
     new Intl.DateTimeFormat("vi-VN", {
       day: "2-digit",
@@ -270,6 +268,7 @@ export default function BookingForm() {
           .join(", "),
         promoCode: appliedPromoCode,
         useMeGoPoints: clubMember,
+        holdUntil: holdUntil ?? undefined,
       });
       navigate(`/customer/payment/${booking.id}`, {
         state: { bookingId: booking.id },
@@ -335,23 +334,7 @@ export default function BookingForm() {
           <span>›</span>
           <span>3. Kết quả và vé điện tử</span>
         </div>
-        <div className="mb-4 flex items-start gap-3 rounded-xl bg-[#eaf2ff] px-4 py-3 text-xs text-[#31527f] shadow-sm">
-          <InfoOutlinedIcon
-            className="mt-0.5 shrink-0 text-[#1677ff]"
-            sx={{ fontSize: 15 }}
-          />
-          <p>
-            <strong>Giữ đơn đặt phòng trong</strong>{" "}
-            <strong className="text-[#ed4d65]">
-              {minutes}:{seconds}
-            </strong>{" "}
-            phút.
-          </p>
-          <span className="ml-auto hidden items-center gap-1 whitespace-nowrap sm:flex">
-            <ShieldOutlinedIcon sx={{ fontSize: 14 }} /> Cam kết giữ phòng yên
-            tâm
-          </span>
-        </div>
+        <BookingHoldTimer holdUntil={holdUntil} variant="booking-form" />
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_365px]">
           <div className="space-y-5">
             <BookingSection

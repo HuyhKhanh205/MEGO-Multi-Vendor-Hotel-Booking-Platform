@@ -31,6 +31,7 @@ export interface CustomerData {
 export interface BookingSelection {
   hotelId: string; roomTypeId: string; checkIn: string; checkOut: string;
   rooms: number; adults: number; children: number;
+  holdUntil?: string;
 }
 
 export interface RoomSelection {
