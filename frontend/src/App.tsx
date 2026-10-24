@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AppRoutes from "./routers/AppRoutes";
+import ChatWidget from "./components/chat/ChatWidget";
 
 function App() {
   const [showDevPanel, setShowDevPanel] = useState(false);
@@ -21,8 +22,11 @@ function App() {
       {/* Main Application Routing with Header */}
       <AppRoutes />
 
+      {/* Shared support assistant, mounted once outside the route tree. */}
+      <ChatWidget />
+
       {/* Floating Dev Router Helper (collapsed by default so Header is cleanly at top) */}
-      <div className="fixed bottom-4 right-4 z-50">
+      <div className="fixed bottom-4 left-4 z-50">
         {!showDevPanel ? (
           <button
             type="button"
