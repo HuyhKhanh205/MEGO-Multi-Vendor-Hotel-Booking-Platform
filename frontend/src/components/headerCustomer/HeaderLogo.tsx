@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 
 interface HeaderLogoProps {
   className?: string;
@@ -8,28 +7,20 @@ interface HeaderLogoProps {
 export const HeaderLogo: React.FC<HeaderLogoProps> = ({
   className = "",
 }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
   const handleLogoClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (location.pathname === "/") {
-      // Đang ở trang chủ: chỉ cuộn lên đầu, không tải lại
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      // Ở trang khác: điều hướng về trang chủ + cuộn lên đầu
-      navigate("/");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+    // Cuộn mượt về đầu trang hiện tại (không chuyển trang hoặc tải lại)
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <a
-      href="/"
+    <button
+      type="button"
       onClick={handleLogoClick}
-      aria-label="MeGo - Về trang chủ"
+      aria-label="MeGo - Cuộn về đầu trang"
+      title="Cuộn về đầu trang"
       className={`inline-flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg py-1
-        transition-all duration-150 hover:opacity-85 active:scale-95 cursor-pointer ${className}`}
+        transition-all duration-150 hover:opacity-85 active:scale-95 cursor-pointer bg-transparent border-none ${className}`}
     >
       {/* Brand Logo Image */}
       <div className="relative flex items-center justify-center">
@@ -40,7 +31,7 @@ export const HeaderLogo: React.FC<HeaderLogoProps> = ({
           draggable={false}
         />
       </div>
-    </a>
+    </button>
   );
 };
 

@@ -80,7 +80,16 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
           className="flex items-center justify-between p-4 border-b"
           style={{ borderColor: "var(--border-default)" }}
         >
-          <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              handleClose();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            aria-label="MeGo - Cuộn về đầu trang"
+            title="Cuộn về đầu trang"
+            className="flex items-center gap-2 cursor-pointer bg-transparent border-none text-left p-0 transition-opacity hover:opacity-85"
+          >
             <span className="text-lg font-extrabold text-[#1677FF]">Me</span>
             <span
               className="text-lg font-black"
@@ -94,7 +103,7 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
             >
               Hotel
             </span>
-          </div>
+          </button>
 
           <div className="flex items-center gap-1">
             {/* Theme Toggle trong mobile drawer */}

@@ -15,8 +15,7 @@ export const customerRoutes: RouteObject[] = [
         element: <CustomerHome />,
       },
       {
-        index: true,
-        path:"bookingform",
+        path: "bookingform",
         element: <BookingForm />,
       },
       {
