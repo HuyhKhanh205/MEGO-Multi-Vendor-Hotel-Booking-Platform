@@ -14,7 +14,6 @@ import {
   HotelReviews,
   HotelPolicies,
   HotelLocation,
-  BookingModal,
 } from "../components/detailhotel";
 import { HotelsService } from "../../../services/hotels.service";
 import type { HotelRoom } from "../../../types/hotel";
@@ -61,17 +60,6 @@ export const HotelDetailPage = () => {
   // 3. User interaction state
   const [isFavorite, setIsFavorite] = useState(false);
   const [activeNavTab, setActiveNavTab] = useState<string>("overview");
-
-  // Booking Modal State
-  const [bookingModalState, setBookingModalState] = useState<{
-    isOpen: boolean;
-    room: HotelRoom | null;
-    quantity: number;
-  }>({
-    isOpen: false,
-    room: null,
-    quantity: 1,
-  });
 
   // Title & Scroll to top
   useEffect(() => {
@@ -128,7 +116,7 @@ export const HotelDetailPage = () => {
     }
   };
 
-  // Trigger Booking Modal (Enforce Authentication)
+  // Chuyển thông tin khách sạn/phòng đã chọn sang form checkout.
   const handleOpenBooking = (room: HotelRoom, quantity: number) => {
     if (!isAuthenticated) {
       toast.info("Vui lòng đăng nhập để tiếp tục đặt phòng.", {
@@ -139,10 +127,19 @@ export const HotelDetailPage = () => {
       return;
     }
 
-    setBookingModalState({
-      isOpen: true,
-      room,
-      quantity,
+    navigate("/customer/checkout", {
+      state: {
+        hotelId: hotel.id,
+        hotelName: hotel.name,
+        hotelImageUrl: hotel.coverImage,
+        roomTypeId: room.id,
+        roomName: room.name,
+        roomPricePerNight: room.pricePerNight,
+        checkIn,
+        checkOut,
+        rooms: quantity,
+        guests,
+      },
     });
   };
 
@@ -364,20 +361,6 @@ export const HotelDetailPage = () => {
         </button>
       </div>
 
-      {/* ── 5. Booking Confirmation Modal ── */}
-      <BookingModal
-        isOpen={bookingModalState.isOpen}
-        onClose={() =>
-          setBookingModalState({ isOpen: false, room: null, quantity: 1 })
-        }
-        hotelName={hotel.name}
-        room={bookingModalState.room}
-        quantity={bookingModalState.quantity}
-        checkIn={checkIn}
-        checkOut={checkOut}
-        nightsCount={nightsCount}
-        guestsCount={guests}
-      />
     </div>
   );
 };
