@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { POPULAR_DESTINATIONS, TOP_DESTINATIONS_CONFIG } from "../../data/homeData";
 import type { DestinationItem } from "../../types/homeTypes";
+import ProvincesGalleryModal from "./ProvincesGalleryModal";
 
 // ─── Config ──────────────────────────────────────────────────────────────────
 
@@ -69,6 +70,7 @@ const DestinationCard: React.FC<DestinationCardProps> = ({ dest }) => (
 // ─── Section ─────────────────────────────────────────────────────────────────
 
 export const PopularDestinationsSection: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { displayCount, totalProvinces } = TOP_DESTINATIONS_CONFIG;
   const topDestinations = POPULAR_DESTINATIONS.slice(0, displayCount);
 
@@ -98,14 +100,16 @@ export const PopularDestinationsSection: React.FC = () => {
             </p>
           </div>
 
-          {/* Link "Khám phá tất cả" */}
-          <Link
-            to="/hotels"
-            className="inline-flex items-center gap-1 text-sm font-bold text-[#1677FF] hover:text-blue-700 transition-colors group shrink-0 whitespace-nowrap"
+          {/* Nút "Khám phá tất cả 63 tỉnh thành" - Mở modal hiển thị ảnh trọn vẹn 63 tỉnh thành */}
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            aria-label={`Khám phá bộ sưu tập hình ảnh ${totalProvinces} tỉnh thành Việt Nam`}
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#1677FF] hover:text-blue-700 dark:text-[var(--brand-primary)] dark:hover:text-blue-400 transition-colors group shrink-0 whitespace-nowrap cursor-pointer bg-transparent border-none p-0"
           >
             <span>Khám phá tất cả {totalProvinces} tỉnh thành</span>
-            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-          </Link>
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
+          </button>
         </div>
 
         {/* ── 4-card grid ── */}
@@ -115,6 +119,12 @@ export const PopularDestinationsSection: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* ── Modal xem hình ảnh 63 tỉnh thành (không chuyển sang trang khách sạn) ── */}
+      <ProvincesGalleryModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </section>
   );
 };

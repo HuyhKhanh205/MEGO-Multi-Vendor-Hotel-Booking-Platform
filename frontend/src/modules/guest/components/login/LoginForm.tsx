@@ -216,18 +216,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           )}
         </button>
 
-        {/* Demo Login Button */}
-        {onQuickDemoLogin && (
-          <div className="pt-1">
-            <button
-              type="button"
-              onClick={onQuickDemoLogin}
-              className="w-full py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#1677FF] text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
-            >
-              <span>⚡ Đăng nhập nhanh tài khoản mẫu (Demo Thành viên MeGo)</span>
-            </button>
-          </div>
-        )}
+       
       </form>
 
       {/* ── Social Login Section ── */}

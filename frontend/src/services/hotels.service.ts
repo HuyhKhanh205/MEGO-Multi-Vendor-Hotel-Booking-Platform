@@ -18,7 +18,7 @@ export const HotelsService = {
     const query = (params.keyword || params.destination || "").trim().toLowerCase();
     if (query) {
       const normalizedQuery = query.replace(/\s+/g, "");
-      result = result.filter((hotel) => {
+      const matched = result.filter((hotel) => {
         const hotelName = hotel.name.toLowerCase();
         const hotelCity = hotel.city.toLowerCase().replace(/\s+/g, "");
         const hotelDistrict = hotel.district.toLowerCase();
@@ -26,12 +26,17 @@ export const HotelsService = {
 
         return (
           hotelName.includes(query) ||
+          query.includes(hotelCity) ||
           hotelCity.includes(normalizedQuery) ||
           normalizedQuery.includes(hotelCity) ||
           hotelDistrict.includes(query) ||
           hotelAddress.includes(query)
         );
       });
+
+      // Nếu có khách sạn đúng tỉnh/thành phố đó thì hiển thị
+      // Nếu tỉnh/thành chưa có khách sạn trong mock data thì hiển thị gợi ý toàn bộ khách sạn
+      result = matched.length > 0 ? matched : result;
     }
 
     // 2. Filter by Property Types (from filters or URL)
