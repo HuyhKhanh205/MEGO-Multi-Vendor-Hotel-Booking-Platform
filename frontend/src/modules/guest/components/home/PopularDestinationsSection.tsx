@@ -75,7 +75,8 @@ export const PopularDestinationsSection: React.FC = () => {
   return (
     <section
       aria-label="Điểm đến du lịch hàng đầu Việt Nam"
-      className="py-10 sm:py-14 bg-[#F9F9FF]"
+      className="py-10 sm:py-14 transition-colors duration-200"
+      style={{ backgroundColor: "var(--bg-page)" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* ── Header ── */}

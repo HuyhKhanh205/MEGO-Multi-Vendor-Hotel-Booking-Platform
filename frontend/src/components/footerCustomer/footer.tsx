@@ -17,7 +17,11 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
     <footer
       role="contentinfo"
       aria-label="Chân trang MeGo"
-      className={`w-full bg-white border-t border-[#E5E7EB] mt-auto select-text ${className}`}
+      className={`w-full border-t mt-auto select-text ${className}`}
+      style={{
+        backgroundColor: "var(--bg-surface)",
+        borderColor: "var(--border-default)",
+      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 sm:pt-9 pb-4">
         {/* Upper 4-Column Content Section */}

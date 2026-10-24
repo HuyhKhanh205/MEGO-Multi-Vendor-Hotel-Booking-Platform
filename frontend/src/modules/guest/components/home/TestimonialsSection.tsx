@@ -3,7 +3,14 @@ import { TESTIMONIALS_DATA } from "../../data/homeData";
 
 export const TestimonialsSection: React.FC = () => {
   return (
-    <section aria-label="Đánh giá từ khách hàng" className="py-12 sm:py-16 bg-white border-t border-gray-100">
+    <section
+      aria-label="Đánh giá từ khách hàng"
+      className="py-12 sm:py-16 border-t transition-colors duration-200"
+      style={{
+        backgroundColor: "var(--bg-surface)",
+        borderColor: "var(--border-default)",
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold uppercase tracking-wider mb-2">

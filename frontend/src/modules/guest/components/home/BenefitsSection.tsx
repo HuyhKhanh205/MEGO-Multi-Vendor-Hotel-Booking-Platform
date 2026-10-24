@@ -33,7 +33,7 @@ export const BenefitsSection: React.FC = () => {
   };
 
   return (
-    <section aria-label="Lợi ích nổi bật của MeGo" className="py-12 sm:py-16 bg-[#F9F9FF]">
+    <section aria-label="Lợi ích nổi bật của MeGo" className="py-12 sm:py-16" style={{ backgroundColor: "var(--bg-page)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
@@ -49,7 +49,8 @@ export const BenefitsSection: React.FC = () => {
           {BENEFITS_DATA.map((benefit) => (
             <div
               key={benefit.id}
-              className="bg-white rounded-3xl p-6 border border-gray-100 shadow-xs hover:shadow-md hover:border-blue-100 transition-all duration-200 flex flex-col justify-between group"
+              className="bg-white rounded-3xl p-6 border shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
+              style={{ backgroundColor: "var(--card-bg)", borderColor: "var(--card-border)" }}
             >
               <div>
                 <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">

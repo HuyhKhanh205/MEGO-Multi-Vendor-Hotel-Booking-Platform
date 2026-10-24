@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind v4: cấu hình dark mode dùng class .dark trên <html> */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --color-mego-primary: #004CCD;
@@ -43,12 +46,400 @@
   --color-on-primary-fixed: #00174C;
 }
 
+/* ============================================
+   CSS VARIABLES THEME SYSTEM
+   Dùng data-theme attribute trên <html>
+   ============================================ */
+
+/* Light Mode (mặc định) */
+:root,
+[data-theme="light"] {
+  --bg-page: #F9F9FF;
+  --bg-surface: #FFFFFF;
+  --bg-surface-secondary: #F8FAFC;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-hover: #F0F4FF;
+  --bg-muted: #F1F5F9;
+  --bg-input: #FFFFFF;
+
+  --text-primary: #111C2D;
+  --text-secondary: #424656;
+  --text-muted: #64748B;
+  --text-placeholder: #94A3B8;
+  --text-on-primary: #FFFFFF;
+
+  --border-default: #E2E8F0;
+  --border-light: #F1F5F9;
+  --border-focus: #1677FF;
+
+  --header-bg: #FFFFFF;
+  --header-border: #E5E7EB;
+  --header-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+
+  --card-bg: #FFFFFF;
+  --card-border: #E2E8F0;
+  --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08);
+
+  --dropdown-bg: #FFFFFF;
+  --dropdown-border: #F1F5F9;
+  --dropdown-item-hover: #F0F4FF;
+
+  --popover-bg: #FFFFFF;
+  --popover-border: #F1F5F9;
+
+  --icon-default: #4B5563;
+  --icon-hover: #1677FF;
+
+  --divider: #E5E7EB;
+
+  --scrollbar-track: #F1F5F9;
+  --scrollbar-thumb: #CBD5E1;
+
+  /* Brand stays the same */
+  --brand-primary: #1677FF;
+  --brand-primary-hover: #0F62D4;
+  --brand-primary-bg: #EFF6FF;
+  --brand-primary-bg-hover: #DBEAFE;
+}
+
+/* Dark Mode */
+.dark,
+[data-theme="dark"] {
+  --bg-page: #0F1623;
+  --bg-surface: #1A2235;
+  --bg-surface-secondary: #151E2E;
+  --bg-surface-elevated: #1E2A3E;
+  --bg-surface-hover: #243248;
+  --bg-muted: #1A2235;
+  --bg-input: #1E2A3E;
+
+  --text-primary: #E8EDF5;
+  --text-secondary: #9BAABF;
+  --text-muted: #6B7F99;
+  --text-placeholder: #4E6080;
+  --text-on-primary: #FFFFFF;
+
+  --border-default: #2A3A52;
+  --border-light: #1E2A3E;
+  --border-focus: #3B82F6;
+
+  --header-bg: #141C2E;
+  --header-border: #1F2D42;
+  --header-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+
+  --card-bg: #1A2235;
+  --card-border: #2A3A52;
+  --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3);
+
+  --dropdown-bg: #1A2235;
+  --dropdown-border: #2A3A52;
+  --dropdown-item-hover: #243248;
+
+  --popover-bg: #1A2235;
+  --popover-border: #2A3A52;
+
+  --icon-default: #9BAABF;
+  --icon-hover: #60A5FA;
+
+  --divider: #2A3A52;
+
+  --scrollbar-track: #1A2235;
+  --scrollbar-thumb: #2A3A52;
+
+  /* Brand stays the same - xanh dương là màu nhấn thương hiệu */
+  --brand-primary: #3B82F6;
+  --brand-primary-hover: #2563EB;
+  --brand-primary-bg: #1E3A5F;
+  --brand-primary-bg-hover: #1E40AF30;
+}
+
 @layer base {
   body {
     font-family: var(--font-sans);
-    color: #111C2D;
-    background-color: #F9F9FF;
+    color: var(--text-primary);
+    background-color: var(--bg-page);
     overflow-x: hidden;
     scroll-behavior: smooth;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
+
+  /* Scrollbar styling */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+  *::-webkit-scrollbar { width: 6px; height: 6px; }
+  *::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  *::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+}
+
+/* ============================================
+   DARK MODE OVERRIDES — Global component styles
+   ============================================ */
+
+/* ── Header ── */
+.dark header {
+  background-color: var(--header-bg) !important;
+  border-color: var(--header-border) !important;
+  box-shadow: var(--header-shadow) !important;
+}
+
+/* ── Section backgrounds ── */
+.dark .bg-white,
+.dark .bg-white\/95 {
+  background-color: var(--bg-surface) !important;
+}
+.dark .bg-gray-50,
+.dark .bg-gray-50\/70 {
+  background-color: var(--bg-surface-secondary) !important;
+}
+.dark .bg-gray-100 {
+  background-color: var(--bg-muted) !important;
+}
+/* Trang chủ & Auth: section backgrounds */
+.dark .bg-\[\#F4F6FC\],
+.dark .bg-\[\#F8FAFC\],
+.dark .bg-\[\#F9F9FF\],
+.dark .bg-\[#F9F9FF\] {
+  background-color: var(--bg-page) !important;
+}
+.dark .min-h-screen {
+  background-color: var(--bg-page);
+}
+/* GuestHome wrapper */
+.dark .bg-\[\#111C2D\] { background-color: var(--bg-page) !important; }
+
+/* ── Card backgrounds ── */
+.dark .bg-white.rounded-3xl,
+.dark .bg-white.rounded-2xl,
+.dark .bg-white.rounded-xl,
+.dark .bg-white.rounded-lg {
+  background-color: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+}
+
+/* ── Text colors (Gray, Slate, Hex) ── */
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-slate-950,
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-\[\#111C2D\],
+.dark .text-\[\#2C3E50\] {
+  color: var(--text-primary) !important;
+}
+.dark .text-gray-700,
+.dark .text-gray-600,
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: var(--text-secondary) !important;
+}
+.dark .text-gray-500,
+.dark .text-gray-400,
+.dark .text-slate-500,
+.dark .text-slate-400,
+.dark .text-\[\#64748B\] {
+  color: var(--text-muted) !important;
+}
+/* Amber text giữ nguyên trong dark (vẫn readable) */
+.dark .text-amber-800 {
+  color: #fcd34d !important;
+}
+.dark .text-amber-600,
+.dark .text-amber-500 {
+  color: #fbbf24 !important;
+}
+
+/* ── Border colors ── */
+.dark .border-gray-100,
+.dark .border-gray-200\/60,
+.dark .border-indigo-50,
+.dark .border-indigo-200,
+.dark .border-blue-200,
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-slate-200\/80,
+.dark .border-slate-200\/90 {
+  border-color: var(--border-light) !important;
+}
+.dark .border-gray-200 {
+  border-color: var(--border-default) !important;
+}
+.dark .border-gray-200\/80 {
+  border-color: color-mix(in srgb, var(--border-default) 80%, transparent) !important;
+}
+.dark .border-\[#E5E7EB\],
+.dark .border-\[#E2E8F0\],
+.dark .border-white\/80 {
+  border-color: var(--header-border) !important;
+}
+.dark .divide-gray-100 > * + * {
+  border-color: var(--border-light) !important;
+}
+
+/* ── Search Form & Input Containers ── */
+.dark .bg-indigo-50 {
+  background-color: var(--bg-surface-secondary) !important;
+  border-color: var(--border-default) !important;
+}
+.dark .hover\:bg-indigo-100\/70:hover {
+  background-color: var(--bg-surface-hover) !important;
+}
+.dark .bg-blue-100 {
+  background-color: var(--brand-primary-bg) !important;
+  color: var(--brand-primary) !important;
+}
+.dark .bg-teal-50 {
+  background-color: rgba(0, 163, 137, 0.15) !important;
+}
+.dark .bg-teal-100 {
+  background-color: rgba(0, 163, 137, 0.25) !important;
+}
+.dark .bg-sky-50 {
+  background-color: var(--bg-surface-secondary) !important;
+  border-color: var(--border-default) !important;
+  color: var(--text-secondary) !important;
+}
+.dark .text-blue-800 {
+  color: #93c5fd !important;
+}
+.dark .text-blue-700,
+.dark .text-blue-600 {
+  color: #60a5fa !important;
+}
+.dark .border-blue-100,
+.dark .border-blue-300 {
+  border-color: var(--border-default) !important;
+}
+.dark .bg-\[\#E8EEF8\] {
+  background-color: var(--bg-muted) !important;
+  color: var(--text-secondary) !important;
+}
+.dark .hover\:bg-\[\#dce6f5\]:hover {
+  background-color: var(--bg-surface-hover) !important;
+}
+
+/* ── Hover states ── */
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-gray-50\/70:hover {
+  background-color: var(--bg-surface-hover) !important;
+}
+.dark .hover\:bg-gray-100:hover {
+  background-color: var(--bg-muted) !important;
+}
+.dark .hover\:bg-gray-100\/80:hover,
+.dark .hover\:bg-gray-100\/70:hover {
+  background-color: color-mix(in srgb, var(--bg-muted) 80%, transparent) !important;
+}
+.dark .hover\:border-blue-100:hover,
+.dark .hover\:border-blue-200:hover {
+  border-color: var(--brand-primary) !important;
+  opacity: 0.5;
+}
+
+/* ── Inputs & Form ── */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--bg-input) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--text-placeholder) !important;
+}
+
+/* ── Hotel / Benefit / Testimonial cards ── */
+/* Catch card với background cụ thể */
+.dark .bg-gray-50\/70 {
+  background-color: var(--bg-surface-secondary) !important;
+}
+/* Amenity chips */
+.dark .bg-gray-50.border.border-gray-100 {
+  background-color: var(--bg-muted) !important;
+  border-color: var(--border-light) !important;
+  color: var(--text-secondary) !important;
+}
+/* Amber rating badge */
+.dark .bg-amber-50 {
+  background-color: rgba(120, 80, 0, 0.25) !important;
+}
+/* Rating text in amber */
+.dark .text-amber-800 {
+  color: #fcd34d !important;
+}
+
+/* ── Filter tabs (FeaturedHotelsSection) ── */
+.dark button.bg-white.text-gray-600 {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-default) !important;
+}
+.dark button.bg-white.text-gray-600:hover {
+  background-color: var(--bg-surface-hover) !important;
+}
+
+/* ── Blue brand badges (section labels) ── */
+.dark .bg-blue-50 {
+  background-color: var(--brand-primary-bg) !important;
+}
+.dark .bg-blue-50\/30 {
+  background-color: color-mix(in srgb, var(--brand-primary-bg) 30%, transparent) !important;
+}
+.dark .bg-blue-50\/50,
+.dark .bg-blue-50\/80 {
+  background-color: color-mix(in srgb, var(--brand-primary-bg) 60%, transparent) !important;
+}
+.dark .hover\:bg-blue-50:hover {
+  background-color: var(--brand-primary-bg) !important;
+}
+.dark .hover\:bg-blue-50\/50:hover,
+.dark .hover\:bg-blue-50\/70:hover {
+  background-color: color-mix(in srgb, var(--brand-primary-bg) 70%, transparent) !important;
+}
+
+/* ── Dividers (bg-gray-200 used as separator) ── */
+.dark .bg-gray-200 {
+  background-color: var(--border-default) !important;
+}
+
+/* ── Shadows ── */
+.dark .shadow-xl,
+.dark .shadow-lg,
+.dark .shadow-2xl,
+.dark .shadow-xs {
+  --tw-shadow-color: rgb(0 0 0 / 0.5);
+}
+
+/* ── Mobile Drawer ── */
+.dark [role="dialog"] {
+  background-color: var(--bg-surface) !important;
+}
+
+/* ── Dev panel ── */
+.dark .bg-white\/95 {
+  background-color: color-mix(in srgb, var(--bg-surface) 95%, transparent) !important;
+}
+
+/* ── TestimonialsSection section bg ── */
+.dark section.bg-white.border-t.border-gray-100 {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-light) !important;
+}
+
+/* ── MeGoClubBanner, MeGoRadarSection (nền đặc biệt) ── */
+/* Giữ nguyên gradient/màu nền của những section này vì chữ đã trắng */
+
+/* ── Footer ── */
+.dark footer {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
+}
+
+/* ── Inline style bg-[#F9F9FF] và bg-[#F8FAFC] trong GuestHome ── */
+.dark [style*="background-color: rgb(249, 249, 255)"],
+.dark [style*="background-color: #F9F9FF"],
+.dark [style*="background-color: #F8FAFC"] {
+  background-color: var(--bg-page) !important;
 }

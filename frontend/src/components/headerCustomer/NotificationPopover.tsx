@@ -47,15 +47,11 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
         aria-label={`Thông báo ${unreadCount > 0 ? `(${unreadCount} chưa đọc)` : ""}`}
-        className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-gray-100/70 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
+        className="relative p-2 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer
+          text-gray-600 hover:text-blue-600 hover:bg-gray-100/70
+          dark:text-[var(--icon-default)] dark:hover:text-[var(--brand-primary)] dark:hover:bg-[var(--bg-surface-hover)]"
       >
-        {/* Bell Icon */}
-        <svg
-          className="w-5 h-5 text-gray-600 hover:text-blue-600 transition-colors"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-5 h-5 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -64,21 +60,34 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
           />
         </svg>
 
-        {/* Small Red Dot indicating unread */}
         {unreadCount > 0 && (
           <span
             aria-label="Có thông báo mới"
-            className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white"
+            className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white dark:ring-[var(--header-bg)]"
           />
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-88 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-          <div className="flex items-center justify-between px-4 py-3 bg-gray-50/70 border-b border-gray-100">
+        <div
+          className="absolute right-0 mt-2 w-80 sm:w-88 rounded-2xl shadow-xl border overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150"
+          style={{
+            backgroundColor: "var(--popover-bg)",
+            borderColor: "var(--popover-border)",
+          }}
+        >
+          <div
+            className="flex items-center justify-between px-4 py-3 border-b"
+            style={{
+              backgroundColor: "var(--bg-muted)",
+              borderColor: "var(--border-light)",
+            }}
+          >
             <div className="flex items-center gap-2">
-              <h4 className="text-sm font-bold text-gray-900">Thông báo</h4>
-              <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">
+              <h4 className="text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                Thông báo
+              </h4>
+              <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium dark:bg-amber-900/30 dark:text-amber-400">
                 Dữ liệu demo
               </span>
             </div>
@@ -86,16 +95,22 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
               <button
                 type="button"
                 onClick={markAllAsRead}
-                className="text-[11.5px] text-[#1677FF] hover:text-blue-700 font-medium hover:underline"
+                className="text-[11.5px] text-[#1677FF] hover:text-blue-700 font-medium hover:underline dark:text-[var(--brand-primary)]"
               >
                 Đánh dấu đã đọc
               </button>
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
+          <div
+            className="max-h-80 overflow-y-auto"
+            style={{ borderColor: "var(--border-light)" }}
+          >
             {notifications.length === 0 ? (
-              <div className="p-6 text-center text-sm text-gray-400">
+              <div
+                className="p-6 text-center text-sm"
+                style={{ color: "var(--text-muted)" }}
+              >
                 Không có thông báo nào.
               </div>
             ) : (
@@ -103,15 +118,29 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
                 <div
                   key={item.id}
                   onClick={() => markItemAsRead(item.id)}
-                  className={`p-3.5 text-left transition-colors cursor-pointer hover:bg-gray-50 flex items-start gap-3 ${
-                    !item.isRead ? "bg-blue-50/30" : ""
-                  }`}
+                  className={`p-3.5 text-left transition-colors cursor-pointer flex items-start gap-3 border-b last:border-b-0`}
+                  style={{
+                    borderColor: "var(--border-light)",
+                    backgroundColor: !item.isRead
+                      ? "color-mix(in srgb, var(--brand-primary-bg) 40%, transparent)"
+                      : "transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.backgroundColor =
+                      "var(--bg-surface-hover)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.backgroundColor =
+                      !item.isRead
+                        ? "color-mix(in srgb, var(--brand-primary-bg) 40%, transparent)"
+                        : "transparent";
+                  }}
                 >
                   <div
                     className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                       item.type === "promo"
-                        ? "bg-amber-100 text-amber-600"
-                        : "bg-blue-100 text-[#1677FF]"
+                        ? "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400"
+                        : "bg-blue-100 text-[#1677FF] dark:bg-[var(--brand-primary-bg)] dark:text-[var(--brand-primary)]"
                     }`}
                   >
                     {item.type === "promo" ? (
@@ -126,17 +155,32 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <p className={`text-[12.5px] leading-snug ${!item.isRead ? "font-bold text-gray-900" : "font-medium text-gray-700"}`}>
+                      <p
+                        className={`text-[12.5px] leading-snug ${
+                          !item.isRead ? "font-bold" : "font-medium"
+                        }`}
+                        style={{
+                          color: !item.isRead
+                            ? "var(--text-primary)"
+                            : "var(--text-secondary)",
+                        }}
+                      >
                         {item.title}
                       </p>
                       {!item.isRead && (
-                        <span className="w-2 h-2 rounded-full bg-[#1677FF] shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-[#1677FF] shrink-0 dark:bg-[var(--brand-primary)]" />
                       )}
                     </div>
-                    <p className="text-[11.5px] text-gray-500 line-clamp-2 mt-0.5">
+                    <p
+                      className="text-[11.5px] line-clamp-2 mt-0.5"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       {item.content}
                     </p>
-                    <span className="text-[10px] text-gray-400 mt-1 block">
+                    <span
+                      className="text-[10px] mt-1 block"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       {item.time}
                     </span>
                   </div>
@@ -145,8 +189,14 @@ export const NotificationPopover: React.FC<NotificationPopoverProps> = ({
             )}
           </div>
 
-          <div className="p-2 text-center bg-gray-50/70 border-t border-gray-100">
-            <span className="text-[11px] text-gray-400">
+          <div
+            className="p-2 text-center border-t"
+            style={{
+              backgroundColor: "var(--bg-muted)",
+              borderColor: "var(--border-light)",
+            }}
+          >
+            <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>
               Hệ thống thông báo thời gian thực MeGo
             </span>
           </div>
