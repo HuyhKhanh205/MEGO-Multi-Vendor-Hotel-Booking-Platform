@@ -16,7 +16,6 @@ The backend is a modular monolith under `com.mego.backend`. Each business module
 | `promotion` | Vouchers, discounts, and customer loyalty tiers and points. | Existing `MemberTier` entity/repository and voucher/points enums. |
 | `review` | Customer reviews, moderation, and hotel rating summaries. | Currently has the existing `ReviewStatus` enum only. |
 | `notification` | Email, in-app, or other notifications triggered by business events. | Currently has the existing `NotificationType` enum only. |
-| `support` | Customer support tickets and their lifecycle. | Currently has the existing `TicketStatus` enum only. |
 
 Several entities and repositories for partner, hotel, inventory, and promotion were already present before this refactor; they were moved into their owning module. No new business workflows were added for those modules.
 
