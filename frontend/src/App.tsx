@@ -38,9 +38,10 @@ function App() {
             <span>Switch Role</span>
           </button>
         ) : (
-          <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-3 shadow-xl w-64 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-150">
+          <div className="bg-white/95 backdrop-blur-md border border-gray-200 rounded-2xl p-3 shadow-xl w-64 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-150
+            dark:bg-[var(--bg-surface)] dark:border-[var(--border-default)]">
             <div className="flex items-center justify-between pb-1 border-b border-gray-100">
-              <span className="text-xs font-bold text-gray-800">
+              <span className="text-xs font-bold text-gray-800 dark:text-[var(--text-primary)]">
                 🏨 Chuyển vai trò test
               </span>
               <button

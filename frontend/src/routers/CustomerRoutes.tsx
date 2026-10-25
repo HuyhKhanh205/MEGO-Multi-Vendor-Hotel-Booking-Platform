@@ -24,6 +24,22 @@ export const customerRoutes: RouteObject[] = [
     path: "/customer",
     element: <MainLayout />,
     children: [
+      {
+        index: true,
+        element: <CustomerHome />,
+      },
+      {
+        path: "bookingform",
+        element: <BookingForm />,
+      },
+      {
+        path: "payment",
+        element: <Payment />,
+      },
+      {
+        path: "payment-result",
+        element: <PaymentResult />,
+      },
       { index: true, element: page(<CustomerHome />) },
       { path: "profile", element: page(<ProfilePage />) },
       { path: "bookingform", element: page(<BookingForm />) },

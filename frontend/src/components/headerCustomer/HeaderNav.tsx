@@ -25,8 +25,8 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
           className={({ isActive }) =>
             `relative py-5 px-2.5 lg:px-3 text-[13.5px] transition-colors duration-150 inline-flex items-center select-none font-sans whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded-md ${
               isActive
-                ? "text-[#1677FF] font-semibold"
-                : "text-gray-600 hover:text-[#1677FF] font-medium"
+                ? "text-[#1677FF] font-semibold dark:text-[var(--brand-primary)]"
+                : "text-gray-600 hover:text-[#1677FF] font-medium dark:text-[var(--text-secondary)] dark:hover:text-[var(--brand-primary)]"
             }`
           }
         >
@@ -35,7 +35,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
               <span>{item.label}</span>
               {isActive && (
                 <span
-                  className="absolute bottom-0 left-2.5 right-2.5 lg:left-3 lg:right-3 h-[2.5px] bg-[#1677FF] rounded-full transition-all duration-200"
+                  className="absolute bottom-0 left-2.5 right-2.5 lg:left-3 lg:right-3 h-[2.5px] bg-[#1677FF] rounded-full transition-all duration-200 dark:bg-[var(--brand-primary)]"
                   aria-hidden="true"
                 />
               )}

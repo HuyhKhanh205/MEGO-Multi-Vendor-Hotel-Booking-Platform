@@ -9,7 +9,7 @@ import TestimonialsSection from "../components/home/TestimonialsSection";
 
 export const GuestHome: React.FC = () => {
   return (
-    <div className="w-full bg-[#F9F9FF] text-[#111C2D] overflow-x-hidden">
+    <div className="w-full overflow-x-hidden" style={{ backgroundColor: "var(--bg-page)", color: "var(--text-primary)" }}>
       {/* Section 1: Hero Banner & Thanh tìm kiếm khách sạn */}
       <HeroSection />
 

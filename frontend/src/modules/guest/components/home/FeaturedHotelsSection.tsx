@@ -14,7 +14,11 @@ export const FeaturedHotelsSection: React.FC = () => {
       : FEATURED_HOTELS_DATA.filter((h) => h.city === selectedCity);
 
   return (
-    <section aria-label="Khách sạn và ưu đãi nổi bật" className="py-12 sm:py-16 bg-[#F9F9FF]">
+    <section
+      aria-label="Khách sạn và ưu đãi nổi bật"
+      className="py-12 sm:py-16 transition-colors duration-200"
+      style={{ backgroundColor: "var(--bg-page)" }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">

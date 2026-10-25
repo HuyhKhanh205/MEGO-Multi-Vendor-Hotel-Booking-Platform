@@ -12,7 +12,13 @@ export const HotelCard: React.FC<HotelCardProps> = ({ hotel }) => {
   };
 
   return (
-    <div className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-xs hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col group">
+    <div
+      className="rounded-3xl overflow-hidden border shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col group"
+      style={{
+        backgroundColor: "var(--card-bg)",
+        borderColor: "var(--card-border)",
+      }}
+    >
       {/* Hotel Image with Badges */}
       <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
         <Link to={`/hotels/${hotel.id}`} className="block w-full h-full cursor-pointer">

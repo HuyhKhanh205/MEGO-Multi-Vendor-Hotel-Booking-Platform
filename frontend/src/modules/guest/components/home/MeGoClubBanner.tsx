@@ -34,7 +34,8 @@ export const MeGoClubBanner: React.FC = () => {
   return (
     <section
       aria-label="Đặc quyền Hội viên MeGo Club"
-      className="py-6 sm:py-8 bg-[#F9F9FF]"
+      className="py-6 sm:py-8 transition-colors duration-200"
+      style={{ backgroundColor: "var(--bg-page)" }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#0039B3] via-[#1055D4] to-[#0099A8] shadow-lg">

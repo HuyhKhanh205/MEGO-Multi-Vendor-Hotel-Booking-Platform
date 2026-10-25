@@ -3,7 +3,14 @@ import { Link } from "react-router-dom";
 
 export const MeGoRadarSection: React.FC = () => {
   return (
-    <section aria-label="MeGo Radar bản đồ vị trí" className="py-12 sm:py-16 bg-white border-y border-gray-100">
+    <section
+      aria-label="MeGo Radar bản đồ vị trí"
+      className="py-12 sm:py-16 border-y transition-colors duration-200"
+      style={{
+        backgroundColor: "var(--bg-surface)",
+        borderColor: "var(--border-default)",
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Left Content (5-6 cols) */}

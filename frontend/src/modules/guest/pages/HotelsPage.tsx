@@ -197,7 +197,10 @@ export const HotelsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans pb-16">
+    <div
+      className="min-h-screen font-sans pb-16 transition-colors duration-200"
+      style={{ backgroundColor: "var(--bg-page)", color: "var(--text-primary)" }}
+    >
       {/* ── Main Two-Column Container (Max 1440px, centered, matching sample image) ── */}
       <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <div className="flex flex-col lg:flex-row items-start gap-6">

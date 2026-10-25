@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import CurrencyDropdown from "./LanguageDropdown";
 import SupportPopover from "./SupportPopover";
 import NotificationPopover from "./NotificationPopover";
+import ThemeToggle from "./ThemeToggle";
 import { useAppSelector, useAppDispatch } from "../../stores/store";
 import { logout } from "../../stores/authSlice";
 
@@ -50,15 +51,19 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
       {/* 3. Thông báo (với chấm đỏ) */}
       <NotificationPopover />
 
+      {/* 4. Nút chuyển đổi Dark / Light Mode */}
+      <ThemeToggle />
+
       <div className="w-px h-5 bg-gray-200 mx-0.5" aria-hidden="true" />
 
-      {/* 4. Khu vực tài khoản: Đăng nhập / Đăng ký (Thay thế hoàn toàn VIP Gold) */}
+      {/* 5. Khu vực tài khoản: Đăng nhập / Đăng ký */}
       {!isAuthenticated ? (
         <div className="flex items-center gap-2">
           {/* Nút Đăng nhập */}
           <Link
             to="/login"
-            className="inline-flex items-center justify-center px-3.5 py-1.5 text-[13.5px] font-semibold text-[#1677FF] bg-white border border-[#1677FF]/40 hover:bg-blue-50/70 hover:border-[#1677FF] rounded-[10px] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 whitespace-nowrap active:scale-[0.98]"
+            className="inline-flex items-center justify-center px-3.5 py-1.5 text-[13.5px] font-semibold text-[#1677FF] bg-white border border-[#1677FF]/40 hover:bg-blue-50/70 hover:border-[#1677FF] rounded-[10px] transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 whitespace-nowrap active:scale-[0.98]
+              dark:bg-[var(--bg-surface)] dark:text-[var(--brand-primary)] dark:border-[var(--brand-primary)]/40 dark:hover:bg-[var(--brand-primary-bg)]"
           >
             Đăng nhập
           </Link>
@@ -66,7 +71,8 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
           {/* Nút Đăng ký */}
           <Link
             to="/register"
-            className="inline-flex items-center justify-center px-4 py-1.5 text-[13.5px] font-semibold text-white bg-[#1677FF] hover:bg-[#0f62d4] active:bg-[#0950b7] rounded-[10px] shadow-xs hover:shadow transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 whitespace-nowrap active:scale-[0.98]"
+            className="inline-flex items-center justify-center px-4 py-1.5 text-[13.5px] font-semibold text-white bg-[#1677FF] hover:bg-[#0f62d4] active:bg-[#0950b7] rounded-[10px] shadow-xs hover:shadow transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 whitespace-nowrap active:scale-[0.98]
+              dark:bg-[var(--brand-primary)] dark:hover:bg-[var(--brand-primary-hover)]"
           >
             Đăng ký
           </Link>
@@ -79,7 +85,8 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             aria-expanded={isUserMenuOpen}
             aria-label="Menu tài khoản người dùng"
-            className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-full hover:bg-gray-100/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="flex items-center gap-2 p-1 pl-1.5 pr-2 rounded-full hover:bg-gray-100/80 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
+              dark:hover:bg-[var(--bg-surface-hover)]"
           >
             {user?.avatar ? (
               <img
@@ -92,7 +99,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
                 {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
               </div>
             )}
-            <span className="text-[13px] font-semibold text-gray-800 max-w-[100px] truncate hidden md:inline-block">
+            <span className="text-[13px] font-semibold text-gray-800 max-w-[100px] truncate hidden md:inline-block dark:text-[var(--text-primary)]">
               {user?.name || "Tài khoản"}
             </span>
             <svg
@@ -108,12 +115,13 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
           </button>
 
           {isUserMenuOpen && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-              <div className="px-4 py-2.5 border-b border-gray-100">
-                <p className="text-[13.5px] font-bold text-gray-900 truncate">
+            <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-150
+              dark:bg-[var(--dropdown-bg)] dark:border-[var(--dropdown-border)]">
+              <div className="px-4 py-2.5 border-b border-gray-100 dark:border-[var(--border-light)]">
+                <p className="text-[13.5px] font-bold text-gray-900 truncate dark:text-[var(--text-primary)]">
                   {user?.name || "Người dùng"}
                 </p>
-                <p className="text-[11.5px] text-gray-400 truncate mt-0.5">
+                <p className="text-[11.5px] text-gray-400 truncate mt-0.5 dark:text-[var(--text-muted)]">
                   {user?.email || "user@mego.vn"}
                 </p>
               </div>
@@ -122,9 +130,10 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
                 <Link
                   to="/customer/profile"
                   onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors
+                    dark:text-[var(--text-secondary)] dark:hover:bg-[var(--brand-primary-bg)] dark:hover:text-[var(--brand-primary)]"
                 >
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-gray-400 dark:text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                   Trang cá nhân
@@ -133,20 +142,22 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
                 <Link
                   to="/my-bookings"
                   onClick={() => setIsUserMenuOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                  className="flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors
+                    dark:text-[var(--text-secondary)] dark:hover:bg-[var(--brand-primary-bg)] dark:hover:text-[var(--brand-primary)]"
                 >
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-gray-400 dark:text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   Đặt chỗ của tôi
                 </Link>
               </div>
 
-              <div className="border-t border-gray-100 pt-1">
+              <div className="border-t border-gray-100 pt-1 dark:border-[var(--border-light)]">
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-red-600 hover:bg-red-50 transition-colors text-left"
+                  className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] text-red-600 hover:bg-red-50 transition-colors text-left
+                    dark:hover:bg-red-900/20"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

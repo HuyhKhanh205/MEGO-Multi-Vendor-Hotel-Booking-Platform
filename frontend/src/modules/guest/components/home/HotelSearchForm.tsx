@@ -88,19 +88,29 @@ export const HotelSearchForm: React.FC<HotelSearchFormProps> = ({
     <div className={`w-full max-w-6xl mx-auto ${className}`}>
       <form
         onSubmit={handleSubmit}
-        className="w-full rounded-2xl bg-white p-3 sm:p-3.5 shadow-xl border border-white/80"
+        className="w-full rounded-2xl p-3 sm:p-3.5 shadow-xl border transition-colors duration-200"
+        style={{
+          backgroundColor: "var(--card-bg)",
+          borderColor: "var(--card-border)",
+        }}
       >
         {/* Login notice */}
-        <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-[10px] sm:text-xs">
-          <div className="flex min-w-0 items-center gap-2 text-slate-700">
-            <svg className="h-3.5 w-3.5 shrink-0 text-[#1677FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <div
+          className="mb-3 flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-[10px] sm:text-xs"
+          style={{
+            backgroundColor: "var(--brand-primary-bg)",
+            borderColor: "var(--border-default)",
+          }}
+        >
+          <div className="flex min-w-0 items-center gap-2" style={{ color: "var(--text-secondary)" }}>
+            <svg className="h-3.5 w-3.5 shrink-0 text-[#1677FF] dark:text-[var(--brand-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <rect x="4" y="10" width="16" height="11" rx="2" strokeWidth="2" />
               <path d="M8 10V7a4 4 0 018 0v3" strokeWidth="2" strokeLinecap="round" />
               <path d="M12 14v3" strokeWidth="2" strokeLinecap="round" />
             </svg>
             <span className="truncate">Vui lòng đăng nhập để đặt phòng và nhận ưu đãi độc quyền</span>
           </div>
-          <button type="button" onClick={() => navigate("/login")} className="shrink-0 font-semibold text-[#1677FF] hover:underline">
+          <button type="button" onClick={() => navigate("/login")} className="shrink-0 font-semibold text-[#1677FF] dark:text-[var(--brand-primary)] hover:underline">
             Đăng nhập ngay
           </button>
         </div>
@@ -156,22 +166,89 @@ export const HotelSearchForm: React.FC<HotelSearchFormProps> = ({
             </button>
 
             {isGuestPopoverOpen && (
-              <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-2xl border border-gray-100 bg-white p-4 shadow-xl">
+              <div
+                className="absolute right-0 top-full z-50 mt-2 w-64 rounded-2xl border p-4 shadow-xl animate-in fade-in duration-150"
+                style={{
+                  backgroundColor: "var(--popover-bg)",
+                  borderColor: "var(--popover-border)",
+                }}
+              >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div><p className="text-xs font-bold text-gray-800">Số khách</p><p className="text-[10px] text-gray-400">Từ 1 tuổi trở lên</p></div>
+                    <div>
+                      <p className="text-xs font-bold" style={{ color: "var(--text-primary)" }}>Số khách</p>
+                      <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Từ 1 tuổi trở lên</p>
+                    </div>
                     <div className="flex items-center gap-2">
-                      <button type="button" disabled={guests <= 1} onClick={() => setGuests(Math.max(1, guests - 1))} className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 font-bold text-gray-600 disabled:opacity-30">−</button>
-                      <span className="w-6 text-center text-sm font-bold">{guests}</span>
-                      <button type="button" disabled={guests >= 20} onClick={() => setGuests(guests + 1)} className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 font-bold text-gray-600 disabled:opacity-30">+</button>
+                      <button
+                        type="button"
+                        disabled={guests <= 1}
+                        onClick={() => setGuests(Math.max(1, guests - 1))}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border font-bold disabled:opacity-30 transition-colors"
+                        style={{
+                          borderColor: "var(--border-default)",
+                          color: "var(--text-secondary)",
+                          backgroundColor: "var(--bg-surface-secondary)",
+                        }}
+                      >
+                        −
+                      </button>
+                      <span className="w-6 text-center text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                        {guests}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={guests >= 20}
+                        onClick={() => setGuests(guests + 1)}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border font-bold disabled:opacity-30 transition-colors"
+                        style={{
+                          borderColor: "var(--border-default)",
+                          color: "var(--text-secondary)",
+                          backgroundColor: "var(--bg-surface-secondary)",
+                        }}
+                      >
+                        +
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between border-t border-gray-100 pt-3">
-                    <div><p className="text-xs font-bold text-gray-800">Số phòng</p><p className="text-[10px] text-gray-400">Tối đa 10 phòng</p></div>
+                  <div
+                    className="flex items-center justify-between border-t pt-3"
+                    style={{ borderColor: "var(--border-light)" }}
+                  >
+                    <div>
+                      <p className="text-xs font-bold" style={{ color: "var(--text-primary)" }}>Số phòng</p>
+                      <p className="text-[10px]" style={{ color: "var(--text-muted)" }}>Tối đa 10 phòng</p>
+                    </div>
                     <div className="flex items-center gap-2">
-                      <button type="button" disabled={rooms <= 1} onClick={() => setRooms(Math.max(1, rooms - 1))} className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 font-bold text-gray-600 disabled:opacity-30">−</button>
-                      <span className="w-6 text-center text-sm font-bold">{rooms}</span>
-                      <button type="button" disabled={rooms >= 10} onClick={() => setRooms(rooms + 1)} className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200 font-bold text-gray-600 disabled:opacity-30">+</button>
+                      <button
+                        type="button"
+                        disabled={rooms <= 1}
+                        onClick={() => setRooms(Math.max(1, rooms - 1))}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border font-bold disabled:opacity-30 transition-colors"
+                        style={{
+                          borderColor: "var(--border-default)",
+                          color: "var(--text-secondary)",
+                          backgroundColor: "var(--bg-surface-secondary)",
+                        }}
+                      >
+                        −
+                      </button>
+                      <span className="w-6 text-center text-sm font-bold" style={{ color: "var(--text-primary)" }}>
+                        {rooms}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={rooms >= 10}
+                        onClick={() => setRooms(rooms + 1)}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg border font-bold disabled:opacity-30 transition-colors"
+                        style={{
+                          borderColor: "var(--border-default)",
+                          color: "var(--text-secondary)",
+                          backgroundColor: "var(--bg-surface-secondary)",
+                        }}
+                      >
+                        +
+                      </button>
                     </div>
                   </div>
                   <button type="button" onClick={() => setIsGuestPopoverOpen(false)} className="w-full rounded-lg bg-blue-50 py-1.5 text-xs font-bold text-[#1677FF] hover:bg-blue-100">Xong</button>
