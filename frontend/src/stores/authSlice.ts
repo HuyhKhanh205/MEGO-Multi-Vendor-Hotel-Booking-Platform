@@ -5,7 +5,7 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
-  role?: "GUEST" | "CUSTOMER" | "PARTNER" | "ADMIN";
+  role?: "GUEST" | "CUSTOMER" | "PARTNER" | "PARTNER_STAFF" | "ADMIN";
 }
 
 export interface AuthState {

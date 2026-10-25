@@ -1,21 +1,61 @@
 /**
  * MeGo Auth Service
  *
- * Service layer cho các API xác thực người dùng.
- * Ghi chú: Các endpoint cần được kết nối với Spring Boot backend.
+ * Service layer cho các API xác thực người dùng — kết nối Spring Boot backend
+ * (AuthController, base path `/api/auth`).
  *
- * Backend endpoints cần triển khai:
- *   POST /api/v1/auth/forgot-password       — Gửi mã khôi phục mật khẩu
- *   POST /api/v1/auth/reset-password         — Đặt lại mật khẩu bằng token
- *   POST /api/v1/auth/verify-email           — Xác minh email bằng token
- *   POST /api/v1/auth/resend-verification    — Gửi lại email xác minh
+ * Backend endpoints đã triển khai:
+ *   POST /api/auth/register     — Đăng ký, tạo user PENDING_VERIFICATION + gửi OTP email
+ *   POST /api/auth/verify-otp   — Xác minh OTP 6 số → kích hoạt + trả JWT
+ *   POST /api/auth/resend-otp   — Gửi lại OTP
+ *   POST /api/auth/login        — Đăng nhập email + password → trả JWT
+ *
+ * Backend endpoints CHƯA triển khai (giữ lại cho màn hình quên mật khẩu):
+ *   POST /api/auth/forgot-password
+ *   POST /api/auth/reset-password
  */
 
-import axios from "axios";
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
+import apiClient, {
+  getApiErrorMessage,
+  getApiErrorStatus,
+} from "./apiClient";
+import type { User } from "../stores/authSlice";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
+
+/** Khớp enum RoleName phía backend */
+export type BackendRole = "CUSTOMER" | "PARTNER" | "PARTNER_STAFF" | "ADMIN";
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  fullName: string;
+  phone?: string;
+}
+
+export interface VerifyOtpRequest {
+  email: string;
+  otp: string;
+}
+
+/** Khớp AuthResponse phía backend */
+export interface AuthResponse {
+  jwt: string;
+  message: string;
+  role: BackendRole;
+  email: string;
+  fullName: string;
+}
+
+/** Khớp MessageResponse phía backend */
+export interface MessageResponse {
+  message: string;
+}
 
 export interface ForgotPasswordRequest {
   email: string;
@@ -39,29 +79,65 @@ export interface ResetPasswordResponse {
   message: string;
 }
 
-export interface VerifyEmailRequest {
-  token: string;
+/** Lỗi API có kèm HTTP status để UI xử lý theo từng trường hợp (401/403...). */
+export class AuthApiError extends Error {
+  status?: number;
+
+  constructor(message: string, status?: number) {
+    super(message);
+    this.name = "AuthApiError";
+    this.status = status;
+  }
 }
 
-export interface VerifyEmailResponse {
-  success: boolean;
-  message: string;
-  email?: string;
-}
-
-export interface ResendVerificationRequest {
-  email: string;
-}
-
-export interface ResendVerificationResponse {
-  success: boolean;
-  message: string;
-  cooldownSeconds?: number;
-}
+const toAuthError = (error: unknown, fallback: string) =>
+  new AuthApiError(getApiErrorMessage(error, fallback), getApiErrorStatus(error));
 
 // ─── Service ─────────────────────────────────────────────────────────────────
 
 export const AuthService = {
+  /** Đăng nhập bằng email + mật khẩu. */
+  async login(data: LoginRequest): Promise<AuthResponse> {
+    try {
+      const res = await apiClient.post<AuthResponse>("/auth/login", data);
+      return res.data;
+    } catch (error) {
+      throw toAuthError(error, "Đăng nhập thất bại. Vui lòng thử lại.");
+    }
+  },
+
+  /** Đăng ký tài khoản mới — backend gửi mã OTP 6 số tới email. */
+  async register(data: RegisterRequest): Promise<MessageResponse> {
+    try {
+      const res = await apiClient.post<MessageResponse>("/auth/register", data);
+      return res.data;
+    } catch (error) {
+      throw toAuthError(error, "Đăng ký thất bại. Vui lòng thử lại.");
+    }
+  },
+
+  /** Xác minh OTP đăng ký — thành công sẽ trả JWT (đăng nhập luôn). */
+  async verifyOtp(data: VerifyOtpRequest): Promise<AuthResponse> {
+    try {
+      const res = await apiClient.post<AuthResponse>("/auth/verify-otp", data);
+      return res.data;
+    } catch (error) {
+      throw toAuthError(error, "Không thể xác minh mã OTP. Vui lòng thử lại.");
+    }
+  },
+
+  /** Gửi lại mã OTP xác minh email. */
+  async resendOtp(email: string): Promise<MessageResponse> {
+    try {
+      const res = await apiClient.post<MessageResponse>("/auth/resend-otp", {
+        email,
+      });
+      return res.data;
+    } catch (error) {
+      throw toAuthError(error, "Không thể gửi lại mã OTP. Vui lòng thử lại.");
+    }
+  },
+
   /**
    * Gửi yêu cầu khôi phục mật khẩu.
    * Backend sẽ gửi email chứa link/mã reset nếu email tồn tại.
@@ -71,25 +147,16 @@ export const AuthService = {
     data: ForgotPasswordRequest
   ): Promise<ForgotPasswordResponse> {
     try {
-      const response = await axios.post<ForgotPasswordResponse>(
-        `${API_BASE}/auth/forgot-password`,
+      const res = await apiClient.post<ForgotPasswordResponse>(
+        "/auth/forgot-password",
         data
       );
-      return response.data;
+      return res.data;
     } catch (error) {
-      // Nếu backend chưa triển khai endpoint, trả về trạng thái pending
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(
-            error.response.data?.message ||
-              "Không thể gửi yêu cầu khôi phục mật khẩu. Vui lòng thử lại."
-          );
-        }
-        throw new Error(
-          "Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối mạng."
-        );
-      }
-      throw error;
+      throw toAuthError(
+        error,
+        "Không thể gửi yêu cầu khôi phục mật khẩu. Vui lòng thử lại."
+      );
     }
   },
 
@@ -101,99 +168,29 @@ export const AuthService = {
     data: ResetPasswordRequest
   ): Promise<ResetPasswordResponse> {
     try {
-      const response = await axios.post<ResetPasswordResponse>(
-        `${API_BASE}/auth/reset-password`,
+      const res = await apiClient.post<ResetPasswordResponse>(
+        "/auth/reset-password",
         data
       );
-      return response.data;
+      return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 400) {
-          throw new Error(
-            error.response.data?.message ||
-              "Token không hợp lệ hoặc đã hết hạn."
-          );
-        }
-        if (error.response) {
-          throw new Error(
-            error.response.data?.message ||
-              "Không thể đặt lại mật khẩu. Vui lòng thử lại."
-          );
-        }
-        throw new Error(
-          "Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối mạng."
-        );
-      }
-      throw error;
+      throw toAuthError(
+        error,
+        getApiErrorStatus(error) === 400
+          ? "Token không hợp lệ hoặc đã hết hạn."
+          : "Không thể đặt lại mật khẩu. Vui lòng thử lại."
+      );
     }
   },
 
-  /**
-   * Xác minh email bằng token từ email đăng ký.
-   * Chỉ backend mới quyết định email đã được xác minh thành công hay chưa.
-   */
-  async verifyEmail(data: VerifyEmailRequest): Promise<VerifyEmailResponse> {
-    try {
-      const response = await axios.post<VerifyEmailResponse>(
-        `${API_BASE}/auth/verify-email`,
-        data
-      );
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 400) {
-          throw new Error(
-            error.response.data?.message ||
-              "Liên kết xác minh không hợp lệ hoặc đã hết hạn."
-          );
-        }
-        if (error.response) {
-          throw new Error(
-            error.response.data?.message ||
-              "Không thể xác minh email. Vui lòng thử lại."
-          );
-        }
-        throw new Error(
-          "Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối mạng."
-        );
-      }
-      throw error;
-    }
-  },
-
-  /**
-   * Gửi lại email xác minh.
-   * Chỉ bắt đầu lại bộ đếm sau khi backend xác nhận yêu cầu gửi lại hợp lệ.
-   */
-  async resendVerification(
-    data: ResendVerificationRequest
-  ): Promise<ResendVerificationResponse> {
-    try {
-      const response = await axios.post<ResendVerificationResponse>(
-        `${API_BASE}/auth/resend-verification`,
-        data
-      );
-      return response.data;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 429) {
-          throw new Error(
-            error.response.data?.message ||
-              "Bạn đã gửi quá nhiều yêu cầu. Vui lòng đợi và thử lại sau."
-          );
-        }
-        if (error.response) {
-          throw new Error(
-            error.response.data?.message ||
-              "Không thể gửi lại email. Vui lòng thử lại."
-          );
-        }
-        throw new Error(
-          "Không thể kết nối tới máy chủ. Vui lòng kiểm tra kết nối mạng."
-        );
-      }
-      throw error;
-    }
+  /** Chuyển AuthResponse của backend → User lưu trong Redux store. */
+  toAuthUser(res: AuthResponse): User {
+    return {
+      id: res.email,
+      name: res.fullName,
+      email: res.email,
+      role: res.role,
+    };
   },
 
   /**
@@ -221,6 +218,32 @@ export const AuthService = {
 
     return providers[domain] || null;
   },
+};
+
+/**
+ * Xác định trang đích sau khi đăng nhập.
+ * Ưu tiên redirect hợp lệ (nội bộ) từ URL; nếu không có thì điều hướng theo vai trò.
+ */
+export const getPostLoginPath = (
+  role: User["role"] | undefined,
+  explicitRedirect?: string | null
+): string => {
+  if (
+    explicitRedirect &&
+    explicitRedirect.startsWith("/") &&
+    !explicitRedirect.startsWith("//")
+  ) {
+    return explicitRedirect;
+  }
+  switch (role) {
+    case "ADMIN":
+      return "/admin";
+    case "PARTNER":
+    case "PARTNER_STAFF":
+      return "/partner";
+    default:
+      return "/";
+  }
 };
 
 export default AuthService;

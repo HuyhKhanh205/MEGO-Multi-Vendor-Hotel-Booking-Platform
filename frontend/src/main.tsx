@@ -7,7 +7,12 @@ import App from "./App";
 import "./i18n";
 import "./index.css";
 import store from "./stores/store";
+import { logout } from "./stores/authSlice";
+import { setUnauthorizedHandler } from "./services/apiClient";
 import { ThemeProvider } from "./contexts/ThemeContext";
+
+// Token hết hạn / không hợp lệ → tự động đăng xuất
+setUnauthorizedHandler(() => store.dispatch(logout()));
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

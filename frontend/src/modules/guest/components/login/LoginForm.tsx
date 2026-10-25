@@ -21,24 +21,15 @@ interface LoginFormProps {
   registerLink?: string;
 }
 
-// Regex validation for either email or VN phone number
+// Backend /api/auth/login chỉ hỗ trợ đăng nhập bằng email
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const phoneRegex = /^(0|\+84)[3|5|7|8|9][0-9]{8}$/;
 
 const validationSchema = Yup.object({
   identifier: Yup.string()
-    .required("Vui lòng nhập Email hoặc Số điện thoại")
-    .test(
-      "is-email-or-phone",
-      "Vui lòng nhập định dạng email hoặc số điện thoại hợp lệ (10 số)",
-      (value) => {
-        if (!value) return false;
-        const cleanVal = value.trim().replace(/\s+/g, "");
-        return emailRegex.test(cleanVal) || phoneRegex.test(cleanVal);
-      }
-    ),
+    .trim()
+    .required("Vui lòng nhập địa chỉ email")
+    .matches(emailRegex, "Định dạng email không hợp lệ (ví dụ: name@example.com)"),
   password: Yup.string()
-    .min(6, "Mật khẩu phải chứa ít nhất 6 ký tự")
     .required("Vui lòng nhập mật khẩu của bạn"),
   rememberMe: Yup.boolean(),
 });
@@ -49,15 +40,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   errorMessage,
   onSubmit,
   onSocialClick,
-  onQuickDemoLogin,
   registerLink = "/register",
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      identifier: initialEmailOrPhone || "khachhang@mego.vn",
-      password: "password123",
+      identifier: initialEmailOrPhone,
+      password: "",
       rememberMe: true,
     },
     validationSchema,
@@ -99,7 +89,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             htmlFor="identifier"
             className="block text-xs font-bold text-slate-700"
           >
-            Email hoặc Số điện thoại
+            Địa chỉ Email
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -108,12 +98,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
             <input
               id="identifier"
               name="identifier"
-              type="text"
+              type="email"
               autoComplete="username"
               value={formik.values.identifier}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              placeholder="name@example.com hoặc 0912 345 678"
+              placeholder="name@example.com"
               className={`w-full pl-10 pr-4 py-3 text-sm rounded-xl border bg-slate-50/50 outline-none transition-all ${
                 formik.touched.identifier && formik.errors.identifier
                   ? "border-red-400 bg-red-50/20 text-red-900 focus:ring-2 focus:ring-red-200"

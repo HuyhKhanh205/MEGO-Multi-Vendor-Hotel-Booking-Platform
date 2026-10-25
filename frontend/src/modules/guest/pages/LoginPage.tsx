@@ -4,6 +4,11 @@ import { toast } from "react-toastify";
 import { LoginHero, LoginForm } from "../components/login";
 import { useAppDispatch, useAppSelector } from "../../../stores/store";
 import { loginSuccess } from "../../../stores/authSlice";
+import {
+  AuthService,
+  AuthApiError,
+  getPostLoginPath,
+} from "../../../services/auth.service";
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,33 +16,31 @@ export const LoginPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
 
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Validate internal redirect URL to prevent open redirect vulnerabilities
-  const rawRedirect =
+  // Redirect nội bộ (nếu có) — getPostLoginPath sẽ chặn open redirect
+  const explicitRedirect =
     searchParams.get("redirect") ||
     (location.state as { from?: string } | undefined)?.from ||
-    "/";
-  const safeRedirect =
-    rawRedirect.startsWith("/") && !rawRedirect.startsWith("//")
-      ? rawRedirect
-      : "/";
+    null;
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated (bao gồm ngay sau khi đăng nhập thành công)
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(safeRedirect, { replace: true });
+      navigate(getPostLoginPath(user?.role, explicitRedirect), {
+        replace: true,
+      });
     }
-  }, [isAuthenticated, navigate, safeRedirect]);
+  }, [isAuthenticated, user?.role, navigate, explicitRedirect]);
 
   useEffect(() => {
     document.title = "Đăng nhập tài khoản | MeGo Khách sạn & Resort";
     window.scrollTo(0, 0);
   }, []);
 
-  // Form submit handler
+  // Form submit handler — POST /api/auth/login
   const handleLoginSubmit = async (values: {
     identifier: string;
     password: string;
@@ -46,65 +49,44 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     setErrorMessage(null);
 
-    // Simulate backend API call (Ghi chú: kết nối endpoint Spring Boot /api/v1/auth/login)
-    setTimeout(() => {
-      setIsLoading(false);
+    const email = values.identifier.trim().toLowerCase();
 
-      // Verify credentials (Demo test accounts)
-      const isEmail = values.identifier.includes("@");
-      const userName = isEmail
-        ? values.identifier.split("@")[0].toUpperCase()
-        : "Khách hàng MeGo";
+    try {
+      const res = await AuthService.login({ email, password: values.password });
 
-      dispatch(
-        loginSuccess({
-          user: {
-            id: `usr-${Date.now().toString().slice(-4)}`,
-            name: `Nguyễn ${userName}`,
-            email: isEmail ? values.identifier : `${values.identifier}@mego.vn`,
-            role: "CUSTOMER",
-            avatar:
-              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
-          },
-          token: `mego-jwt-token-${Date.now()}`,
-        })
-      );
-
-      toast.success("Đăng nhập thành công! Chào mừng bạn quay trở lại MeGo.", {
+      toast.success(res.message || "Đăng nhập thành công!", {
         position: "top-right",
         autoClose: 3000,
       });
 
-      // Navigate back to the intended booking / protected route
-      navigate(safeRedirect, { replace: true });
-    }, 600);
-  };
+      // Effect phía trên sẽ điều hướng theo redirect / vai trò
+      dispatch(loginSuccess({ user: AuthService.toAuthUser(res), token: res.jwt }));
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Đăng nhập thất bại.";
 
-  // Quick 1-click login helper for seamless testing
-  const handleQuickDemoLogin = () => {
-    setIsLoading(true);
-    setTimeout(() => {
+      // 403 + chưa xác minh email → gửi lại OTP và chuyển sang trang xác minh
+      if (
+        err instanceof AuthApiError &&
+        err.status === 403 &&
+        message.toLowerCase().includes("xác minh")
+      ) {
+        try {
+          await AuthService.resendOtp(email);
+          toast.info("Tài khoản chưa xác minh. Mã OTP mới đã được gửi tới email của bạn.");
+        } catch {
+          // Vẫn chuyển trang — người dùng có thể bấm "Gửi lại" tại đó
+        }
+        const params = new URLSearchParams({ email });
+        if (explicitRedirect) params.set("redirect", explicitRedirect);
+        navigate(`/verify-email?${params.toString()}`);
+        return;
+      }
+
+      setErrorMessage(message);
+    } finally {
       setIsLoading(false);
-      dispatch(
-        loginSuccess({
-          user: {
-            id: "usr-demo-01",
-            name: "Trần Mai Anh",
-            email: "maianh.tran@mego.vn",
-            role: "CUSTOMER",
-            avatar:
-              "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
-          },
-          token: "mego-jwt-token-demo-valid",
-        })
-      );
-
-      toast.success("Đã đăng nhập thành công với tài khoản mẫu!", {
-        position: "top-right",
-      });
-
-      navigate(safeRedirect, { replace: true });
-    }, 300);
+    }
   };
 
   // Social OAuth click handler
@@ -115,7 +97,7 @@ export const LoginPage: React.FC = () => {
       apple: "Apple ID",
     };
     toast.info(
-      `Cổng đăng nhập qua ${providerNames[provider]} đang được kết nối với hệ thống backend. Vui lòng đăng nhập bằng Email/SĐT hoặc nút thử nghiệm.`,
+      `Cổng đăng nhập qua ${providerNames[provider]} chưa được hỗ trợ. Vui lòng đăng nhập bằng Email.`,
       { autoClose: 4000 }
     );
   };
@@ -135,7 +117,6 @@ export const LoginPage: React.FC = () => {
             errorMessage={errorMessage}
             onSubmit={handleLoginSubmit}
             onSocialClick={handleSocialClick}
-            onQuickDemoLogin={handleQuickDemoLogin}
             registerLink={`/register${
               searchParams.toString() ? `?${searchParams.toString()}` : ""
             }`}
