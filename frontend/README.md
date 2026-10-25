@@ -261,3 +261,46 @@ mego-frontend/
 ├── vite.config.ts
 └── README.md
 ```
+
+## AI chat widget
+
+The shared chat widget is mounted in `src/App.tsx`. It reads the current role from Redux auth state, keeps conversation messages in Redux, and persists them in `sessionStorage` for the current browser tab. Logging out or clearing the conversation removes the saved messages.
+
+### Local UI testing
+
+Set `VITE_CHAT_USE_MOCK=true` in `frontend/.env.local`, then restart the Vite dev server. The mock waits about 800 ms and returns a role-aware reply without calling the backend. To exercise the error and retry state once, also set `VITE_CHAT_MOCK_FAIL_ONCE=true`; the first request fails and retry succeeds. Remove that setting or restart the dev server to reset the mock.
+
+Check the widget as a guest and while signed in with each role. Since the demo login creates a Customer account, you can preview another role in the browser console by setting the same auth values Redux reads on startup, then reloading:
+
+```js
+localStorage.setItem("mego_auth_user", JSON.stringify({
+  id: "chat-test",
+  name: "Chat Tester",
+  email: "chat@example.com",
+  role: "PARTNER", // Change to CUSTOMER or ADMIN to check those prompts.
+}));
+localStorage.setItem("mego_auth_token", "chat-test");
+location.reload();
+```
+
+Remove `mego_auth_user` and `mego_auth_token` from local storage and reload to check Guest. The role and suggested prompts come from `state.auth.user.role`; routes `/login`, `/register`, `/forgot-password`, `/reset-password`, and `/verify-email` hide the widget. Test narrow viewport behavior below 640 px, refresh after a conversation to confirm the tab history remains, then clear the conversation or log out and refresh to confirm it is gone. Press Escape to close the panel; Enter sends and Shift+Enter adds a line break.
+
+### Backend contract
+
+The frontend posts to `POST /api/chat` (change `CHAT_API_ENDPOINT` in `src/services/chatService.ts` if the backend path differs).
+
+Request JSON:
+
+```json
+{
+  "message": "How can I find a room?",
+  "history": [
+    { "role": "user", "content": "I need a hotel in Da Nang." },
+    { "role": "assistant", "content": "What dates are you travelling?" }
+  ],
+  "role": "GUEST",
+  "language": "en"
+}
+```
+
+`history` contains prior turns only; the current user input is in `message`. Roles are `GUEST`, `CUSTOMER`, `PARTNER`, or `ADMIN`; message roles in history are `user` or `assistant`. Return JSON `{ "reply": "..." }`. On failure, the frontend displays a JSON `message` when available, or a translated fallback. The backend should select its own role-specific assistant context, validate the authenticated role from the server-side session/token, and treat the supplied `role` as a UI hint rather than an authorization claim.

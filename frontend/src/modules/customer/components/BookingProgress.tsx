@@ -25,12 +25,12 @@ const BookingProgress = ({ activeStep }: BookingProgressProps) => (
               isActive
                 ? "bg-[#1677ff] text-white"
                 : isCompleted
-                  ? "text-[#1677ff]"
+                  ? "text-[#16a34a]"
                   : "text-[#737d95]"
             }`}
           >
             {isCompleted && <CheckIcon sx={{ fontSize: 14 }} />}
-            {!isCompleted && step.number}. {step.label}
+            {step.number}. {step.label}
           </span>
           {index < steps.length - 1 && <span className="text-[#d1d7e3]">›</span>}
         </div>

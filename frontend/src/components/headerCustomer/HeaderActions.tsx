@@ -128,7 +128,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
 
               <div className="py-1">
                 <Link
-                  to="/customer"
+                  to="/customer/profile"
                   onClick={() => setIsUserMenuOpen(false)}
                   className="flex items-center gap-2.5 px-4 py-2 text-[13px] text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors
                     dark:text-[var(--text-secondary)] dark:hover:bg-[var(--brand-primary-bg)] dark:hover:text-[var(--brand-primary)]"
