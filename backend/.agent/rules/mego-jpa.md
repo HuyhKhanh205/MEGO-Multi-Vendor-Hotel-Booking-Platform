@@ -1,12 +1,16 @@
-# Quy ước dự án MeGo (Spring Boot 4.1, Java 21, JPA/Hibernate, MariaDB)
-- Package gốc: com.mego.backend; entity ở `model.entity`, enum ở `model.enums`, base ở `model.base`, repository ở `repository`.
-- Dùng jakarta.persistence.*, Lombok (@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder). KHÔNG dùng @Data trên entity.
-- Mọi entity kế thừa BaseEntity (id Long IDENTITY, createdAt, updatedAt qua JPA Auditing).
-- @ManyToOne/@OneToOne luôn FetchType.LAZY. Collection dùng Set khởi tạo new HashSet<>(), có helper addX/removeX.
-- equals/hashCode theo id; toString không được kéo lazy field.
-- Enum lưu @Enumerated(EnumType.STRING).
-- Tiền: BigDecimal precision=15, scale=2. Ngày lưu trú: LocalDate. Thời điểm: LocalDateTime.
-- Bảng và cột snake_case, tên bảng số nhiều. Khai báo @Table với indexes và uniqueConstraints.
-- Không CascadeType.REMOVE/orphanRemoval với entity liên quan Booking. Hotel, RoomType, User, Voucher chỉ xóa mềm.
-- Có comment tiếng Việt ngắn cho entity và field nghiệp vụ. Thêm Bean Validation phù hợp.
-- Code phải hoàn chỉnh, không để TODO/placeholder. Chỉ làm đúng nhóm được yêu cầu trong mỗi lượt.
+# Quy ước JPA cho MEGO backend
+
+- Package gốc là `com.mego.backend`. Tổ chức code theo module: entity ở `<module>.internal.entity`, enum ở `<module>.internal.domain`, repository ở `<module>.internal.repository`; API, DTO công khai và event công khai đặt trực tiếp trong package gốc của module.
+- Module chỉ được tham chiếu package gốc của module khác. Không import bất kỳ class nào từ `internal` của module khác.
+- `shared` chỉ chứa hạ tầng và kiểu dữ liệu dùng chung; không phụ thuộc module nghiệp vụ.
+- Dùng `jakarta.persistence.*` và Lombok (`@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@Builder`). Không dùng `@Data` trên entity.
+- Entity kế thừa `shared.persistence.BaseEntity` để dùng `Long` IDENTITY, `createdAt` và `updatedAt` từ JPA Auditing.
+- Không tạo quan hệ JPA xuyên module. Tham chiếu dữ liệu module khác bằng ID như `userId`, `hotelId`; gọi API công khai của module đó khi cần thông tin.
+- `@ManyToOne` và `@OneToOne` trong cùng module luôn dùng `FetchType.LAZY`. Khởi tạo collection rỗng; dùng `Set` khi cần loại trùng và `List` khi cần thứ tự.
+- Không sinh `equals`/`hashCode` có thể duyệt quan hệ lazy. Dùng implementation theo ID của `BaseEntity`; `toString` không đọc lazy field.
+- Enum lưu bằng `@Enumerated(EnumType.STRING)`.
+- Tiền dùng `BigDecimal` với precision/scale phù hợp (thường `15,2`). Ngày lưu trú dùng `LocalDate`, thời điểm dùng `LocalDateTime`.
+- Tên bảng và cột dùng snake_case; bảng có tiền tố module, ví dụ `auth_users`. Khai báo `@Table` với index và unique constraint khi nghiệp vụ cần.
+- Tránh `CascadeType.REMOVE` và `orphanRemoval` với dữ liệu có thể được booking tham chiếu. Hotel, RoomType và User dùng xóa mềm khi nghiệp vụ yêu cầu.
+- Viết comment tiếng Việt ngắn cho entity và field nghiệp vụ; thêm Bean Validation phù hợp.
+- Giữ thay đổi trong đúng module được yêu cầu, không thêm TODO hoặc placeholder.

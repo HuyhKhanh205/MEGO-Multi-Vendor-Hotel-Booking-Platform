@@ -195,13 +195,13 @@ export const MobileNavigation: React.FC<MobileNavigationProps> = ({
                   Đăng nhập
                 </Link>
                 <Link
-                  to="/register"
+                  to="/partner/login"
                   onClick={handleClose}
                   className="w-full py-2.5 px-4 text-center text-sm font-semibold text-white rounded-xl transition-colors shadow-xs
                     bg-[#1677FF] hover:bg-blue-700
                     dark:bg-[var(--brand-primary)] dark:hover:bg-[var(--brand-primary-hover)]"
                 >
-                  Đăng ký tài khoản
+                  Đối tác
                 </Link>
               </div>
             ) : (

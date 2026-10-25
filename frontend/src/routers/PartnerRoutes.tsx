@@ -13,6 +13,10 @@ const PartnerComingSoon = lazy(() => import("../modules/partner/pages/PartnerCom
 
 const partnerFallback = <div className="flex min-h-64 items-center justify-center"><CircularProgress aria-label="Đang tải trang" /></div>;
 const page = (element: ReactNode) => <Suspense fallback={partnerFallback}>{element}</Suspense>;
+import { Navigate, type RouteObject } from "react-router-dom";
+import PartnerHome from "../modules/partner/pages/PartnerHome";
+import PartnerLoginPage from "../modules/partner/pages/PartnerLoginPage";
+import ProtectedRoute from "./ProtectedRoute";
 
 export const partnerRoutes: RouteObject[] = [
   {
@@ -26,6 +30,7 @@ export const partnerRoutes: RouteObject[] = [
   {
     path: "/partner/register/status",
     element: page(<PartnerApplicationStatusPage />),
+    element: <PartnerLoginPage />,
   },
   {
     path: "/partner",
@@ -37,6 +42,24 @@ export const partnerRoutes: RouteObject[] = [
     children: [
       { index: true, element: page(<PartnerHome />) },
       { path: "*", element: page(<PartnerComingSoon />) },
+      <ProtectedRoute
+        allowedRoles={["PARTNER"]}
+        loginPath="/partner/login"
+      />
+    ),
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/partner/dashboard" replace />,
+      },
+      {
+        path: "dashboard",
+        element: <PartnerHome />,
+      },
+      {
+        path: "*",
+        element: <PartnerHome />,
+      },
     ],
   },
 ];

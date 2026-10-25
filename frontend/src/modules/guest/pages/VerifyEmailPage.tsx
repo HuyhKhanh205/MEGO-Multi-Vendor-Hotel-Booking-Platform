@@ -1,36 +1,54 @@
-import React, { useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import React, { useCallback, useEffect } from "react";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { VerifyEmailCard } from "../components/auth";
+import { useAppDispatch } from "../../../stores/store";
+import { loginSuccess } from "../../../stores/authSlice";
+import {
+  AuthService,
+  getPostLoginPath,
+  type AuthResponse,
+} from "../../../services/auth.service";
 
 /**
- * Trang Xác nhận Email — /verify-email
+ * Trang Xác nhận Email — /verify-email?email=user@example.com[&redirect=/path]
  *
- * Hai luồng sử dụng:
+ * Sau khi đăng ký (hoặc đăng nhập khi tài khoản chưa xác minh), người dùng
+ * nhập mã OTP 6 số được gửi qua email. Xác minh thành công → backend trả JWT
+ * → đăng nhập luôn và chuyển hướng.
  *
- * 1. Xác minh email sau đăng ký:
- *    URL: /verify-email?email=user@example.com
- *    Hiển thị trạng thái chờ xác nhận + bộ đếm gửi lại.
- *
- * 2. Xác minh từ link email:
- *    URL: /verify-email?token=abc123&email=user@example.com
- *    Tự động gọi API xác minh.
- *
- * Ghi chú backend:
- *   POST /api/v1/auth/verify-email         — Xác minh bằng token
- *   POST /api/v1/auth/resend-verification  — Gửi lại email xác minh
+ * Backend:
+ *   POST /api/auth/verify-otp  — Xác minh OTP, kích hoạt + trả JWT
+ *   POST /api/auth/resend-otp  — Gửi lại OTP
  */
 export const VerifyEmailPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const email = searchParams.get("email") || "";
-  const token = searchParams.get("token");
+  const redirect = searchParams.get("redirect");
 
   useEffect(() => {
     document.title = "Xác nhận email | MeGo Hotel & Resort";
     window.scrollTo(0, 0);
   }, []);
 
-  const loginLink = "/login";
+  const loginLink = redirect
+    ? `/login?redirect=${encodeURIComponent(redirect)}`
+    : "/login";
+
+  const handleVerified = useCallback(
+    (res: AuthResponse) => {
+      dispatch(loginSuccess({ user: AuthService.toAuthUser(res), token: res.jwt }));
+      toast.success(res.message || "Xác minh thành công! Chào mừng bạn đến với MeGo.", {
+        position: "top-right",
+        autoClose: 4000,
+      });
+      navigate(getPostLoginPath(res.role, redirect), { replace: true });
+    },
+    [dispatch, navigate, redirect]
+  );
 
   // No email → redirect guidance
   if (!email) {
@@ -91,8 +109,8 @@ export const VerifyEmailPage: React.FC = () => {
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-lg p-6 sm:p-8">
           <VerifyEmailCard
             email={email}
-            token={token}
             loginLink={loginLink}
+            onVerified={handleVerified}
           />
         </div>
       </div>

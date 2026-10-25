@@ -9,18 +9,33 @@ import {
   setChatLoading,
 } from "../stores/chatSlice";
 import { CHAT_MOCK_FAILURE_CODE, chatService } from "../services/chatService";
-import type { ChatHistoryMessage, ChatMessage, ChatUserRole } from "../types/chat";
+import type {
+  ChatBookingResponse,
+  ChatHistoryMessage,
+  ChatMessage,
+  ChatRoomCard,
+  ChatUserRole,
+} from "../types/chat";
 
 interface FailedAttempt {
   message: string;
   history: ChatHistoryMessage[];
 }
 
-const createMessage = (role: ChatMessage["role"], content: string): ChatMessage => ({
+const createMessage = (
+  role: ChatMessage["role"],
+  content: string,
+  extra?: {
+    cards?: ChatRoomCard[];
+    bookingConfirmation?: ChatBookingResponse;
+  },
+): ChatMessage => ({
   id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`,
   role,
   content,
   createdAt: new Date().toISOString(),
+  ...(extra?.cards && extra.cards.length > 0 ? { cards: extra.cards } : {}),
+  ...(extra?.bookingConfirmation ? { bookingConfirmation: extra.bookingConfirmation } : {}),
 });
 
 export const useChat = (role: ChatUserRole) => {
@@ -64,7 +79,13 @@ export const useChat = (role: ChatUserRole) => {
           { signal: controller.signal },
         );
         if (requestVersion !== requestVersionRef.current) return;
-        dispatch(addMessage(createMessage("assistant", response.reply)));
+        dispatch(
+          addMessage(
+            createMessage("assistant", response.reply, {
+              cards: response.cards,
+            }),
+          ),
+        );
         failedAttemptRef.current = null;
       } catch (error: unknown) {
         if (requestVersion !== requestVersionRef.current || controller.signal.aborted) return;
@@ -100,6 +121,21 @@ export const useChat = (role: ChatUserRole) => {
     [isLoading, messages, runRequest],
   );
 
+  const addBookingSuccessMessage = useCallback(
+    (result: ChatBookingResponse) => {
+      dispatch(
+        addMessage(
+          createMessage(
+            "assistant",
+            `MeGo đã ghi nhận yêu cầu đặt phòng ${result.roomName} tại ${result.hotelName}. Mã xác nhận của quý khách là ${result.bookingCode}.`,
+            { bookingConfirmation: result },
+          ),
+        ),
+      );
+    },
+    [dispatch],
+  );
+
   const retry = useCallback(() => {
     const failedAttempt = failedAttemptRef.current;
     if (!failedAttempt || isLoading) return;
@@ -112,5 +148,5 @@ export const useChat = (role: ChatUserRole) => {
     dispatch(clearChat());
   }, [cancelPendingRequest, dispatch]);
 
-  return { sendMessage, retry, clearConversation };
+  return { sendMessage, addBookingSuccessMessage, retry, clearConversation };
 };

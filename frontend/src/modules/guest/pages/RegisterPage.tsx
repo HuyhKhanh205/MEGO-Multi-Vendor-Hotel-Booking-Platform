@@ -2,75 +2,66 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { RegisterHero, RegisterForm, type RegisterFormValues } from "../components/register";
-import { useAppDispatch, useAppSelector } from "../../../stores/store";
-import { loginSuccess } from "../../../stores/authSlice";
+import { useAppSelector } from "../../../stores/store";
+import { AuthService, getPostLoginPath } from "../../../services/auth.service";
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
 
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Validate internal redirect URL to prevent open redirect vulnerabilities
-  const rawRedirect =
+  // Redirect nội bộ (nếu có) — getPostLoginPath sẽ chặn open redirect
+  const explicitRedirect =
     searchParams.get("redirect") ||
     (location.state as { from?: string } | undefined)?.from ||
-    "/";
-  const safeRedirect =
-    rawRedirect.startsWith("/") && !rawRedirect.startsWith("//")
-      ? rawRedirect
-      : "/";
+    null;
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(safeRedirect, { replace: true });
+      navigate(getPostLoginPath(user?.role, explicitRedirect), {
+        replace: true,
+      });
     }
-  }, [isAuthenticated, navigate, safeRedirect]);
+  }, [isAuthenticated, user?.role, navigate, explicitRedirect]);
 
   useEffect(() => {
     document.title = "Đăng ký thành viên MeGo Club | Nhận ngay 500 điểm thưởng";
     window.scrollTo(0, 0);
   }, []);
 
-  // Form submit handler
+  // Form submit handler — POST /api/auth/register → chuyển sang nhập OTP
   const handleRegisterSubmit = async (values: RegisterFormValues) => {
     setIsLoading(true);
     setErrorMessage(null);
 
-    // Simulate backend API call (Ghi chú: kết nối endpoint Spring Boot /api/v1/auth/register)
-    setTimeout(() => {
+    try {
+      const res = await AuthService.register({
+        email: values.email,
+        password: values.password,
+        fullName: values.fullName,
+        phone: values.phoneNumber || undefined,
+      });
+
+      toast.success(res.message || "Đăng ký thành công! Vui lòng kiểm tra email.", {
+        position: "top-right",
+        autoClose: 5000,
+      });
+
+      const params = new URLSearchParams({ email: values.email });
+      if (explicitRedirect) params.set("redirect", explicitRedirect);
+      navigate(`/verify-email?${params.toString()}`, { replace: true });
+    } catch (err) {
+      setErrorMessage(
+        err instanceof Error ? err.message : "Đăng ký thất bại. Vui lòng thử lại."
+      );
+    } finally {
       setIsLoading(false);
-
-      dispatch(
-        loginSuccess({
-          user: {
-            id: `usr-${Date.now().toString().slice(-4)}`,
-            name: values.fullName,
-            email: values.email,
-            role: "CUSTOMER",
-            avatar:
-              "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80",
-          },
-          token: `mego-jwt-token-${Date.now()}`,
-        })
-      );
-
-      toast.success(
-        `Chúc mừng ${values.fullName}! Bạn đã gia nhập MeGo Club thành công và nhận ngay 500 MeGo Points.`,
-        {
-          position: "top-right",
-          autoClose: 4000,
-        }
-      );
-
-      // Navigate back to the intended booking / protected route
-      navigate(safeRedirect, { replace: true });
-    }, 800);
+    }
   };
 
   // Social OAuth click handler
@@ -81,7 +72,7 @@ export const RegisterPage: React.FC = () => {
       apple: "Apple ID",
     };
     toast.info(
-      `Cổng đăng ký nhanh qua ${providerNames[provider]} đang được kết nối với hệ thống backend. Vui lòng hoàn tất biểu mẫu đăng ký tiêu chuẩn.`,
+      `Cổng đăng ký nhanh qua ${providerNames[provider]} chưa được hỗ trợ. Vui lòng hoàn tất biểu mẫu đăng ký tiêu chuẩn.`,
       { autoClose: 4000 }
     );
   };

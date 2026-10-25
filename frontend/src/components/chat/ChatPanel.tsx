@@ -1,12 +1,24 @@
+import { useEffect, useState } from "react";
 import { Alert, Box, Button, IconButton, Paper, Tooltip, Typography, useTheme } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import type { ChatMessage, ChatUserRole } from "../../types/chat";
+import { toast } from "react-toastify";
+import { useAppSelector } from "../../stores/store";
+import type {
+  ChatBookingResponse,
+  ChatMessage,
+  ChatRoomCard,
+  ChatUserRole,
+} from "../../types/chat";
+import ChatBookingWizard from "./ChatBookingWizard";
 import ChatInput from "./ChatInput";
 import ChatMessageList from "./ChatMessageList";
 import SuggestedPrompts from "./SuggestedPrompts";
+
+export const PENDING_CHAT_BOOK_KEY = "mego_pending_chat_book";
 
 interface ChatPanelProps {
   role: ChatUserRole;
@@ -17,6 +29,7 @@ interface ChatPanelProps {
   onClear: () => void;
   onSend: (message: string) => void;
   onRetry: () => void;
+  onBookingComplete: (result: ChatBookingResponse) => void;
 }
 
 export default function ChatPanel({
@@ -28,9 +41,59 @@ export default function ChatPanel({
   onClear,
   onSend,
   onRetry,
+  onBookingComplete,
 }: ChatPanelProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const [activeWizardCard, setActiveWizardCard] = useState<ChatRoomCard | null>(null);
+
+  // Tự động khôi phục phòng đang chọn để đặt sau khi người dùng đăng nhập xong và quay lại
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    try {
+      const saved = sessionStorage.getItem(PENDING_CHAT_BOOK_KEY);
+      if (saved) {
+        sessionStorage.removeItem(PENDING_CHAT_BOOK_KEY);
+        const parsed = JSON.parse(saved) as ChatRoomCard;
+        if (parsed && parsed.hotelId && parsed.roomId) {
+          setActiveWizardCard(parsed);
+        }
+      }
+    } catch {
+      // Ignore storage error
+    }
+  }, [isAuthenticated]);
+
+  const handleStartQuickBook = (card: ChatRoomCard) => {
+    if (!isAuthenticated) {
+      try {
+        sessionStorage.setItem(PENDING_CHAT_BOOK_KEY, JSON.stringify(card));
+      } catch {
+        // Ignore storage error
+      }
+      toast.info("Vui lòng đăng nhập tài khoản để đặt phòng trực tiếp trên Chatbox.", {
+        position: "top-right",
+      });
+      const redirectUrl = location.pathname + location.search;
+      onClose();
+      navigate(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
+      return;
+    }
+    setActiveWizardCard(card);
+  };
+
+  const handleClearAll = () => {
+    setActiveWizardCard(null);
+    try {
+      sessionStorage.removeItem(PENDING_CHAT_BOOK_KEY);
+    } catch {
+      // Ignore
+    }
+    onClear();
+  };
 
   return (
     <Paper
@@ -68,7 +131,7 @@ export default function ChatPanel({
         <Tooltip title={t("chat.clear")}>
           <span>
             <IconButton
-              onClick={onClear}
+              onClick={handleClearAll}
               disabled={messages.length === 0 && !error}
               aria-label={t("chat.clear")}
               color="inherit"
@@ -101,7 +164,23 @@ export default function ChatPanel({
           <SuggestedPrompts role={role} onSelect={onSend} />
         </Box>
       ) : (
-        <ChatMessageList messages={messages} isLoading={isLoading} />
+        <ChatMessageList
+          messages={messages}
+          isLoading={isLoading}
+          onStartQuickBook={handleStartQuickBook}
+        />
+      )}
+
+      {/* Khung Đặt phòng từng bước (3 bước) ngay trong Chatbox — chỉ mở khi đã đăng nhập */}
+      {isAuthenticated && activeWizardCard && (
+        <ChatBookingWizard
+          card={activeWizardCard}
+          onCancel={() => setActiveWizardCard(null)}
+          onSuccess={(result) => {
+            setActiveWizardCard(null);
+            onBookingComplete(result);
+          }}
+        />
       )}
 
       {error && (
