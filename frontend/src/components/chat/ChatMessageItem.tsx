@@ -24,7 +24,7 @@ const normalizeRawText = (text: string): string => {
     .replace(/`([^`]*)`/g, "$1")
     .replace(/^#{1,6}\s*/gm, "")
     .replace(/^\s*[-*]\s+/gm, "• ")
-    .replace(/[📊🏨🌟📍🕒🛏️👇✨💎🏅🏊🛡️🏢⚙️💡📌🎉]/gu, "")
+    .replace(/(?:📊|🏨|🌟|📍|🕒|🛏️|👇|✨|💎|🏅|🏊|🛡️|🏢|⚙️|💡|📌|🎉)/gu, "")
     .replace(/[ \t]{2,}/g, " ")
     .replace(/^ +/gm, "")
     .replace(/\n{3,}/g, "\n\n")

@@ -59,7 +59,7 @@ export default function ChatPanel({
         sessionStorage.removeItem(PENDING_CHAT_BOOK_KEY);
         const parsed = JSON.parse(saved) as ChatRoomCard;
         if (parsed && parsed.hotelId && parsed.roomId) {
-          setActiveWizardCard(parsed);
+          queueMicrotask(() => setActiveWizardCard(parsed));
         }
       }
     } catch {

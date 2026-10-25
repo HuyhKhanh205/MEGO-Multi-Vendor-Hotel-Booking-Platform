@@ -10,61 +10,16 @@ import {
   MOCK_TREND,
   MOCK_URGENT_TASKS,
   PARTNER_DEMO_ACCOUNT,
-  PARTNER_DEMO_CREDENTIALS,
 } from "../data/partnerMock";
-import type { DashboardPeriod, PartnerAccount, PartnerDashboardData } from "../types/partner.types";
+import type { DashboardPeriod, PartnerDashboardData } from "../types/partner.types";
 
 const USE_MOCK = true;
 const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api", headers: { "Content-Type": "application/json" } });
 const delay = (ms = 450) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
 
-const MAX_FAILED_ATTEMPTS = 5;
-const LOCK_MINUTES = 5;
-let failedAttempts = 0;
-let lockedUntil = 0;
-
-export interface PartnerLoginInput {
-  identifier: string;
-  password: string;
-  rememberMe: boolean;
-}
-
-export interface PartnerLoginResult {
-  account: PartnerAccount;
-  token: string;
-}
-
 const periodDays: Record<DashboardPeriod, number> = { TODAY: 1, LAST_7_DAYS: 7, THIS_MONTH: MOCK_TREND.length };
 
 export const partnerApi = {
-  async login(input: PartnerLoginInput): Promise<PartnerLoginResult> {
-    if (!USE_MOCK) return (await api.post<PartnerLoginResult>("/partner/auth/login", input)).data; // TODO: endpoint Spring Boot cho đối tác
-    await delay();
-
-    const now = Date.now();
-    if (lockedUntil > now) {
-      const minutes = Math.ceil((lockedUntil - now) / 60_000);
-      throw new Error(`Tài khoản tạm khóa do đăng nhập sai nhiều lần. Vui lòng thử lại sau ${minutes} phút hoặc liên hệ hotline.`);
-    }
-
-    const identifier = input.identifier.trim().toLowerCase();
-    const matchesIdentifier = identifier === PARTNER_DEMO_CREDENTIALS.identifier
-      || identifier === PARTNER_DEMO_ACCOUNT.hotels[0].code.toLowerCase();
-    if (!matchesIdentifier || input.password !== PARTNER_DEMO_CREDENTIALS.password) {
-      failedAttempts += 1;
-      if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
-        failedAttempts = 0;
-        lockedUntil = now + LOCK_MINUTES * 60_000;
-        throw new Error(`Bạn đã nhập sai ${MAX_FAILED_ATTEMPTS} lần. Tài khoản tạm khóa ${LOCK_MINUTES} phút để bảo vệ dữ liệu khách sạn.`);
-      }
-      const remaining = MAX_FAILED_ATTEMPTS - failedAttempts;
-      throw new Error(`Email/mã đối tác hoặc mật khẩu không đúng. Còn ${remaining} lần thử trước khi tài khoản bị tạm khóa.`);
-    }
-
-    failedAttempts = 0;
-    return { account: PARTNER_DEMO_ACCOUNT, token: `mego-partner-token-${now}` };
-  },
-
   async getDashboard(period: DashboardPeriod): Promise<PartnerDashboardData> {
     if (!USE_MOCK) return (await api.get<PartnerDashboardData>("/partner/dashboard", { params: { period } })).data; // TODO: endpoint Spring Boot cho đối tác
     await delay();

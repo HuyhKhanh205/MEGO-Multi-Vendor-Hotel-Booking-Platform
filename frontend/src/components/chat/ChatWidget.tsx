@@ -14,13 +14,13 @@ import ChatPanel, { PENDING_CHAT_BOOK_KEY } from "./ChatPanel";
 const CHAT_HIDDEN_ROUTES = [
   "/login",
   "/partner/login",
+  "/partner/register",
+  "/partner/register/status",
   "/admin/login",
   "/register",
   "/forgot-password",
   "/reset-password",
   "/verify-email",
-  "/partner/login",
-  "/partner/register",
 ] as const;
 
 function ChatWidgetContent() {
