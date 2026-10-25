@@ -38,8 +38,7 @@ export const BookingSummaryCard = ({
   onRoomsChange,
   onScrollToRooms,
 }: BookingSummaryCardProps) => {
-  const estimatedTotal = startingPrice * nightsCount;
-
+ const estimatedTotal = startingPrice * nightsCount * rooms;
   return (
     <aside className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 space-y-5">
       {/* ── 1. Top Price Block ── */}
