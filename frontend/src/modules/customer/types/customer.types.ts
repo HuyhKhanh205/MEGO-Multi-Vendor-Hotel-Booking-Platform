@@ -2,7 +2,17 @@ export type BookingStatus = "PENDING_PAYMENT" | "CONFIRMED" | "CHECKED_IN" | "CO
 export type PaymentStatus = "UNPAID" | "PENDING" | "PAID" | "REFUNDED";
 export type MemberTier = "BRONZE" | "SILVER" | "GOLD" | "DIAMOND";
 
-export interface CustomerProfile { id: string; fullName: string; email: string; phone: string; birthDate: string; avatarUrl: string; }
+export interface CustomerProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  birthDate: string;
+  avatarUrl: string;
+  gender?: "Nam" | "Nữ" | "Khác" | "";
+  nationality?: string;
+  address?: string;
+}
 export interface CustomerBooking {
   id: string; bookingCode: string; status: BookingStatus; createdAt: string; checkIn: string; checkOut: string;
   numberOfNights: number; numberOfRooms: number; numberOfGuests: number; hotelId: string; hotelName: string;
@@ -31,6 +41,7 @@ export interface CustomerData {
 export interface BookingSelection {
   hotelId: string; roomTypeId: string; checkIn: string; checkOut: string;
   rooms: number; adults: number; children: number;
+  holdUntil?: string;
 }
 
 export interface RoomSelection {

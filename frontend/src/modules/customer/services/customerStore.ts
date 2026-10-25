@@ -21,7 +21,24 @@ export const loadCustomerData = (): CustomerData => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed: unknown = JSON.parse(stored);
-      if (isCustomerData(parsed)) return parsed;
+      if (isCustomerData(parsed)) {
+        const merged = {
+          ...parsed,
+          promoCodes: [
+            ...parsed.promoCodes,
+            ...seedData.promoCodes.filter(
+              (seedPromo) =>
+                !parsed.promoCodes.some(
+                  (promo) => promo.code.toUpperCase() === seedPromo.code.toUpperCase(),
+                ),
+            ),
+          ],
+        };
+        if (merged.promoCodes.length !== parsed.promoCodes.length) {
+          persist(merged);
+        }
+        return merged;
+      }
     }
   } catch { /* Corrupt local data falls back to the seed. */ }
   const initial = structuredClone(seedData);

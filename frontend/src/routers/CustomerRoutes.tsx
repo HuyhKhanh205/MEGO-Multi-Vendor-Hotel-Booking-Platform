@@ -25,12 +25,11 @@ export const customerRoutes: RouteObject[] = [
     element: <MainLayout />,
     children: [
       { index: true, element: page(<CustomerHome />) },
+      { path: "profile", element: page(<ProfilePage />) },
       { path: "bookingform", element: page(<BookingForm />) },
       { path: "payment", element: page(<Payment />) },
-      { path: "checkout", element: page(<BookingForm />) },
       { path: "payment/:bookingId", element: page(<Payment />) },
       { path: "payment-result", element: page(<PaymentResult />) },
-      { path: "profile", element: page(<ProfilePage />) },
       { path: "change-password", element: page(<PasswordPage />) },
       { path: "payment-methods", element: page(<PaymentMethodsPage />) },
       { path: "bookings", element: page(<BookingsPage />) },

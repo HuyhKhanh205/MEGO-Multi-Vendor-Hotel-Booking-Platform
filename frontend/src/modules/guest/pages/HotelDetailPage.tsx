@@ -127,7 +127,7 @@ export const HotelDetailPage = () => {
       return;
     }
 
-    navigate("/customer/checkout", {
+    navigate("/customer/bookingform", {
       state: {
         hotelId: hotel.id,
         hotelName: hotel.name,
