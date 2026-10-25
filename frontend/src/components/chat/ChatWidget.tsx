@@ -19,6 +19,8 @@ const CHAT_HIDDEN_ROUTES = [
   "/forgot-password",
   "/reset-password",
   "/verify-email",
+  "/partner/login",
+  "/partner/register",
 ] as const;
 
 function ChatWidgetContent() {
