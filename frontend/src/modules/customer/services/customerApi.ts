@@ -116,6 +116,14 @@ export const customerApiMethods = {
   setDefaultPaymentMethod: async (id: string) => { await delay(); updateCustomerData((data) => { data.savedPaymentMethods = data.savedPaymentMethods.map((item) => ({ ...item, isDefault: item.id === id })); }); },
   removePaymentMethod: async (id: string) => { await delay(); updateCustomerData((data) => { const item = data.savedPaymentMethods.find((method) => method.id === id); if (item?.pendingBookingId) throw new Error("Phương thức đang được gắn với đơn chờ xử lý."); data.savedPaymentMethods = data.savedPaymentMethods.filter((method) => method.id !== id); }); },
   getWishlist: () => read((data) => data.wishlist),
+  addWishlist: async (hotel: WishlistHotel) => {
+    await delay();
+    updateCustomerData((data) => {
+      if (!data.wishlist.some((item) => item.hotelId === hotel.hotelId)) {
+        data.wishlist.push(hotel);
+      }
+    });
+  },
   removeWishlist: async (id: string) => { await delay(); return updateCustomerData((data) => { const removed = data.wishlist.find((item) => item.id === id); data.wishlist = data.wishlist.filter((item) => item.id !== id); return removed; }); },
   restoreWishlist: async (hotel: WishlistHotel) => { await delay(); updateCustomerData((data) => { if (!data.wishlist.some((item) => item.id === hotel.id)) data.wishlist.push(hotel); }); },
   redeemVoucher: async (id: string) => { await delay(); updateCustomerData((data) => { const voucher = data.vouchers.find((item) => item.id === id); if (!voucher || data.loyalty.points < voucher.points) throw new Error("Số điểm hiện tại không đủ."); data.loyalty.points -= voucher.points; data.myVouchers.unshift({ code: `MEGO-${crypto.randomUUID().slice(0, 6).toUpperCase()}`, name: voucher.name, expiresAt: voucher.expiresAt, status: "ACTIVE" }); data.loyalty.pointHistory.unshift({ id: crypto.randomUUID(), date: new Date().toISOString().slice(0, 10), reason: `Đổi ${voucher.name}`, points: -voucher.points, bookingCode: "—" }); }); },
