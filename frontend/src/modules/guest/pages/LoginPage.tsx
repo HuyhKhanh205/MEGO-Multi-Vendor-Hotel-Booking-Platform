@@ -103,14 +103,18 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-140px)] bg-[#F4F6FC] py-6 sm:py-10 lg:py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-      <div className="w-full max-w-[1280px] bg-white rounded-3xl border border-slate-200/80 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] items-stretch">
+    <div className="relative min-h-[calc(100vh-140px)] bg-gradient-to-br from-[#EEF2FF] via-[#F4F6FC] to-[#E0EAFF] py-6 sm:py-10 lg:py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center overflow-hidden">
+      {/* Ambient Decorative Glow */}
+      <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-blue-400/15 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 w-96 h-96 rounded-full bg-indigo-400/15 blur-3xl" />
+
+      <div className="relative z-10 w-full max-w-[1240px] bg-white/95 backdrop-blur-xl rounded-[32px] border border-white/80 shadow-[0_24px_60px_-15px_rgba(15,23,42,0.12)] overflow-hidden grid grid-cols-1 lg:grid-cols-[1.12fr_1fr] items-stretch">
         {/* ── Cột trái (~53%): Brand Hero Banner ── */}
-        <div className="hidden lg:block p-3">
+        <div className="hidden lg:block p-3.5">
           <LoginHero />
         </div>
 
-        {/* ── Cột phải (~47%): Login Form ── */}
+        {/* ── Cột phải (~47%): Login Form (2-Step Progressive UI) ── */}
         <div className="p-6 sm:p-10 lg:p-12 flex flex-col justify-center">
           <LoginForm
             isLoading={isLoading}

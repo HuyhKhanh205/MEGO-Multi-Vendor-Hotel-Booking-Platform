@@ -56,7 +56,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
 
       <div className="w-px h-5 bg-gray-200 mx-0.5" aria-hidden="true" />
 
-      {/* 5. Khu vực tài khoản: Đăng nhập / Đăng ký */}
+      {/* 5. Khu vực tài khoản: Đăng nhập / Đối tác */}
       {!isAuthenticated ? (
         <div className="flex items-center gap-2">
           {/* Nút Đăng nhập */}
@@ -68,13 +68,13 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ className = "" }) 
             Đăng nhập
           </Link>
 
-          {/* Nút Đăng ký */}
+          {/* Nút Đối tác */}
           <Link
-            to="/register"
+            to="/partner/login"
             className="inline-flex items-center justify-center px-4 py-1.5 text-[13.5px] font-semibold text-white bg-[#1677FF] hover:bg-[#0f62d4] active:bg-[#0950b7] rounded-[10px] shadow-xs hover:shadow transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 whitespace-nowrap active:scale-[0.98]
               dark:bg-[var(--brand-primary)] dark:hover:bg-[var(--brand-primary-hover)]"
           >
-            Đăng ký
+            Đối tác
           </Link>
         </div>
       ) : (

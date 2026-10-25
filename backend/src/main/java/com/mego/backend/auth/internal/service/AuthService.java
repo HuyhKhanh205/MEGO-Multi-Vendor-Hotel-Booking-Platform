@@ -101,7 +101,7 @@ public class AuthService {
     @Transactional
     public AuthResponse verifyOtp(VerifyOtpRequest req) {
         // 1. Tìm OTP hợp lệ
-        EmailOtpCode otpCode = otpRepository.findLatestValidOtp(req.getEmail())
+        EmailOtpCode otpCode = otpRepository.findLatestValidOtp(req.getEmail(), LocalDateTime.now())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Mã OTP không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu gửi lại."));
 

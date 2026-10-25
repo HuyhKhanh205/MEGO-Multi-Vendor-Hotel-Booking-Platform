@@ -26,6 +26,13 @@ import type { User } from "../stores/authSlice";
 /** Khớp enum RoleName phía backend */
 export type BackendRole = "CUSTOMER" | "PARTNER" | "PARTNER_STAFF" | "ADMIN";
 
+/** Khớp enum PartnerApprovalStatus phía backend */
+export type PartnerApprovalStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "SUSPENDED";
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -50,6 +57,10 @@ export interface AuthResponse {
   role: BackendRole;
   email: string;
   fullName: string;
+  /** Trạng thái tài khoản / hồ sơ đối tác (PENDING | APPROVED | REJECTED) */
+  status?: PartnerApprovalStatus | string;
+  approvalStatus?: PartnerApprovalStatus;
+  partnerStatus?: PartnerApprovalStatus;
 }
 
 /** Khớp MessageResponse phía backend */
@@ -237,10 +248,10 @@ export const getPostLoginPath = (
   }
   switch (role) {
     case "ADMIN":
-      return "/admin";
+      return "/admin/dashboard";
     case "PARTNER":
     case "PARTNER_STAFF":
-      return "/partner";
+      return "/partner/dashboard";
     default:
       return "/";
   }

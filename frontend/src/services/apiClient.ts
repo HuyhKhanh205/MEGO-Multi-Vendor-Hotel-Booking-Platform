@@ -22,7 +22,8 @@ const apiClient = axios.create({
   timeout: 20000,
 });
 
-const isAuthEndpoint = (url?: string) => !!url && url.includes("/auth/");
+const isAuthEndpoint = (url?: string) =>
+  !!url && (url.includes("/auth/") || (url.includes("/chat") && !url.includes("/chat/book")));
 
 // ── Request: gắn JWT ─────────────────────────────────────────────────────────
 apiClient.interceptors.request.use((config) => {

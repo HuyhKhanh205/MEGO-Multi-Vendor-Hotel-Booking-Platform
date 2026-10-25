@@ -3,6 +3,7 @@ import { lazy, Suspense, type ReactNode } from "react";
 import type { RouteObject } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import AdminLayout from "../modules/admin/components/layout/AdminLayout";
+import ProtectedRoute from "./ProtectedRoute";
 
 const AdminHome = lazy(() => import("../modules/admin/pages/AdminHome"));
 const AdminUsersPage = lazy(() => import("../modules/admin/pages/AdminUsersPage"));
@@ -36,9 +37,14 @@ export const adminRoutes: RouteObject[] = [
   },
   {
     path: "/admin",
-    element: <AdminLayout />,
+    element: (
+      <ProtectedRoute allowedRoles={["ADMIN"]} loginPath="/admin/login">
+        <AdminLayout />
+      </ProtectedRoute>
+    ),
     children: [
       { index: true, element: page(<AdminHome />) },
+      { path: "dashboard", element: page(<AdminHome />) },
       { path: "partners", element: page(<AdminPartnersPage />) },
       { path: "hotels", element: page(<AdminHotelsPage />) },
       { path: "users", element: page(<AdminUsersPage />) },
@@ -49,6 +55,7 @@ export const adminRoutes: RouteObject[] = [
       { path: "reports", element: page(<AdminFinancePage />) },
       { path: "reviews", element: page(<AdminReviewsPage />) },
       { path: "audit-logs", element: page(<AdminAuditLogsPage />) },
+      { path: "*", element: page(<AdminHome />) },
     ],
   },
 ];

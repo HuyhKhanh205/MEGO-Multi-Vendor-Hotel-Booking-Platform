@@ -16,6 +16,7 @@ The backend is a modular monolith under `com.mego.backend`. Each business module
 | `promotion` | Vouchers, discounts, and customer loyalty tiers and points. | Existing `MemberTier` entity/repository and voucher/points enums. |
 | `review` | Customer reviews, moderation, and hotel rating summaries. | Currently has the existing `ReviewStatus` enum only. |
 | `notification` | Email, in-app, or other notifications triggered by business events. | Currently has the existing `NotificationType` enum only. |
+| `chat` | AI hotel concierge and business query assistant backed by real-time database context and Gemini API. | `ChatController`, `ChatService`, `ChatDataSeeder`, and chat request/response DTOs under `internal`. |
 
 Several entities and repositories for partner, hotel, inventory, and promotion were already present before this refactor; they were moved into their owning module. No new business workflows were added for those modules.
 

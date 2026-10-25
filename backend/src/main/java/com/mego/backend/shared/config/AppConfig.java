@@ -64,6 +64,10 @@ public class AppConfig {
                 // ── Public: Auth flow (đăng ký, đăng nhập, OTP) ──────────────
                 .requestMatchers("/api/auth/**").permitAll()
 
+                // ── Trợ lý AI Chatbox: Đặt phòng phải đăng nhập, Hỏi đáp mở public ─
+                .requestMatchers("/api/chat/book").authenticated()
+                .requestMatchers("/api/chat/**").permitAll()
+
                 // ── Public: Tìm kiếm & xem khách sạn (guest không cần login) ─
                 .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/hotels/**").permitAll()

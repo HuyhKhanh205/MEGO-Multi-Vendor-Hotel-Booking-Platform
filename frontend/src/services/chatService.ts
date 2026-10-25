@@ -1,7 +1,13 @@
-import axios from "axios";
-import type { ChatRequest, ChatResponse } from "../types/chat";
+import apiClient from "./apiClient";
+import type {
+  ChatBookingRequest,
+  ChatBookingResponse,
+  ChatRequest,
+  ChatResponse,
+} from "../types/chat";
 
-export const CHAT_API_ENDPOINT = "/api/chat";
+export const CHAT_API_ENDPOINT = "/chat";
+export const CHAT_BOOK_ENDPOINT = "/chat/book";
 export const CHAT_MOCK_FAILURE_CODE = "CHAT_MOCK_FAILURE";
 
 const useMock = import.meta.env.VITE_CHAT_USE_MOCK === "true";
@@ -61,7 +67,7 @@ export const chatService = {
       return { reply: getMockReply(request) };
     }
 
-    const response = await axios.post<ChatResponse>(
+    const response = await apiClient.post<ChatResponse>(
       CHAT_API_ENDPOINT,
       request,
       { signal: options.signal },
@@ -69,6 +75,16 @@ export const chatService = {
     if (typeof response.data?.reply !== "string") {
       throw new Error("CHAT_INVALID_RESPONSE");
     }
+    return response.data;
+  },
+
+  async bookRoomFromChat(
+    payload: ChatBookingRequest,
+  ): Promise<ChatBookingResponse> {
+    const response = await apiClient.post<ChatBookingResponse>(
+      CHAT_BOOK_ENDPOINT,
+      payload,
+    );
     return response.data;
   },
 };

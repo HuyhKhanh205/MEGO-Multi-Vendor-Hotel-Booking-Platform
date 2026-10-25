@@ -9,10 +9,12 @@ import { setChatOpen } from "../../stores/chatSlice";
 import { useAppDispatch, useAppSelector } from "../../stores/store";
 import { getChatRole } from "../../data/chatSuggestions";
 import { useChat } from "../../hooks/useChat";
-import ChatPanel from "./ChatPanel";
+import ChatPanel, { PENDING_CHAT_BOOK_KEY } from "./ChatPanel";
 
 const CHAT_HIDDEN_ROUTES = [
   "/login",
+  "/partner/login",
+  "/admin/login",
   "/register",
   "/forgot-password",
   "/reset-password",
@@ -28,13 +30,26 @@ function ChatWidgetContent() {
   const { isOpen, messages, isLoading, error } = useAppSelector((state) => state.chat);
   const auth = useAppSelector((state) => state.auth);
   const role = getChatRole(auth.user?.role, auth.isAuthenticated);
-  const { sendMessage, retry, clearConversation } = useChat(role);
+  const { sendMessage, addBookingSuccessMessage, retry, clearConversation } = useChat(role);
   const currentPath = location.pathname.replace(/\/+$/, "") || "/";
   const hidden = CHAT_HIDDEN_ROUTES.some((route) => currentPath === route);
 
   useEffect(() => {
     if (hidden) dispatch(setChatOpen(false));
   }, [dispatch, hidden]);
+
+  // Nếu vừa đăng nhập xong và có phòng đang chờ đặt trên Chat -> tự động mở lại khung Chatbox
+  useEffect(() => {
+    if (auth.isAuthenticated && !hidden) {
+      try {
+        if (sessionStorage.getItem(PENDING_CHAT_BOOK_KEY)) {
+          dispatch(setChatOpen(true));
+        }
+      } catch {
+        // Ignore storage error
+      }
+    }
+  }, [auth.isAuthenticated, dispatch, hidden]);
 
   useEffect(() => {
     if (!isOpen || hidden) return;
@@ -85,8 +100,8 @@ function ChatWidgetContent() {
             right: "max(16px, env(safe-area-inset-right, 0px))",
             bottom: "calc(88px + env(safe-area-inset-bottom, 0px))",
             zIndex: theme.zIndex.modal - 1,
-            width: 380,
-            height: 560,
+            width: 400,
+            height: 600,
             maxWidth: "calc(100vw - 32px)",
             maxHeight: "calc(100dvh - 104px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))",
             "@media (max-width: 639px)": {
@@ -107,6 +122,7 @@ function ChatWidgetContent() {
             onClear={clearConversation}
             onSend={sendMessage}
             onRetry={retry}
+            onBookingComplete={addBookingSuccessMessage}
           />
         </Box>
       </Grow>

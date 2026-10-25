@@ -1,15 +1,20 @@
 import { useEffect, useRef } from "react";
 import { Box } from "@mui/material";
-import type { ChatMessage } from "../../types/chat";
+import type { ChatMessage, ChatRoomCard } from "../../types/chat";
 import ChatMessageItem from "./ChatMessageItem";
 import TypingIndicator from "./TypingIndicator";
 
 interface ChatMessageListProps {
   messages: ChatMessage[];
   isLoading: boolean;
+  onStartQuickBook: (card: ChatRoomCard) => void;
 }
 
-export default function ChatMessageList({ messages, isLoading }: ChatMessageListProps) {
+export default function ChatMessageList({
+  messages,
+  isLoading,
+  onStartQuickBook,
+}: ChatMessageListProps) {
   const listRef = useRef<HTMLOListElement>(null);
 
   useEffect(() => {
@@ -26,16 +31,26 @@ export default function ChatMessageList({ messages, isLoading }: ChatMessageList
       sx={{
         listStyle: "none",
         m: 0,
-        p: 2,
+        p: 1.5,
         display: "flex",
         flexDirection: "column",
-        gap: 1.25,
+        gap: 1.5,
         flex: 1,
         overflowY: "auto",
       }}
     >
-      {messages.map((message) => <ChatMessageItem key={message.id} message={message} />)}
-      {isLoading && <Box component="li"><TypingIndicator /></Box>}
+      {messages.map((message) => (
+        <ChatMessageItem
+          key={message.id}
+          message={message}
+          onStartQuickBook={onStartQuickBook}
+        />
+      ))}
+      {isLoading && (
+        <Box component="li">
+          <TypingIndicator />
+        </Box>
+      )}
     </Box>
   );
 }
