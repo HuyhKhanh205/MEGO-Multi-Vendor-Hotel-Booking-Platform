@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Heart,
@@ -9,6 +9,8 @@ import {
   Sparkles,
 } from "../../../../components/common/Icons";
 import type { HotelItem } from "../../../../types/hotel";
+import { customerApiMethods } from "../../../customer/services/customerApi";
+import type { WishlistHotel } from "../../../customer/types/customer.types";
 
 interface HotelCardProps {
   hotel: HotelItem;
@@ -17,6 +19,42 @@ interface HotelCardProps {
 export const HotelCard = ({ hotel }: HotelCardProps) => {
   const [searchParams] = useSearchParams();
   const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    void customerApiMethods.getWishlist().then((wishlist) => {
+      if (active) {
+        setIsFavorite(wishlist.some((item) => item.hotelId === hotel.id));
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [hotel.id]);
+
+  const handleToggleFavorite = async () => {
+    const wishlist = await customerApiMethods.getWishlist();
+    const existing = wishlist.find((item) => item.hotelId === hotel.id);
+    if (existing) {
+      await customerApiMethods.removeWishlist(existing.id);
+      setIsFavorite(false);
+      return;
+    }
+
+    const wishlistHotel: WishlistHotel = {
+      id: hotel.id,
+      hotelId: hotel.id,
+      name: hotel.name,
+      location: `${hotel.district}, ${hotel.city}`,
+      stars: hotel.stars,
+      rating: hotel.rating,
+      priceFrom: hotel.pricePerNight,
+      imageUrl: hotel.coverImage,
+      addedAt: new Date().toISOString(),
+    };
+    await customerApiMethods.addWishlist(wishlistHotel);
+    setIsFavorite(true);
+  };
 
   const detailLink = `/hotels/${hotel.id}${searchParams.toString() ? `?${searchParams.toString()}` : ""}`;
 
@@ -79,7 +117,7 @@ export const HotelCard = ({ hotel }: HotelCardProps) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setIsFavorite(!isFavorite);
+              void handleToggleFavorite();
             }}
             className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90 shadow-sm ${
               isFavorite

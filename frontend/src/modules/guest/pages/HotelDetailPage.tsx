@@ -17,6 +17,8 @@ import {
 } from "../components/detailhotel";
 import { HotelsService } from "../../../services/hotels.service";
 import type { HotelRoom } from "../../../types/hotel";
+import { customerApiMethods } from "../../customer/services/customerApi";
+import type { WishlistHotel } from "../../customer/types/customer.types";
 
 export const HotelDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -68,6 +70,44 @@ export const HotelDetailPage = () => {
       window.scrollTo(0, 0);
     }
   }, [hotel]);
+
+  useEffect(() => {
+    if (!hotel) return;
+    void customerApiMethods
+      .getWishlist()
+      .then((wishlist) => {
+        setIsFavorite(wishlist.some((item) => item.hotelId === hotel.id));
+      })
+      .catch(() => {
+        setIsFavorite(false);
+      });
+  }, [hotel]);
+
+  const handleToggleFavorite = async () => {
+    if (!hotel) return;
+    const wishlist = await customerApiMethods.getWishlist();
+    const existing = wishlist.find((item) => item.hotelId === hotel.id);
+    if (existing) {
+      await customerApiMethods.removeWishlist(existing.id);
+      setIsFavorite(false);
+      toast.info("Đã bỏ khách sạn khỏi danh sách yêu thích.");
+      return;
+    }
+    const wishlistHotel: WishlistHotel = {
+      id: hotel.id,
+      hotelId: hotel.id,
+      name: hotel.name,
+      location: `${hotel.district}, ${hotel.city}`,
+      stars: hotel.stars,
+      rating: hotel.rating,
+      priceFrom: hotel.pricePerNight,
+      imageUrl: hotel.coverImage,
+      addedAt: new Date().toISOString(),
+    };
+    await customerApiMethods.addWishlist(wishlistHotel);
+    setIsFavorite(true);
+    toast.success("Đã thêm khách sạn vào danh sách yêu thích.");
+  };
 
   // Helper to update dates in URL
   const updateDates = (newCheckIn: string, newCheckOut: string) => {
@@ -175,7 +215,7 @@ export const HotelDetailPage = () => {
         hotelName={hotel.name}
         city={hotel.city}
         isFavorite={isFavorite}
-        onToggleFavorite={() => setIsFavorite(!isFavorite)}
+        onToggleFavorite={() => void handleToggleFavorite()}
       />
 
       {/* ── 2. Main Page Container (Max 1440px) ── */}
