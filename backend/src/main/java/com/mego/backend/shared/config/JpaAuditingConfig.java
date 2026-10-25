@@ -1,4 +1,4 @@
-package com.mego.backend.config;
+package com.mego.backend.shared.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

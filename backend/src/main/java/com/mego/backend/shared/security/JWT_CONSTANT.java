@@ -1,4 +1,4 @@
-package com.mego.backend.config;
+package com.mego.backend.shared.security;
 
 /**
  * Hằng số JWT – giữ lại để tương thích code cũ.
@@ -6,7 +6,7 @@ package com.mego.backend.config;
  * ⚠️  SECRET_KEY KHÔNG còn được đọc từ System.getenv() trực tiếp ở đây nữa
  *      (dễ gây NullPointerException khi env chưa set).
  *      Giá trị thực được inject qua @Value("${jwt.secret}") trong
- *      {@link JwtProvider} và {@link JwtTokenVlidator}.
+ *      {@link JwtProvider} và {@link JwtTokenValidator}.
  */
 public class JWT_CONSTANT {
 

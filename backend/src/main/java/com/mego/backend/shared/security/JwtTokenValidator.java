@@ -1,4 +1,4 @@
-package com.mego.backend.config;
+package com.mego.backend.shared.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -34,7 +34,7 @@ import java.util.List;
  * sẽ tự bypass qua ({@code filterChain.doFilter()}).</p>
  */
 @Component
-public class JwtTokenVlidator extends OncePerRequestFilter {
+public class JwtTokenValidator extends OncePerRequestFilter {
 
     @Value("${jwt.secret}")
     private String secretKey;

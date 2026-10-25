@@ -1,4 +1,6 @@
-package com.mego.backend.config;
+package com.mego.backend.shared.config;
+
+import com.mego.backend.shared.security.JwtTokenValidator;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,7 +53,7 @@ public class AppConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                            JwtTokenVlidator jwtTokenVlidator) throws Exception {
+                                            JwtTokenValidator jwtTokenValidator) throws Exception {
         http
             // Không dùng session (JWT stateless)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -76,8 +78,8 @@ public class AppConfig {
             )
 
             // Thêm JWT filter TRƯỚC BasicAuthenticationFilter
-            // JwtTokenVlidator đã là @Component → inject trực tiếp, không dùng new
-            .addFilterBefore(jwtTokenVlidator, BasicAuthenticationFilter.class)
+            // JwtTokenValidator đã là @Component → inject trực tiếp, không dùng new
+            .addFilterBefore(jwtTokenValidator, BasicAuthenticationFilter.class)
 
             // Tắt CSRF (REST API dùng JWT, không dùng cookie session)
             .csrf(csrf -> csrf.disable())

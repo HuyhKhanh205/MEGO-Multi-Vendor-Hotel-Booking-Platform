@@ -1,6 +1,6 @@
 package com.mego.backend.service;
 
-import com.mego.backend.config.JwtProvider;
+import com.mego.backend.shared.security.JwtProvider;
 import com.mego.backend.domain.RoleName;
 import com.mego.backend.domain.UserStatus;
 import com.mego.backend.dto.request.LoginRequest;

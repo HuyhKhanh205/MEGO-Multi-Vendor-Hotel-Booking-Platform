@@ -5,7 +5,7 @@ import com.mego.backend.dto.request.RegisterRequest;
 import com.mego.backend.dto.request.ResendOtpRequest;
 import com.mego.backend.dto.request.VerifyOtpRequest;
 import com.mego.backend.dto.response.AuthResponse;
-import com.mego.backend.dto.response.MessageResponse;
+import com.mego.backend.shared.dto.MessageResponse;
 import com.mego.backend.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * Controller xử lý các API xác thực (Authentication) của MeGo.
  *
  * <p>Base path: {@code /api/auth} – toàn bộ endpoint trong class này
- * được cấu hình {@code permitAll()} trong {@link com.mego.backend.config.AppConfig}.</p>
+ * được cấu hình {@code permitAll()} trong {@link com.mego.backend.shared.config.AppConfig}.</p>
  *
  * <table border="1">
  *   <tr><th>Method</th><th>Path</th><th>Mô tả</th></tr>

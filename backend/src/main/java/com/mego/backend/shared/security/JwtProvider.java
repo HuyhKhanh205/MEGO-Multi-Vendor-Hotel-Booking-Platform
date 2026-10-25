@@ -1,4 +1,4 @@
-package com.mego.backend.config;
+package com.mego.backend.shared.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package com.mego.backend.dto.response;
+package com.mego.backend.shared.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

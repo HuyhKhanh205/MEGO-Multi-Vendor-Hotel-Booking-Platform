@@ -1,6 +1,6 @@
-package com.mego.backend.config;
+package com.mego.backend.shared.exception;
 
-import com.mego.backend.dto.response.MessageResponse;
+import com.mego.backend.shared.dto.MessageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
