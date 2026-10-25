@@ -5,13 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 /**
- * Đồng bộ dữ liệu khách sạn & hạng phòng chuẩn của sàn MeGo vào CSDL MariaDB
- * để Trợ lý AI truy vấn trực tiếp từ CSDL và điều hướng chính xác tới trang chi tiết phòng.
+ * Đồng bộ dữ liệu khách sạn, hạng phòng và tài khoản mẫu của sàn MeGo vào CSDL MariaDB
+ * để Trợ lý AI truy vấn trực tiếp từ CSDL và phục vụ kiểm thử đăng nhập các phân hệ.
  */
 @Component
 @RequiredArgsConstructor
@@ -19,15 +20,225 @@ import java.time.LocalDate;
 public class ChatDataSeeder implements ApplicationRunner {
 
     private final JdbcTemplate jdbcTemplate;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(ApplicationArguments args) {
         try {
             seedMemberTiersIfEmpty();
+            seedTestUsersAndPartners();
             seedAmenitiesIfEmpty();
             syncWebHotelsAndRooms();
         } catch (Exception ex) {
             log.warn("[ChatDataSeeder] Bỏ qua đồng bộ dữ liệu mẫu: {}", ex.getMessage());
+        }
+    }
+
+    private void seedTestUsersAndPartners() {
+        // 1. Tài khoản CUSTOMER (Khách hàng đặt phòng)
+        upsertUser(
+                "customer@mego.vn",
+                "Customer@123",
+                "Nguyễn Minh Quân",
+                "0905123456",
+                "CUSTOMER",
+                "ACTIVE",
+                true,
+                1500
+        );
+        upsertUser(
+                "khachhang@gmail.com",
+                "12345678",
+                "Trần Thị Ngọc Anh",
+                "0912345678",
+                "CUSTOMER",
+                "ACTIVE",
+                true,
+                350
+        );
+
+        // 2. Tài khoản PARTNER (Đối tác khách sạn: APPROVED, PENDING, REJECTED)
+        Long partnerApprovedId = upsertUser(
+                "partner@mego.vn",
+                "Partner@123",
+                "Lê Hoàng Bách (Sunrise & Furama Group)",
+                "0905888999",
+                "PARTNER",
+                "ACTIVE",
+                true,
+                0
+        );
+        upsertPartnerProfile(
+                partnerApprovedId,
+                "Công ty Cổ phần Nghỉ dưỡng Biển Đông (MeGo Partner)",
+                "0401987654",
+                "28 Võ Nguyên Giáp, Quận Sơn Trà, Đà Nẵng",
+                "0905888999",
+                "Vietcombank",
+                "0041000888999",
+                "CONG TY CP NGHI DUONG BIEN DONG",
+                "APPROVED",
+                null
+        );
+
+        Long partnerDemoKhanhId = upsertUser(
+                "partner@sunrise-danang.vn",
+                "MeGo@2025",
+                "Trần Minh Khoa",
+                "0905678910",
+                "PARTNER",
+                "ACTIVE",
+                true,
+                0
+        );
+        upsertPartnerProfile(
+                partnerDemoKhanhId,
+                "Grand Sunrise Boutique Hotel Da Nang",
+                "0402112233",
+                "28 Võ Nguyên Giáp, Quận Sơn Trà, Đà Nẵng",
+                "0905678910",
+                "Techcombank",
+                "19036688990011",
+                "GRAND SUNRISE BOUTIQUE HOTEL",
+                "APPROVED",
+                null
+        );
+
+        Long partnerPendingId = upsertUser(
+                "partner.pending@mego.vn",
+                "Partner@123",
+                "Phạm Quốc Bảo (Hồ sơ chờ duyệt)",
+                "0938111222",
+                "PARTNER",
+                "ACTIVE",
+                true,
+                0
+        );
+        upsertPartnerProfile(
+                partnerPendingId,
+                "Khu nghỉ dưỡng Лаvender Đà Lạt",
+                "5801234567",
+                "Hồ Tuyền Lâm, Phường 4, Đà Lạt",
+                "0938111222",
+                "ACB",
+                "8899112233",
+                "PHAM QUOC BAO",
+                "PENDING",
+                null
+        );
+
+        Long partnerRejectedId = upsertUser(
+                "partner.rejected@mego.vn",
+                "Partner@123",
+                "Võ Thanh Tùng (Hồ sơ bị từ chối)",
+                "0977333444",
+                "PARTNER",
+                "ACTIVE",
+                true,
+                0
+        );
+        upsertPartnerProfile(
+                partnerRejectedId,
+                "Homestay Biển Xanh",
+                "0311223344",
+                "120 Thùy Vân, TP. Vũng Tàu",
+                "0977333444",
+                "MB Bank",
+                "999988887777",
+                "VO THANH TUNG",
+                "REJECTED",
+                "Chưa bổ sung đầy đủ giấy chứng nhận đủ điều kiện PCCC và giấy phép kinh doanh lưu trú."
+        );
+
+        // 3. Tài khoản ADMIN (Quản trị viên sàn MeGo)
+        upsertUser(
+                "admin@mego.vn",
+                "Admin@123",
+                "Quản trị viên Hệ thống MeGo",
+                "0909000111",
+                "ADMIN",
+                "ACTIVE",
+                true,
+                0
+        );
+
+        log.info("[ChatDataSeeder] Đã đồng bộ các tài khoản mẫu (CUSTOMER, PARTNER, ADMIN) để test.");
+    }
+
+    private Long upsertUser(
+            String email,
+            String rawPassword,
+            String fullName,
+            String phone,
+            String role,
+            String status,
+            boolean emailVerified,
+            int loyaltyPoints
+    ) {
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM auth_users WHERE email = ?", Integer.class, email);
+        if (count == null || count == 0) {
+            jdbcTemplate.update("""
+                    INSERT INTO auth_users
+                    (email, password_hash, full_name, phone, role, status, email_verified, loyalty_points, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+                    """,
+                    email,
+                    passwordEncoder.encode(rawPassword),
+                    fullName,
+                    phone,
+                    role,
+                    status,
+                    emailVerified,
+                    loyaltyPoints
+            );
+        }
+        return jdbcTemplate.queryForObject(
+                "SELECT id FROM auth_users WHERE email = ? LIMIT 1", Long.class, email);
+    }
+
+    private void upsertPartnerProfile(
+            Long userId,
+            String businessName,
+            String taxCode,
+            String address,
+            String contactPhone,
+            String bankName,
+            String bankAccountNumber,
+            String bankAccountHolder,
+            String approvalStatus,
+            String rejectReason
+    ) {
+        if (userId == null) return;
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM partner_profiles WHERE user_id = ?", Integer.class, userId);
+        if (count == null || count == 0) {
+            jdbcTemplate.update("""
+                    INSERT INTO partner_profiles
+                    (user_id, business_name, tax_code, address, contact_phone, bank_name, bank_account_number, bank_account_holder, commission_rate, approval_status, reject_reason, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 15.00, ?, ?, NOW(), NOW())
+                    """,
+                    userId,
+                    businessName,
+                    taxCode,
+                    address,
+                    contactPhone,
+                    bankName,
+                    bankAccountNumber,
+                    bankAccountHolder,
+                    approvalStatus,
+                    rejectReason
+            );
+        } else {
+            jdbcTemplate.update("""
+                    UPDATE partner_profiles
+                    SET approval_status = ?, reject_reason = ?, updated_at = NOW()
+                    WHERE user_id = ?
+                    """,
+                    approvalStatus,
+                    rejectReason,
+                    userId
+            );
         }
     }
 

@@ -13,6 +13,7 @@ import com.mego.backend.auth.internal.repository.EmailOtpCodeRepository;
 import com.mego.backend.auth.internal.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -54,6 +55,7 @@ public class AuthService {
     private final AuthenticationManager   authenticationManager;
     private final JwtProvider             jwtProvider;
     private final EmailService            emailService;
+    private final JdbcTemplate            jdbcTemplate;
 
     // -----------------------------------------------------------------------
     // ĐĂNG KÝ – Bước 1: Tạo tài khoản & gửi OTP
@@ -195,12 +197,29 @@ public class AuthService {
         String jwt = jwtProvider.generateToken(authentication);
         log.info("[AuthService] Đăng nhập thành công: {}", req.getEmail());
 
+        String approvalStatus = null;
+        if (user.getRole() == RoleName.PARTNER && user.getId() != null) {
+            try {
+                java.util.List<String> statuses = jdbcTemplate.queryForList(
+                        "SELECT approval_status FROM partner_profiles WHERE user_id = ? LIMIT 1",
+                        String.class,
+                        user.getId()
+                );
+                if (!statuses.isEmpty()) {
+                    approvalStatus = statuses.get(0);
+                }
+            } catch (Exception ex) {
+                log.debug("[AuthService] Không lấy được approval_status cho partner {}: {}", user.getEmail(), ex.getMessage());
+            }
+        }
+
         return AuthResponse.builder()
                 .jwt(jwt)
                 .message("Đăng nhập thành công!")
                 .role(user.getRole())
                 .email(user.getEmail())
                 .fullName(user.getFullName())
+                .approvalStatus(approvalStatus)
                 .build();
     }
 

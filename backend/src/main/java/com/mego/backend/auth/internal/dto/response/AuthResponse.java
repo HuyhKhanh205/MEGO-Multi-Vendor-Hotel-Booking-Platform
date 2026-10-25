@@ -25,4 +25,7 @@ public class AuthResponse {
 
     /** Tên đầy đủ của user. */
     private String fullName;
+
+    /** Trạng thái duyệt hồ sơ đối tác (APPROVED / PENDING / REJECTED / SUSPENDED) nếu role là PARTNER. */
+    private String approvalStatus;
 }
