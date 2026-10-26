@@ -34,10 +34,11 @@ export const BookingSummaryCard = ({
   nightsCount,
   onCheckInChange,
   onCheckOutChange,
+  onGuestsChange,
+  onRoomsChange,
   onScrollToRooms,
 }: BookingSummaryCardProps) => {
-  const estimatedTotal = startingPrice * nightsCount;
-
+ const estimatedTotal = startingPrice * nightsCount * rooms;
   return (
     <aside className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 space-y-5">
       {/* ── 1. Top Price Block ── */}
@@ -97,17 +98,71 @@ export const BookingSummaryCard = ({
             />
           </div>
         </div>
+        
+  {/* Guests & Rooms Selector */}
+<div className="pt-3 border-t border-slate-200/60 space-y-3">
+  {/* Người lớn */}
+  <div className="flex items-center justify-between gap-3 text-xs">
+    <span className="text-slate-500 flex items-center gap-1">
+      <Users className="w-3.5 h-3.5 text-slate-400" />
+      Người lớn
+    </span>
 
-        {/* Guests & Rooms Preview */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-200/60 text-xs">
-          <span className="text-slate-500 flex items-center gap-1">
-            <Users className="w-3.5 h-3.5 text-slate-400" />
-            Khách & Phòng:
-          </span>
-          <span className="font-bold text-slate-800">
-            {guests} người lớn • {rooms} phòng
-          </span>
-        </div>
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        onClick={() => onGuestsChange(Math.max(1, guests - 1))}
+        disabled={guests <= 1}
+        className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center font-bold disabled:opacity-30 hover:bg-slate-100"
+      >
+        -
+      </button>
+
+      <span className="w-4 text-center font-bold text-slate-800">
+        {guests}
+      </span>
+
+      <button
+        type="button"
+        onClick={() => onGuestsChange(guests + 1)}
+        className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center font-bold hover:bg-slate-100"
+      >
+        +
+      </button>
+    </div>
+  </div>
+
+  {/* Số phòng */}
+  <div className="flex items-center justify-between gap-3 text-xs">
+    <span className="text-slate-500 flex items-center gap-1">
+      <Users className="w-3.5 h-3.5 text-slate-400" />
+      Số phòng
+    </span>
+
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        onClick={() => onRoomsChange(Math.max(1, rooms - 1))}
+        disabled={rooms <= 1}
+        className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center font-bold disabled:opacity-30 hover:bg-slate-100"
+      >
+        -
+      </button>
+
+      <span className="w-4 text-center font-bold text-slate-800">
+        {rooms}
+      </span>
+
+      <button
+        type="button"
+        onClick={() => onRoomsChange(rooms + 1)}
+        className="w-7 h-7 rounded-lg border border-slate-200 flex items-center justify-center font-bold hover:bg-slate-100"
+      >
+        +
+      </button>
+    </div>
+  </div>
+</div>
       </div>
 
       {/* ── 3. Total Calculation Preview ── */}

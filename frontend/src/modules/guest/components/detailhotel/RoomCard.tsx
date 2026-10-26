@@ -196,32 +196,6 @@ export const RoomCard = ({
 
           {/* Quantity Selector + CTA */}
           <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
-            {!isSoldOut && (
-              <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50 p-0.5">
-                <button
-                  type="button"
-                  onClick={handleDecrease}
-                  disabled={quantity <= 1}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-slate-700 hover:bg-white disabled:opacity-30 transition-colors"
-                  aria-label="Giảm số lượng phòng"
-                >
-                  -
-                </button>
-                <span className="w-8 text-center text-xs font-bold text-slate-900">
-                  {quantity}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleIncrease}
-                  disabled={quantity >= maxAvailable}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-slate-700 hover:bg-white disabled:opacity-30 transition-colors"
-                  aria-label="Tăng số lượng phòng"
-                >
-                  +
-                </button>
-              </div>
-            )}
-
             <button
               type="button"
               disabled={isSoldOut}
