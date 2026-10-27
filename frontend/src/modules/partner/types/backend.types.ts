@@ -153,3 +153,102 @@ export interface RoomDto {
 
 /** POST /api/partner/room-types/{id}/rooms, PUT /api/partner/rooms/{id} */
 export type RoomRequest = Pick<RoomDto, "roomNumber" | "floor" | "status">;
+
+// ─── Tồn kho & giá theo ngày (inventory_room_inventories) ───────────────────
+
+export interface RoomInventoryDto {
+  id: number;
+  roomTypeId: number;
+  /** yyyy-MM-dd */
+  date: string;
+  totalRooms: number;
+  availableRooms: number;
+  heldRooms: number;
+  /** Giá riêng của ngày; null = dùng basePrice của hạng phòng */
+  price: number | null;
+  closed: boolean;
+  /** @Version của entity: gửi kèm khi cập nhật để tránh ghi đè (409 nếu lệch) */
+  version: number;
+  /** Giá áp dụng thực tế = price ?? basePrice (backend tính sẵn cho tiện hiển thị) */
+  effectivePrice: number;
+}
+
+/** PATCH /api/partner/inventory/{id} */
+export interface InventoryUpdateRequest {
+  price?: number | null;
+  availableRooms?: number;
+  closed?: boolean;
+  version: number;
+}
+
+export type PriceAdjustMode = "SET" | "PERCENT" | "AMOUNT" | "RESET";
+export type AllotmentMode = "SET" | "REDUCE";
+
+/** POST /api/partner/hotels/{hotelId}/inventory/bulk */
+export interface InventoryBulkRequest {
+  roomTypeIds: number[];
+  /** yyyy-MM-dd */
+  from: string;
+  to: string;
+  /** 1 = Thứ Hai … 7 = Chủ nhật (ISO-8601) */
+  weekdays: number[];
+  price?: { mode: PriceAdjustMode; value: number };
+  allotment?: { mode: AllotmentMode; value: number };
+  closed?: boolean;
+}
+
+export interface InventoryBulkResult {
+  updatedCount: number;
+}
+
+// ─── Nhân viên & phân quyền (partner_staffs) ─────────────────────────────────
+
+/** Khớp enum UserStatus của backend */
+export type UserStatus = "ACTIVE" | "LOCKED" | "PENDING_VERIFICATION";
+
+/** Giá trị lưu vào cột partner_staffs.position */
+export type StaffPosition = "FRONT_DESK" | "DUTY_MANAGER" | "ACCOUNTANT" | "HOUSEKEEPING";
+
+/** Đề xuất enum PartnerPermission cho backend (bảng partner_staff_permissions) */
+export type PartnerPermission =
+  | "BOOKING_VIEW"
+  | "BOOKING_CHECKIN_CHECKOUT"
+  | "BOOKING_GUEST_NOTES"
+  | "BOOKING_SURCHARGE"
+  | "BOOKING_CANCEL_NOSHOW"
+  | "RATE_VIEW"
+  | "RATE_EDIT"
+  | "INVENTORY_STOP_SELL"
+  | "PROMOTION_MANAGE"
+  | "FINANCE_REPORT_VIEW"
+  | "FINANCE_PAYOUT"
+  | "FINANCE_INVOICE"
+  | "REVIEW_VIEW"
+  | "REVIEW_REPLY"
+  | "REVIEW_REPORT"
+  | "HOTEL_INFO_EDIT";
+
+export interface PartnerStaffDto {
+  id: number;
+  userId: number;
+  fullName: string;
+  email: string;
+  phone: string | null;
+  position: StaffPosition;
+  /** null = được làm việc ở tất cả khách sạn của đối tác */
+  hotelId: number | null;
+  status: UserStatus;
+  /** ISO datetime */
+  lastLoginAt: string | null;
+  permissions: PartnerPermission[];
+}
+
+/** POST /api/partner/staff, PUT /api/partner/staff/{id} (email không đổi khi sửa) */
+export interface StaffRequest {
+  fullName: string;
+  email: string;
+  phone: string | null;
+  position: StaffPosition;
+  hotelId: number | null;
+  permissions?: PartnerPermission[];
+}

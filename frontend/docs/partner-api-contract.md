@@ -74,6 +74,75 @@ Gợi ý: đối tác sửa thông tin hiển thị thì có thể chuyển `app
 | PUT | `/api/partner/rooms/{id}` | `RoomRequest` | `RoomDto` |
 | DELETE | `/api/partner/rooms/{id}` | – | 204 |
 
+## Giá & tồn kho theo ngày (màn Cấu hình giá phòng, Tồn kho & Đóng/Mở bán)
+
+Dùng bảng `inventory_room_inventories` (entity `RoomInventory`), mỗi dòng là 1 hạng phòng × 1 đêm.
+
+| Method | Path | Request | Response |
+|---|---|---|---|
+| GET | `/api/partner/hotels/{hotelId}/inventory?from=yyyy-MM-dd&to=yyyy-MM-dd` | – | `RoomInventoryDto[]`, đủ mọi hạng phòng × mọi ngày trong khoảng (tối đa 366 ngày) |
+| PATCH | `/api/partner/inventory/{id}` | `InventoryUpdateRequest` (`price?`, `availableRooms?`, `closed?`, `version`) | `RoomInventoryDto` |
+| POST | `/api/partner/hotels/{hotelId}/inventory/bulk` | `InventoryBulkRequest` | `{ updatedCount }` |
+
+**`RoomInventoryDto`:**
+- các trường của entity: `id`, `roomTypeId`, `date`, `totalRooms`, `availableRooms`, `heldRooms`, `price` (null = dùng `basePrice` của hạng phòng), `closed`, `version`;
+- thêm `effectivePrice = price ?? roomType.basePrice` để frontend hiển thị.
+- **Ngày chưa có dòng trong DB:** backend trả dòng mặc định (`totalRooms = availableRooms = roomType.totalRooms`, `price = null`, `closed = false`), hoặc tạo sẵn khi tạo hạng phòng. Frontend cần đủ ô để vẽ lịch.
+
+**Khóa lạc quan:** PATCH gửi kèm `version` đang hiển thị. Lệch với DB (`@Version`) thì trả **409**; frontend báo "Dữ liệu vừa được cập nhật bởi người khác" và tải lại.
+
+**`InventoryBulkRequest`:**
+- phạm vi: `roomTypeIds[]`, `from`, `to`, `weekdays[]` (1 = Thứ Hai … 7 = Chủ nhật, ISO-8601);
+- `price?: { mode, value }`:
+  - `SET`: đặt giá = value;
+  - `PERCENT`: giá hiện tại × (1 + value/100), làm tròn 1.000 ₫, value từ −90 đến 300;
+  - `AMOUNT`: giá hiện tại + value;
+  - `RESET`: `price = null`.
+- `allotment?: { mode, value }`: `SET` đặt `availableRooms = min(value, totalRooms)`; `REDUCE` bớt value phòng (không âm).
+- `closed?: boolean`: khóa / mở bán.
+- Bỏ qua ngày đã qua và các thứ không chọn. Làm trong 1 transaction: một ô vi phạm thì trả 400, không ô nào bị đổi.
+
+**Ràng buộc (frontend đã kiểm tra, backend nên kiểm tra lại):**
+- giá ≥ 50.000 ₫;
+- `0 ≤ availableRooms ≤ totalRooms`;
+- không sửa ngày đã qua;
+- khoảng ngày ≤ 366.
+
+## Nhân viên & phân quyền (màn Nhân viên & Phân quyền)
+
+Chỉ role `PARTNER` (chủ cơ sở) được gọi; `PARTNER_STAFF` nhận **403**. Mọi thao tác lọc theo `partner_profile` của JWT.
+
+| Method | Path | Request | Response |
+|---|---|---|---|
+| GET | `/api/partner/staff` | – | `PartnerStaffDto[]` |
+| GET | `/api/partner/staff/{id}` | – | `PartnerStaffDto` |
+| POST | `/api/partner/staff` | `StaffRequest` (`fullName`, `email`, `phone`, `position`, `hotelId`, `permissions?`) | `PartnerStaffDto`; **400** nếu email đã tồn tại (message có chữ "email") |
+| PUT | `/api/partner/staff/{id}` | `StaffRequest` (bỏ qua `email`) | `PartnerStaffDto` |
+| PATCH | `/api/partner/staff/{id}/status` | `{ status: "ACTIVE" \| "LOCKED" }` | `PartnerStaffDto` |
+| POST | `/api/partner/staff/{id}/invite` | – | 204; gửi lại email mời (chỉ khi `PENDING_VERIFICATION`) |
+| DELETE | `/api/partner/staff/{id}` | – | 204 |
+| PUT | `/api/partner/staff/{id}/permissions` | `{ permissions: PartnerPermission[] }` | `PartnerStaffDto` |
+
+**`PartnerStaffDto`:** `id`, `userId`, `fullName`, `email`, `phone` (lấy từ `User`), `position`, `hotelId` (null = mọi cơ sở), `status` (`UserStatus` của User), `lastLoginAt`, `permissions[]`.
+
+**Luồng mời nhân viên (POST):**
+- Tạo `User` role `PARTNER_STAFF`, `status = PENDING_VERIFICATION`, chưa có mật khẩu.
+- Tạo `PartnerStaff` gắn `partnerProfile` của chủ cơ sở.
+- Gửi email có link đặt mật khẩu; nhân viên đặt xong thì chuyển `ACTIVE`.
+- Frontend không gửi mật khẩu. Không tạo được trạng thái `ACTIVE` trực tiếp từ `PENDING_VERIFICATION`.
+
+**Đề xuất bổ sung ở backend:**
+- `position`: lưu giá trị enum `FRONT_DESK` / `DUTY_MANAGER` / `ACCOUNTANT` / `HOUSEKEEPING`.
+- Enum `PartnerPermission` (16 giá trị, xem `backend.types.ts`) và bảng `partner_staff_permissions(staff_id, permission)` (`@ElementCollection`).
+- Quyền chỉ dành cho một số vai trò, backend từ chối (400) nếu gửi sai:
+  - `BOOKING_CANCEL_NOSHOW`: chỉ Quản lý ca;
+  - `FINANCE_REPORT_VIEW`: Kế toán, Quản lý ca;
+  - `FINANCE_INVOICE`: chỉ Kế toán;
+  - `FINANCE_PAYOUT`: không cấp cho nhân viên (chỉ chủ cơ sở).
+- Đổi vai trò (PUT) thì tự gỡ các quyền không còn hợp lệ.
+- Cần thêm `GET /api/partner/me` trả role + `permissions` của người đang đăng nhập để ẩn menu theo quyền (frontend chưa làm phần này).
+- `lastLoginAt`: cập nhật ở `/api/auth/login` (User chưa có cột này).
+
 ## Tổng quan (Dashboard)
 
 | Method | Path | Request | Response |
@@ -91,3 +160,4 @@ Gợi ý: đối tác sửa thông tin hiển thị thì có thể chuyển `app
 - **Cột `description` của hạng phòng đang chứa `frontendRoomId|imageUrl`**, nên chuyển ảnh sang bảng `inventory_room_type_images`.
 - **Tên "Khu nghỉ dưỡng Лаvender Đà Lạt" có chữ Kirin** (Л, а).
 - **Seeder chưa tạo phòng vật lý** (`inventory_rooms`) nên mock frontend tự sinh.
+- **Seeder chưa sinh `inventory_room_inventories` và `partner_staffs`.** Mock frontend tự sinh tồn kho theo ngày (chỉ lưu ô bị sửa) và 8 nhân viên mẫu (6 của `partner@sunrise-danang.vn`, 2 của `partner@mego.vn`).

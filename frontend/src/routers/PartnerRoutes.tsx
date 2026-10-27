@@ -12,6 +12,10 @@ const PartnerApplicationStatusPage = lazy(() => import("../modules/partner/pages
 const PartnerHome = lazy(() => import("../modules/partner/pages/PartnerHome"));
 const PartnerHotelInfoPage = lazy(() => import("../modules/partner/pages/PartnerHotelInfoPage"));
 const PartnerRoomTypesPage = lazy(() => import("../modules/partner/pages/PartnerRoomTypesPage"));
+const PartnerRatesPage = lazy(() => import("../modules/partner/pages/PartnerRatesPage"));
+const PartnerInventoryPage = lazy(() => import("../modules/partner/pages/PartnerInventoryPage"));
+const PartnerStaffPage = lazy(() => import("../modules/partner/pages/PartnerStaffPage"));
+const PartnerStaffPermissionsPage = lazy(() => import("../modules/partner/pages/PartnerStaffPermissionsPage"));
 const PartnerComingSoon = lazy(() => import("../modules/partner/pages/PartnerComingSoon"));
 
 const partnerFallback = (
@@ -48,6 +52,10 @@ export const partnerRoutes: RouteObject[] = [
       { path: "dashboard", element: page(<PartnerHome />) },
       { path: "hotel", element: page(<PartnerHotelInfoPage />) },
       { path: "room-types", element: page(<PartnerRoomTypesPage />) },
+      { path: "rates", element: page(<PartnerRatesPage />) },
+      { path: "inventory", element: page(<PartnerInventoryPage />) },
+      { path: "staff", element: page(<PartnerStaffPage />) },
+      { path: "staff/:staffId/permissions", element: page(<PartnerStaffPermissionsPage />) },
       { path: "*", element: page(<PartnerComingSoon />) },
     ],
   },

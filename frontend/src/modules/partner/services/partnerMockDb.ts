@@ -11,7 +11,8 @@ import {
   SEED_ROOM_TYPES,
   SEED_ROOMS,
 } from "../data/backendSeedMock";
-import type { HotelDto, HotelPolicyDto, RoomDto, RoomTypeDto } from "../types/backend.types";
+import { createSeedStaff, type MockStaffRecord } from "../data/partnerOpsSeedMock";
+import type { HotelDto, HotelPolicyDto, RoomDto, RoomInventoryDto, RoomTypeDto } from "../types/backend.types";
 import { PartnerApiError } from "./partnerHttp";
 
 const STORAGE_KEY = "mego_partner_mock_db_v1";
@@ -21,6 +22,9 @@ export interface PartnerMockDb {
   policies: Record<number, HotelPolicyDto>;
   roomTypes: RoomTypeDto[];
   rooms: RoomDto[];
+  /** Chỉ chứa ô tồn kho đã bị sửa, khóa "roomTypeId:yyyy-MM-dd"; ô khác sinh tự động */
+  inventory: Record<string, RoomInventoryDto>;
+  staff: MockStaffRecord[];
   nextId: number;
 }
 
@@ -29,13 +33,19 @@ const createSeedDb = (): PartnerMockDb => ({
   policies: structuredClone(SEED_POLICIES),
   roomTypes: structuredClone(SEED_ROOM_TYPES),
   rooms: structuredClone(SEED_ROOMS),
+  inventory: {},
+  staff: createSeedStaff(),
   nextId: 10_000,
 });
 
 export const readMockDb = (): PartnerMockDb => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as PartnerMockDb;
+    if (raw) {
+      // DB tạo từ phiên bản trước chưa có tồn kho / nhân viên → bổ sung, giữ nguyên dữ liệu đã sửa
+      const db = JSON.parse(raw) as Partial<PartnerMockDb>;
+      return { ...createSeedDb(), ...db, inventory: db.inventory ?? {}, staff: db.staff ?? createSeedStaff() } as PartnerMockDb;
+    }
   } catch {
     // Dữ liệu hỏng hoặc storage không khả dụng → dùng seed
   }
@@ -59,10 +69,11 @@ export const nextMockId = (db: PartnerMockDb): number => {
   return db.nextId;
 };
 
+export const currentUserEmail = (): string => store.getState().auth.user?.email?.toLowerCase() ?? "";
+
 /** Khách sạn mà tài khoản đang đăng nhập được quản lý (backend sẽ lọc theo partner_profile của JWT). */
 export const ownedHotelIds = (): number[] => {
-  const email = store.getState().auth.user?.email?.toLowerCase() ?? "";
-  return MOCK_HOTEL_OWNERSHIP[email] ?? [];
+  return MOCK_HOTEL_OWNERSHIP[currentUserEmail()] ?? [];
 };
 
 /** Giả lập kiểm tra quyền sở hữu như backend: không phải của mình → 404. */
