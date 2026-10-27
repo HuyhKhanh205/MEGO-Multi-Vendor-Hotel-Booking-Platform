@@ -21,7 +21,7 @@ import StepRepresentative from "../components/onboarding/StepRepresentative";
 import PartnerPublicShell from "../components/public/PartnerPublicShell";
 import { APPLICATION_STATUS_LABELS, EMPTY_ONBOARDING_FORM, REQUIRED_DOCUMENTS } from "../data/onboardingMock";
 import onboardingApi, { OnboardingFieldError } from "../services/onboardingApi";
-import type { ApplicationDocument, DocumentCategory, OnboardingForm, PartnerApplication } from "../types/partner.types";
+import type { DocumentCategory, OnboardingForm, PartnerApplication } from "../types/partner.types";
 
 const STEP_COPY = [
   { title: "Thông tin người đại diện quản trị", description: "Đầu mối chịu trách nhiệm pháp lý và tiếp nhận thông báo hợp đồng điện tử." },
@@ -84,13 +84,8 @@ export const PartnerRegisterPage = () => {
     }
 
     setSubmitError(null);
-    const documents: ApplicationDocument[] = REQUIRED_DOCUMENTS.map((doc) => {
-      const file = files[doc.category] as File;
-      return { category: doc.category, fileName: file.name, size: file.size, mimeType: file.type };
-    });
-
     try {
-      const application = await onboardingApi.submitApplication(values, documents);
+      const application = await onboardingApi.submitApplication(values, files);
       toast.success(`Đã gửi hồ sơ ${application.code}. MeGo sẽ phản hồi trong 24 giờ làm việc.`);
       navigate("/partner/register/status");
     } catch (error) {

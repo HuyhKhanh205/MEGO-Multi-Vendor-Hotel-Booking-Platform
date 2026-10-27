@@ -16,7 +16,7 @@ export const SubmittedDocumentsCard = ({ application }: { application: PartnerAp
   const states = application.documents.map((document) => getDocumentState(document, application.status));
   const validCount = states.filter((state) => state === "valid").length;
   const total = application.documents.length;
-  const summary = application.status === "PENDING_REVIEW" ? `${total} tài liệu đang thẩm định` : `${validCount}/${total} tài liệu hợp lệ`;
+  const summary = application.status === "PENDING" ? `${total} tài liệu đang thẩm định` : `${validCount}/${total} tài liệu hợp lệ`;
 
   return (
     <section className="rounded-3xl border border-slate-200/80 bg-white p-5 sm:p-6">

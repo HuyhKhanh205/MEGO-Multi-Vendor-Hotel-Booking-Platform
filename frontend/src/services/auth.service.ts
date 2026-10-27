@@ -63,6 +63,12 @@ export interface AuthResponse {
   partnerStatus?: PartnerApprovalStatus;
 }
 
+/** Trạng thái duyệt của đối tác từ AuthResponse (backend trả approvalStatus; giữ tương thích status/partnerStatus). */
+export const normalizeApprovalStatus = (res: AuthResponse): PartnerApprovalStatus | undefined => {
+  const raw = (res.approvalStatus ?? res.partnerStatus ?? res.status)?.toString().toUpperCase();
+  return raw === "PENDING" || raw === "APPROVED" || raw === "REJECTED" || raw === "SUSPENDED" ? raw : undefined;
+};
+
 /** Khớp MessageResponse phía backend */
 export interface MessageResponse {
   message: string;
@@ -201,6 +207,7 @@ export const AuthService = {
       name: res.fullName,
       email: res.email,
       role: res.role,
+      ...(res.role === "PARTNER" ? { approvalStatus: normalizeApprovalStatus(res) } : {}),
     };
   },
 

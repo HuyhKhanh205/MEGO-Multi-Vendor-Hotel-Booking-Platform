@@ -21,8 +21,11 @@ import {
   AuthService,
   AuthApiError,
   getPostLoginPath,
+  normalizeApprovalStatus,
   type BackendRole,
 } from "../../../../services/auth.service";
+
+const PARTNER_APPLICATION_STATUS_PATH = "/partner/register/status";
 
 export interface LoginFormProps {
   /** Tiêu đề form (mặc định dùng i18n của trang đăng nhập) */
@@ -153,33 +156,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         return;
       }
 
-      // 2. Với PARTNER: kiểm tra trạng thái duyệt tài khoản (PENDING / REJECTED / APPROVED)
-      if (isPartnerPortal || res.role === "PARTNER") {
-        const partnerStatus = (
-          res.approvalStatus ??
-          res.partnerStatus ??
-          res.status
-        )?.toUpperCase();
-
-        if (partnerStatus === "PENDING") {
-          const pendingMsg = t("auth.login.errors.partnerPending");
-          setInternalError(pendingMsg);
-          toast.error(pendingMsg, { position: "top-right", autoClose: 3000 });
-          return;
-        }
-
-        if (partnerStatus === "REJECTED") {
-          const rejectedMsg = t("auth.login.errors.partnerRejected");
-          setInternalError(rejectedMsg);
-          toast.error(rejectedMsg, { position: "top-right", autoClose: 3000 });
-          return;
-        }
-
-        // Chỉ trạng thái APPROVED mới được phép truy cập (nếu API có trả trường trạng thái duyệt)
-        if (partnerStatus && partnerStatus !== "APPROVED") {
-          const invalidMsg = t("auth.login.errors.invalidCredentials");
-          setInternalError(invalidMsg);
-          toast.error(invalidMsg, { position: "top-right", autoClose: 3000 });
+      // 2. Với PARTNER: hồ sơ chưa được duyệt (PENDING / REJECTED / SUSPENDED) vẫn cho đăng nhập
+      //    nhưng chỉ được vào trang Theo dõi hồ sơ; trang quản trị bị chặn bởi route guard.
+      if (isPartnerPortal && res.role === "PARTNER") {
+        const partnerStatus = normalizeApprovalStatus(res);
+        if (partnerStatus !== "APPROVED") {
+          const statusMsg =
+            partnerStatus === "PENDING"
+              ? t("auth.login.errors.partnerPending")
+              : partnerStatus === "REJECTED"
+                ? t("auth.login.errors.partnerRejected")
+                : "Hồ sơ đối tác chưa được kích hoạt. Vui lòng xem chi tiết trạng thái hồ sơ.";
+          toast.info(statusMsg, { position: "top-right", autoClose: 4000 });
+          dispatch(loginSuccess({ user: AuthService.toAuthUser(res), token: res.jwt }));
+          navigate(PARTNER_APPLICATION_STATUS_PATH, { replace: true });
           return;
         }
       }

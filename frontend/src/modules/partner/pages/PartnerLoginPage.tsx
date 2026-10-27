@@ -28,12 +28,16 @@ export const PartnerLoginPage: React.FC = () => {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const redirectTo = getSafePartnerRedirect(searchParams.get("redirect"));
 
-  // Nếu đã đăng nhập đúng role PARTNER thì tự chuyển về dashboard
+  // Đã đăng nhập ở cổng đối tác: nhân viên / đối tác đã duyệt về trang quản trị,
+  // đối tác chưa được duyệt về trang Theo dõi hồ sơ.
   useEffect(() => {
-    if (isAuthenticated && user?.role === "PARTNER") {
+    if (!isAuthenticated) return;
+    if (user?.role === "PARTNER_STAFF" || (user?.role === "PARTNER" && user.approvalStatus === "APPROVED")) {
       navigate(redirectTo, { replace: true });
+    } else if (user?.role === "PARTNER") {
+      navigate("/partner/register/status", { replace: true });
     }
-  }, [isAuthenticated, user?.role, navigate, redirectTo]);
+  }, [isAuthenticated, user?.role, user?.approvalStatus, navigate, redirectTo]);
 
   useEffect(() => {
     document.title = t("auth.partnerLogin.pageTitle");
@@ -130,7 +134,7 @@ export const PartnerLoginPage: React.FC = () => {
           <LoginForm
             title={t("auth.partnerLogin.title")}
             subtitle={t("auth.partnerLogin.subtitle")}
-            allowedRole="PARTNER"
+            allowedRole={["PARTNER", "PARTNER_STAFF"]}
             redirectTo={redirectTo}
             showRegisterLink={true}
             registerLink="/partner/register"

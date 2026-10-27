@@ -34,13 +34,16 @@ interface TextFieldProps {
   inputMode?: "text" | "numeric" | "tel" | "email";
   autoComplete?: string;
   trailing?: ReactNode;
+  /** Tiền tố id của input (mặc định "onboarding") để không trùng id giữa các form */
+  idPrefix?: string;
+  step?: string;
 }
 
 /** Ô nhập liệu gắn với Formik (dùng trong <Formik>). */
-export const TextField = ({ name, label, icon: Icon, required, placeholder, hint, type = "text", inputMode, autoComplete, trailing }: TextFieldProps) => {
+export const TextField = ({ name, label, icon: Icon, required, placeholder, hint, type = "text", inputMode, autoComplete, trailing, idPrefix = "onboarding", step }: TextFieldProps) => {
   const [field, meta] = useField<string>(name);
   const error = meta.touched ? meta.error : undefined;
-  const id = `onboarding-${name}`;
+  const id = `${idPrefix}-${name}`;
 
   return (
     <FieldShell id={id} label={label} required={required} hint={hint} error={error}>
@@ -50,6 +53,7 @@ export const TextField = ({ name, label, icon: Icon, required, placeholder, hint
           {...field}
           id={id}
           type={type}
+          step={step}
           inputMode={inputMode}
           autoComplete={autoComplete}
           placeholder={placeholder}

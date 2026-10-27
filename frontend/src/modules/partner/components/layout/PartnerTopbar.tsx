@@ -10,9 +10,11 @@ import NotificationsNoneOutlined from "@mui/icons-material/NotificationsNoneOutl
 import PersonOutlineOutlined from "@mui/icons-material/PersonOutlineOutlined";
 import SearchOutlined from "@mui/icons-material/SearchOutlined";
 import StarRounded from "@mui/icons-material/StarRounded";
-import { MOCK_NOTIFICATIONS, PARTNER_DEMO_ACCOUNT } from "../../data/partnerMock";
+import { MOCK_NOTIFICATIONS } from "../../data/partnerMock";
 import { useClickOutside } from "../../hooks/useClickOutside";
-import type { PartnerHotel } from "../../types/partner.types";
+import { useAppSelector } from "../../../../stores/store";
+import type { HotelSummaryDto } from "../../types/backend.types";
+import { usePartnerHotel } from "./hotelContext";
 
 type OpenMenu = "hotel" | "notifications" | "account" | null;
 
@@ -22,9 +24,17 @@ interface PartnerTopbarProps {
   onLogout: () => void;
 }
 
-const HotelBadge = ({ hotel }: { hotel: PartnerHotel }) => (
-  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-extrabold text-[#004CCD]">
-    {hotel.name.split(" ").slice(0, 2).map((word) => word[0]).join("")}
+const initials = (text: string, take: "first" | "last") => {
+  const words = text.split(" ").filter(Boolean);
+  const picked = take === "first" ? words.slice(0, 2) : words.slice(-2);
+  return picked.map((word) => word[0]).join("").toUpperCase();
+};
+
+const ROLE_TITLES: Record<string, string> = { PARTNER: "Chủ cơ sở lưu trú", PARTNER_STAFF: "Nhân viên khách sạn" };
+
+const HotelBadge = ({ hotel }: { hotel: HotelSummaryDto }) => (
+  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-extrabold text-[#004CCD] dark:text-blue-300">
+    {initials(hotel.name, "first")}
   </span>
 );
 
@@ -44,7 +54,8 @@ export const PartnerTopbar = ({ userName, onOpenSidebar, onLogout }: PartnerTopb
 
   const toggle = (menu: Exclude<OpenMenu, null>) => setOpenMenu((current) => (current === menu ? null : menu));
   const unreadCount = notifications.filter((item) => item.unread).length;
-  const hotel = PARTNER_DEMO_ACCOUNT.hotels[0];
+  const { hotels, selectedHotel: hotel, selectHotel, loading: hotelsLoading } = usePartnerHotel();
+  const user = useAppSelector((state) => state.auth.user);
 
   const handleSearch = (event: FormEvent) => {
     event.preventDefault();
@@ -65,32 +76,44 @@ export const PartnerTopbar = ({ userName, onOpenSidebar, onLogout }: PartnerTopb
           type="button"
           onClick={() => toggle("hotel")}
           aria-expanded={openMenu === "hotel"}
-          className="flex min-w-0 items-center gap-2.5 rounded-xl border border-slate-200 py-1.5 pl-1.5 pr-2.5 text-left hover:bg-slate-50"
+          disabled={!hotel}
+          className="flex min-w-0 items-center gap-2.5 rounded-xl border border-slate-200 py-1.5 pl-1.5 pr-2.5 text-left hover:bg-slate-50 disabled:cursor-default"
         >
-          <HotelBadge hotel={hotel} />
-          <span className="hidden min-w-0 sm:block">
-            <span className="flex items-center gap-1 truncate text-sm font-bold text-slate-900">
-              {hotel.name}
-              <span className="flex text-amber-400" aria-label={`${hotel.stars} sao`}>
-                {Array.from({ length: hotel.stars }, (_, index) => <StarRounded key={index} sx={{ fontSize: 13 }} />)}
+          {hotel ? (
+            <>
+              <HotelBadge hotel={hotel} />
+              <span className="hidden min-w-0 sm:block">
+                <span className="flex items-center gap-1 truncate text-sm font-bold text-slate-900">
+                  <span className="max-w-[220px] truncate">{hotel.name}</span>
+                  <span className="flex text-amber-400" aria-label={`${hotel.starRating} sao`}>
+                    {Array.from({ length: hotel.starRating }, (_, index) => <StarRounded key={index} sx={{ fontSize: 13 }} />)}
+                  </span>
+                </span>
+                <span className="block truncate text-[11px] text-slate-500">Mã CS: #{hotel.id} • {hotel.destinationName ?? "Chưa có điểm đến"}</span>
               </span>
-            </span>
-            <span className="block truncate text-[11px] text-slate-500">Mã CS: #{hotel.code} • {hotel.city}</span>
-          </span>
+            </>
+          ) : (
+            <span className="px-2 text-sm text-slate-500">{hotelsLoading ? "Đang tải khách sạn..." : "Chưa có khách sạn"}</span>
+          )}
           <KeyboardArrowDownOutlined sx={{ fontSize: 18 }} className="text-slate-400" />
         </button>
         {openMenu === "hotel" && (
-          <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl border border-slate-100 bg-white p-2 shadow-xl">
-            <p className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">Cơ sở bạn quản lý</p>
-            {PARTNER_DEMO_ACCOUNT.hotels.map((item) => (
-              <div key={item.id} className="flex items-center gap-3 rounded-xl bg-blue-50/60 px-3 py-2">
+          <div className="absolute left-0 top-full mt-2 w-80 rounded-2xl border border-slate-100 bg-white p-2 shadow-xl">
+            <p className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">Cơ sở bạn quản lý ({hotels.length})</p>
+            {hotels.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => { selectHotel(item.id); close(); }}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left ${item.id === hotel?.id ? "bg-blue-50/60" : "hover:bg-slate-50"}`}
+              >
                 <HotelBadge hotel={item} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-semibold text-slate-900">{item.name}</span>
-                  <span className="block text-[11px] text-slate-500">#{item.code} • {item.city}</span>
+                  <span className="block text-[11px] text-slate-500">#{item.id} • {item.destinationName ?? "—"}</span>
                 </span>
-                <CheckRounded sx={{ fontSize: 18 }} className="text-[#1677FF]" />
-              </div>
+                {item.id === hotel?.id && <CheckRounded sx={{ fontSize: 18 }} className="text-[#1677FF]" />}
+              </button>
             ))}
             <button
               type="button"
@@ -169,10 +192,10 @@ export const PartnerTopbar = ({ userName, onOpenSidebar, onLogout }: PartnerTopb
           aria-expanded={openMenu === "account"}
           className="flex items-center gap-2 rounded-xl py-1 pl-1 pr-2 hover:bg-slate-100"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#004CCD] text-xs font-bold text-white">{PARTNER_DEMO_ACCOUNT.avatarInitials}</span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#004CCD] text-xs font-bold text-white">{initials(userName, "last")}</span>
           <span className="hidden text-left xl:block">
             <span className="block whitespace-nowrap text-sm font-bold text-slate-900">{userName}</span>
-            <span className="block whitespace-nowrap text-[11px] text-slate-500">{PARTNER_DEMO_ACCOUNT.title}</span>
+            <span className="block whitespace-nowrap text-[11px] text-slate-500">{ROLE_TITLES[user?.role ?? ""] ?? "Đối tác MeGo"}</span>
           </span>
           <KeyboardArrowDownOutlined sx={{ fontSize: 18 }} className="hidden text-slate-400 xl:block" />
         </button>
@@ -180,7 +203,7 @@ export const PartnerTopbar = ({ userName, onOpenSidebar, onLogout }: PartnerTopb
           <div className="absolute right-0 top-full mt-2 w-60 rounded-2xl border border-slate-100 bg-white p-2 shadow-xl">
             <div className="border-b border-slate-100 px-3 pb-3 pt-1">
               <p className="text-sm font-bold text-slate-900">{userName}</p>
-              <p className="truncate text-xs text-slate-500">{PARTNER_DEMO_ACCOUNT.email}</p>
+              <p className="truncate text-xs text-slate-500">{user?.email}</p>
             </div>
             <button
               type="button"

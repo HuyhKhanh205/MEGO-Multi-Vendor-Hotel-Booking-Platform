@@ -1,6 +1,5 @@
 import type {
   DailyTrendPoint,
-  PartnerAccount,
   PartnerNotification,
   RecentBooking,
   RoomStatusSummary,
@@ -13,28 +12,19 @@ export const PARTNER_HOTLINE_HREF = "tel:19008888";
 export const PARTNER_SUPPORT_EMAIL = "partner-support@mego.vn";
 export const PARTNER_PORTAL_VERSION = "v4.18.2";
 
-/** Tài khoản demo cho môi trường mock. */
-export const PARTNER_DEMO_CREDENTIALS = {
-  identifier: "partner@grandsunrise.vn",
-  password: "Partner@2026",
-} as const;
-
-export const PARTNER_DEMO_ACCOUNT: PartnerAccount = {
-  id: "ptn-8942",
-  fullName: "Trần Hoàng Sơn",
-  title: "Tổng Giám Đốc (GM)",
-  email: PARTNER_DEMO_CREDENTIALS.identifier,
-  avatarInitials: "HS",
-  hotels: [
-    {
-      id: "htl-8942",
-      code: "HTL-8942",
-      name: "Grand Sunrise Boutique Hotel",
-      stars: 5,
-      city: "Đà Nẵng",
-    },
-  ],
-};
+/**
+ * Email đã có tài khoản trong backend (ChatDataSeeder). Mock đăng ký đối tác dùng để giả lập lỗi
+ * "email đã được đăng ký" giống backend (existsByEmail).
+ */
+export const SEEDED_ACCOUNT_EMAILS = [
+  "customer@mego.vn",
+  "khachhang@gmail.com",
+  "partner@mego.vn",
+  "partner@sunrise-danang.vn",
+  "partner.pending@mego.vn",
+  "partner.rejected@mego.vn",
+  "admin@mego.vn",
+];
 
 /** "Hôm nay" của bộ dữ liệu mẫu. */
 export const MOCK_TODAY = "2025-10-15";

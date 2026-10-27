@@ -12,10 +12,27 @@ interface ApplicationStatusHeroProps {
   application: PartnerApplication;
   checkedAt: string;
   onResubmit: () => void;
+  /** Đang đăng nhập bằng chính tài khoản đối tác của hồ sơ */
+  signedIn?: boolean;
 }
 
-export const ApplicationStatusHero = ({ application, checkedAt, onResubmit }: ApplicationStatusHeroProps) => {
-  if (application.status === "NEEDS_INFO") {
+export const ApplicationStatusHero = ({ application, checkedAt, onResubmit, signedIn = false }: ApplicationStatusHeroProps) => {
+  if (application.status === "SUSPENDED") {
+    return (
+      <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
+        <div className="flex items-start gap-3">
+          <WarningAmberOutlined className="mt-0.5 shrink-0 text-red-600" />
+          <div className="min-w-0 flex-1">
+            <p className="text-lg font-bold text-slate-900">Tài khoản đối tác đang tạm ngưng</p>
+            <p className="text-sm text-slate-600">{application.rejectReason ?? "Cơ sở lưu trú tạm ngưng hiển thị trên MeGo. Vui lòng liên hệ chuyên viên để được hỗ trợ kích hoạt lại."}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (application.status === "REJECTED") {
+    const notes = (application.rejectReason ?? "Hồ sơ chưa đạt yêu cầu. Vui lòng liên hệ chuyên viên để biết chi tiết.").split("\n").filter(Boolean);
     return (
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
         <div className="flex items-start gap-3">
@@ -24,7 +41,7 @@ export const ApplicationStatusHero = ({ application, checkedAt, onResubmit }: Ap
             <p className="text-lg font-bold text-slate-900">Hồ sơ cần bổ sung thông tin</p>
             <p className="text-sm text-slate-600">Chuyên viên thẩm định đã tạm dừng hồ sơ cho đến khi bạn cập nhật các mục sau:</p>
             <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-amber-900">
-              {application.reviewNotes.map((note) => <li key={note}>{note}</li>)}
+              {notes.map((note) => <li key={note}>{note}</li>)}
             </ul>
             <button type="button" onClick={onResubmit} className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-600">
               <EditNoteOutlined sx={{ fontSize: 19 }} /> Bổ sung hồ sơ
@@ -45,8 +62,8 @@ export const ApplicationStatusHero = ({ application, checkedAt, onResubmit }: Ap
             <p className="text-sm text-slate-600">
               Tài khoản Extranet đã được kích hoạt cho <strong>{application.email}</strong>. Đăng nhập để thiết lập loại phòng, giá và bắt đầu nhận đặt phòng.
             </p>
-            <Link to="/partner/login" className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">
-              <LoginOutlined sx={{ fontSize: 18 }} /> Đăng nhập Extranet
+            <Link to={signedIn ? "/partner/dashboard" : "/partner/login"} className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">
+              <LoginOutlined sx={{ fontSize: 18 }} /> {signedIn ? "Vào trang quản trị" : "Đăng nhập Extranet"}
             </Link>
           </div>
         </div>

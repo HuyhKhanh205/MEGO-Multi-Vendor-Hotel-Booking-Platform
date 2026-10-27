@@ -9,7 +9,10 @@ import RecentBookingsTable from "../components/dashboard/RecentBookingsTable";
 import RevenueOccupancyChart from "../components/dashboard/RevenueOccupancyChart";
 import RoomStatusCard from "../components/dashboard/RoomStatusCard";
 import UrgentTasksBanner from "../components/dashboard/UrgentTasksBanner";
+import HotelRequired from "../components/layout/HotelRequired";
 import partnerApi from "../services/partnerApi";
+import { PARTNER_USE_MOCK } from "../services/partnerHttp";
+import type { HotelSummaryDto } from "../types/backend.types";
 import type { DashboardPeriod, PartnerDashboardData } from "../types/partner.types";
 
 interface DashboardState {
@@ -33,7 +36,7 @@ const DashboardSkeleton = () => (
   </div>
 );
 
-export const PartnerHome = () => {
+const PartnerDashboard = ({ hotel }: { hotel: HotelSummaryDto }) => {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<DashboardPeriod>("THIS_MONTH");
   const [reloadCount, setReloadCount] = useState(0);
@@ -41,7 +44,7 @@ export const PartnerHome = () => {
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [showUrgent, setShowUrgent] = useState(true);
-  const requestKey = `${period}:${reloadCount}`;
+  const requestKey = `${hotel.id}:${period}:${reloadCount}`;
   const loading = state.requestKey !== requestKey;
 
   useEffect(() => {
@@ -51,11 +54,11 @@ export const PartnerHome = () => {
   useEffect(() => {
     let cancelled = false;
     partnerApi
-      .getDashboard(period)
+      .getDashboard(hotel.id, period)
       .then((data) => { if (!cancelled) setState({ requestKey, period, data, error: null }); })
       .catch(() => { if (!cancelled) setState((previous) => ({ ...previous, requestKey, error: "Không thể tải dữ liệu tổng quan. Vui lòng kiểm tra kết nối và thử lại." })); });
     return () => { cancelled = true; };
-  }, [period, requestKey]);
+  }, [hotel.id, period, requestKey]);
 
   const handleSync = async () => {
     setSyncing(true);
@@ -88,7 +91,7 @@ export const PartnerHome = () => {
   return (
     <div className="space-y-5">
       <DashboardHeader
-        hotelName={data.hotel.name}
+        hotelName={hotel.name}
         today={data.today}
         syncedAt={syncedAt ?? data.syncedAt}
         period={period}
@@ -97,6 +100,12 @@ export const PartnerHome = () => {
         onSync={handleSync}
         onExport={() => toast.info("Báo cáo tổng quan sẽ xuất được khi trang Báo cáo Doanh thu hoàn thành.")}
       />
+
+      {PARTNER_USE_MOCK && (
+        <p className="rounded-xl border border-dashed border-slate-300 px-4 py-2 text-xs text-slate-500">
+          Tình trạng phòng lấy theo danh sách phòng của khách sạn. Doanh thu, lượt đặt và đơn gần nhất đang là dữ liệu mẫu vì backend chưa có module Đặt phòng.
+        </p>
+      )}
 
       {showUrgent && (
         <UrgentTasksBanner
@@ -119,5 +128,9 @@ export const PartnerHome = () => {
     </div>
   );
 };
+
+export const PartnerHome = () => (
+  <HotelRequired>{(hotel) => <PartnerDashboard key={hotel.id} hotel={hotel} />}</HotelRequired>
+);
 
 export default PartnerHome;

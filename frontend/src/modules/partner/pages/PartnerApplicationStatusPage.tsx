@@ -6,7 +6,10 @@ import ErrorOutlineOutlined from "@mui/icons-material/ErrorOutlineOutlined";
 import FileDownloadOutlined from "@mui/icons-material/FileDownloadOutlined";
 import HeadsetMicOutlined from "@mui/icons-material/HeadsetMicOutlined";
 import NoteAddOutlined from "@mui/icons-material/NoteAddOutlined";
+import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
 import RefreshOutlined from "@mui/icons-material/RefreshOutlined";
+import { logout } from "../../../stores/authSlice";
+import { useAppDispatch, useAppSelector } from "../../../stores/store";
 import ApplicationHeaderCard from "../components/onboarding/ApplicationHeaderCard";
 import ApplicationStatusHero from "../components/onboarding/ApplicationStatusHero";
 import { OnboardingFaqCard, SecurityCommitmentsCard } from "../components/onboarding/OnboardingInfoCards";
@@ -26,10 +29,13 @@ interface StatusState {
   error: string | null;
 }
 
-const DEMO_STATUSES: ApplicationStatus[] = ["PENDING_REVIEW", "NEEDS_INFO", "APPROVED"];
+const DEMO_STATUSES: ApplicationStatus[] = ["PENDING", "REJECTED", "APPROVED", "SUSPENDED"];
 
 export const PartnerApplicationStatusPage = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const authUser = useAppSelector((state) => state.auth.user);
+  const signedInPartner = authUser?.role === "PARTNER";
   const [requestId, setRequestId] = useState(1);
   const [state, setState] = useState<StatusState>({ requestId: 0, application: null, checkedAt: "", error: null });
   const loading = state.requestId !== requestId;
@@ -98,7 +104,8 @@ export const PartnerApplicationStatusPage = () => {
       <div className="space-y-5">
         <ApplicationHeaderCard application={application} />
 
-        {import.meta.env.DEV && (
+        {/* Khi đã đăng nhập, trạng thái lấy từ phiên thật nên không cho đổi giả lập */}
+        {import.meta.env.DEV && !signedInPartner && (
           <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-slate-300 px-3 py-2 text-xs text-slate-500">
             Xem giao diện theo trạng thái (chỉ ở môi trường dev):
             {DEMO_STATUSES.map((status) => (
@@ -117,7 +124,7 @@ export const PartnerApplicationStatusPage = () => {
         <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <div className="space-y-5">
             <section className={`space-y-6 rounded-3xl border border-slate-200/80 bg-white p-5 transition-opacity sm:p-6 ${loading ? "opacity-60" : ""}`} aria-busy={loading}>
-              <ApplicationStatusHero application={application} checkedAt={state.checkedAt} onResubmit={handleResubmit} />
+              <ApplicationStatusHero application={application} checkedAt={state.checkedAt} onResubmit={handleResubmit} signedIn={signedInPartner} />
               <ReviewTimeline application={application} checkedAt={state.checkedAt} />
               <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-5">
                 <button
@@ -155,7 +162,22 @@ export const PartnerApplicationStatusPage = () => {
 
   return (
     <PartnerPublicShell
-      headerAction={<Link to="/partner/login" className="text-sm font-semibold text-[#1677FF] hover:underline">Đăng nhập</Link>}
+      headerAction={
+        signedInPartner ? (
+          <div className="flex items-center gap-3 text-sm">
+            <span className="hidden text-slate-500 sm:inline">{authUser?.email}</span>
+            <button
+              type="button"
+              onClick={() => { dispatch(logout()); toast.info("Bạn đã đăng xuất khỏi cổng đối tác."); navigate("/partner/login", { replace: true }); }}
+              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 font-semibold text-slate-600 hover:bg-red-50 hover:text-red-600"
+            >
+              <LogoutOutlined sx={{ fontSize: 18 }} /> Đăng xuất
+            </button>
+          </div>
+        ) : (
+          <Link to="/partner/login" className="text-sm font-semibold text-[#1677FF] hover:underline">Đăng nhập</Link>
+        )
+      }
     >
       <nav aria-label="Breadcrumb" className="mb-5 flex flex-wrap items-center gap-1 text-sm text-slate-500">
         <Link to="/partner/login" className="hover:text-[#1677FF]">Cổng đối tác</Link>

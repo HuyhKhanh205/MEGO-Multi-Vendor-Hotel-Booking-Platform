@@ -35,7 +35,7 @@ export const PARTNER_NAV: PartnerNavGroup[] = [
     items: [
       { label: "Tổng quan", path: PARTNER_HOME_PATH, icon: GridViewOutlined },
       { label: "Quản lý Khách sạn", path: "/partner/hotel", icon: ApartmentOutlined },
-      { label: "Loại phòng & Tiện ích", path: "/partner/room-types", icon: BedOutlined },
+      { label: "Loại phòng & Phòng", path: "/partner/room-types", icon: BedOutlined },
       { label: "Cấu hình Giá phòng", path: "/partner/rates", icon: SellOutlined },
       { label: "Tồn kho & Đóng/Mở bán", path: "/partner/inventory", icon: Inventory2Outlined },
     ],

@@ -6,6 +6,8 @@ export interface User {
   email: string;
   avatar?: string;
   role?: "GUEST" | "CUSTOMER" | "PARTNER" | "PARTNER_STAFF" | "ADMIN";
+  /** Trạng thái duyệt hồ sơ đối tác (chỉ có với role PARTNER), lấy từ AuthResponse.approvalStatus */
+  approvalStatus?: "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
 }
 
 export interface AuthState {

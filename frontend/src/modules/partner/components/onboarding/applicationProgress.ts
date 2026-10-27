@@ -7,7 +7,8 @@ const REVIEW_HOURS = 12;
 /** Trạng thái 4 bước xét duyệt, suy ra từ trạng thái hồ sơ để mọi khối trên trang luôn khớp nhau. */
 export const getReviewStepStates = (status: ApplicationStatus): ReviewStepState[] => {
   if (status === "APPROVED") return ["done", "done", "done", "done"];
-  if (status === "NEEDS_INFO") return ["done", "attention", "upcoming", "upcoming"];
+  if (status === "SUSPENDED") return ["done", "done", "done", "attention"];
+  if (status === "REJECTED") return ["done", "attention", "upcoming", "upcoming"];
   return ["done", "active", "upcoming", "upcoming"];
 };
 
@@ -27,8 +28,8 @@ export const getLegalReviewPercent = (application: PartnerApplication, checkedAt
 export type DocumentReviewState = "reviewing" | "valid" | "replace";
 
 export const getDocumentState = (document: ApplicationDocument, status: ApplicationStatus): DocumentReviewState => {
-  if (status === "APPROVED") return "valid";
+  if (status === "APPROVED" || status === "SUSPENDED") return "valid";
   // Mẫu "cần bổ sung" đang yêu cầu thay Giấy chứng nhận PCCC.
-  if (status === "NEEDS_INFO") return document.category === "FIRE_SAFETY" ? "replace" : "valid";
+  if (status === "REJECTED") return document.category === "FIRE_SAFETY" ? "replace" : "valid";
   return "reviewing";
 };

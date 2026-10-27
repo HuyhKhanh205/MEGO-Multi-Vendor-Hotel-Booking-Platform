@@ -1,22 +1,5 @@
 export type DashboardPeriod = "TODAY" | "LAST_7_DAYS" | "THIS_MONTH";
 
-export interface PartnerHotel {
-  id: string;
-  code: string;
-  name: string;
-  stars: number;
-  city: string;
-}
-
-export interface PartnerAccount {
-  id: string;
-  fullName: string;
-  title: string;
-  email: string;
-  avatarInitials: string;
-  hotels: PartnerHotel[];
-}
-
 export interface PartnerKpis {
   revenue: number;
   revenueChangePct: number;
@@ -81,7 +64,6 @@ export interface PartnerNotification {
 }
 
 export interface PartnerDashboardData {
-  hotel: PartnerHotel;
   /** ISO datetime của lần đồng bộ OTA gần nhất */
   syncedAt: string;
   /** ISO date của "hôm nay" trong dữ liệu */
@@ -128,7 +110,8 @@ export interface ApplicationDocument {
   mimeType: string;
 }
 
-export type ApplicationStatus = "PENDING_REVIEW" | "NEEDS_INFO" | "APPROVED";
+/** Khớp enum PartnerApprovalStatus của backend. REJECTED kèm rejectReason = hồ sơ cần bổ sung / bị từ chối. */
+export type ApplicationStatus = "PENDING" | "APPROVED" | "REJECTED" | "SUSPENDED";
 
 export interface PartnerApplication {
   code: string;
@@ -143,7 +126,8 @@ export interface PartnerApplication {
   /** ISO datetime: hạn SLA 24h */
   slaDueAt: string;
   status: ApplicationStatus;
-  reviewNotes: string[];
+  /** partner_profiles.reject_reason; mỗi dòng là một yêu cầu bổ sung */
+  rejectReason: string | null;
   /** Dữ liệu form đã gửi (không gồm mật khẩu) để bổ sung khi bị yêu cầu */
   formSnapshot: OnboardingDraft;
 }

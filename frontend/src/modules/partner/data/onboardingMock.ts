@@ -76,16 +76,17 @@ export const ONBOARDING_FAQ = [
   { question: "Làm thế nào để đổi tài khoản ngân hàng nhận tiền?", answer: "Bạn cập nhật trong mục Cài đặt tài chính sau khi tài khoản Extranet được kích hoạt." },
 ];
 
-/** Ghi chú mẫu khi chuyên viên yêu cầu bổ sung hồ sơ. */
-export const SAMPLE_REVIEW_NOTES = [
+/** Lý do mẫu khi chuyên viên trả hồ sơ về (rejectReason, mỗi dòng một yêu cầu). */
+export const SAMPLE_REJECT_REASON = [
   "Giấy chứng nhận PCCC đã hết hiệu lực, vui lòng tải lên bản cấp mới.",
   "Tên chủ tài khoản ngân hàng chưa trùng khớp với tên trên Giấy ĐKKD.",
-];
+].join("\n");
 
 export const APPLICATION_STATUS_LABELS: Record<ApplicationStatus, string> = {
-  PENDING_REVIEW: "Đang chờ duyệt",
-  NEEDS_INFO: "Cần bổ sung",
+  PENDING: "Đang chờ duyệt",
   APPROVED: "Đã phê duyệt",
+  REJECTED: "Cần bổ sung / Bị từ chối",
+  SUSPENDED: "Tạm ngưng hoạt động",
 };
 
 export const EMPTY_ONBOARDING_FORM: OnboardingForm = {

@@ -1,22 +1,22 @@
-import axios from "axios";
-import { EMPTY_ONBOARDING_FORM, SAMPLE_REVIEW_NOTES } from "../data/onboardingMock";
-import { PARTNER_DEMO_CREDENTIALS } from "../data/partnerMock";
+import store from "../../../stores/store";
+import { EMPTY_ONBOARDING_FORM, REQUIRED_DOCUMENTS, SAMPLE_REJECT_REASON } from "../data/onboardingMock";
+import { SEEDED_ACCOUNT_EMAILS } from "../data/partnerMock";
 import type {
   ApplicationDocument,
   ApplicationStatus,
+  DocumentCategory,
   HotelCategory,
   OnboardingDraft,
   OnboardingForm,
   PartnerApplication,
 } from "../types/partner.types";
-
-const USE_MOCK = true;
-const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api", headers: { "Content-Type": "application/json" } });
-const delay = (ms = 500) => new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+import { mockDelay, PARTNER_USE_MOCK, PartnerApiError, partnerRequest } from "./partnerHttp";
 
 const DRAFT_KEY = "mego_partner_onboarding_draft";
 const APPLICATION_KEY = "mego_partner_application";
 const SLA_HOURS = 24;
+
+export type DocumentFiles = Partial<Record<DocumentCategory, File>>;
 
 const readJson = <T,>(key: string): T | null => {
   try {
@@ -60,6 +60,42 @@ const toDraft = (form: OnboardingForm): OnboardingDraft => {
   return draft;
 };
 
+const toDocuments = (files: DocumentFiles): ApplicationDocument[] =>
+  REQUIRED_DOCUMENTS.flatMap((doc) => {
+    const file = files[doc.category];
+    return file ? [{ category: doc.category, fileName: file.name, size: file.size, mimeType: file.type }] : [];
+  });
+
+/**
+ * Hồ sơ mẫu cho các tài khoản đối tác chưa duyệt có sẵn trong backend (ChatDataSeeder), để khi
+ * đăng nhập thật bằng các tài khoản này trang Theo dõi hồ sơ có dữ liệu chi tiết.
+ */
+const seededApplication = (email: string, fullName: string, status: ApplicationStatus): PartnerApplication | null => {
+  const seeds: Record<string, Pick<PartnerApplication, "propertyName" | "hotelCategory" | "totalRooms" | "rejectReason">> = {
+    "partner.pending@mego.vn": { propertyName: "Khu nghỉ dưỡng Lavender Đà Lạt", hotelCategory: "RESORT", totalRooms: 36, rejectReason: null },
+    "partner.rejected@mego.vn": {
+      propertyName: "Homestay Biển Xanh",
+      hotelCategory: "BOUTIQUE",
+      totalRooms: 12,
+      rejectReason: "Chưa bổ sung đầy đủ giấy chứng nhận đủ điều kiện PCCC và giấy phép kinh doanh lưu trú.",
+    },
+  };
+  const seed = seeds[email];
+  if (!seed) return null;
+  const submittedAt = new Date(Date.now() - 6 * 3_600_000).toISOString();
+  return {
+    code: `MG-VN-SEED-${email.startsWith("partner.pending") ? "0003" : "0004"}`,
+    representativeName: fullName.replace(/\s*\(.*\)$/, ""),
+    email,
+    ...seed,
+    documents: REQUIRED_DOCUMENTS.map((doc) => ({ category: doc.category, fileName: `${doc.category.toLowerCase()}.pdf`, size: 1_800_000, mimeType: "application/pdf" })),
+    submittedAt,
+    slaDueAt: new Date(Date.parse(submittedAt) + SLA_HOURS * 3_600_000).toISOString(),
+    status,
+    formSnapshot: { ...EMPTY_ONBOARDING_FORM, email, representativeName: fullName, propertyName: seed.propertyName } as OnboardingDraft,
+  };
+};
+
 export const onboardingApi = {
   /** Bản nháp chỉ lưu trên thiết bị, không gồm mật khẩu và file. */
   loadDraft(): OnboardingForm | null {
@@ -75,11 +111,33 @@ export const onboardingApi = {
     removeKey(DRAFT_KEY);
   },
 
-  async submitApplication(form: OnboardingForm, documents: ApplicationDocument[]): Promise<PartnerApplication> {
-    if (!USE_MOCK) return (await api.post<PartnerApplication>("/partner/applications", { ...form, documents })).data; // TODO: endpoint Spring Boot (multipart)
-    await delay(900);
+  /**
+   * POST /api/partner/applications (multipart/form-data, public)
+   *  - part "application": JSON OnboardingForm (gồm password để tạo tài khoản PARTNER)
+   *  - part "documents[<CATEGORY>]": file PDF/JPG/PNG ≤ 15MB
+   */
+  async submitApplication(form: OnboardingForm, files: DocumentFiles): Promise<PartnerApplication> {
+    const documents = toDocuments(files);
 
-    if (form.email.trim().toLowerCase() === PARTNER_DEMO_CREDENTIALS.identifier) {
+    if (!PARTNER_USE_MOCK) {
+      const body = new FormData();
+      body.append("application", new Blob([JSON.stringify(form)], { type: "application/json" }));
+      Object.entries(files).forEach(([category, file]) => { if (file) body.append(`documents[${category}]`, file); });
+      try {
+        return await partnerRequest<PartnerApplication>("post", "/partner/applications", "Không thể gửi hồ sơ. Vui lòng thử lại.", body, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } catch (error) {
+        // Backend trả 400 khi email đã tồn tại (existsByEmail) → đưa người dùng về ô email.
+        if (error instanceof PartnerApiError && error.status === 400 && error.message.toLowerCase().includes("email")) {
+          throw new OnboardingFieldError("email", error.message);
+        }
+        throw error;
+      }
+    }
+
+    await mockDelay(900);
+    if (SEEDED_ACCOUNT_EMAILS.includes(form.email.trim().toLowerCase())) {
       throw new OnboardingFieldError("email", "Email này đã được đăng ký cho một cơ sở lưu trú khác. Vui lòng đăng nhập hoặc dùng email công việc khác.");
     }
 
@@ -94,8 +152,8 @@ export const onboardingApi = {
       documents,
       submittedAt: now.toISOString(),
       slaDueAt: new Date(now.getTime() + SLA_HOURS * 3_600_000).toISOString(),
-      status: "PENDING_REVIEW",
-      reviewNotes: [],
+      status: "PENDING",
+      rejectReason: null,
       formSnapshot: toDraft(form),
     };
     writeJson(APPLICATION_KEY, application);
@@ -103,10 +161,34 @@ export const onboardingApi = {
     return application;
   },
 
+  /**
+   * GET /api/partner/applications/me (cần JWT của tài khoản PARTNER).
+   * Mock: ưu tiên phiên đăng nhập (trạng thái thật từ AuthResponse.approvalStatus), sau đó tới hồ sơ
+   * vừa gửi trên thiết bị này.
+   */
   async getApplication(): Promise<PartnerApplication | null> {
-    if (!USE_MOCK) return (await api.get<PartnerApplication | null>("/partner/applications/current")).data; // TODO: endpoint Spring Boot
-    await delay(350);
-    return readJson<PartnerApplication>(APPLICATION_KEY);
+    const user = store.getState().auth.user;
+    const sessionStatus = user?.role === "PARTNER" ? user.approvalStatus : undefined;
+
+    if (!PARTNER_USE_MOCK) {
+      if (!user) return null;
+      try {
+        return await partnerRequest<PartnerApplication>("get", "/partner/applications/me", "Không thể tải trạng thái hồ sơ.");
+      } catch (error) {
+        if (error instanceof PartnerApiError && error.status === 404) return null;
+        throw error;
+      }
+    }
+
+    await mockDelay(350);
+    const local = readJson<PartnerApplication>(APPLICATION_KEY);
+    if (user?.role === "PARTNER") {
+      const email = user.email.toLowerCase();
+      const base = local && local.email.toLowerCase() === email ? local : seededApplication(email, user.name, sessionStatus ?? "PENDING");
+      // Trạng thái lấy từ phiên đăng nhập thật thay vì dữ liệu cục bộ.
+      return base && sessionStatus ? { ...base, status: sessionStatus } : base;
+    }
+    return local;
   },
 
   /** Chép dữ liệu hồ sơ đã gửi vào bản nháp để mở lại form bổ sung. */
@@ -114,11 +196,11 @@ export const onboardingApi = {
     writeJson(DRAFT_KEY, application.formSnapshot);
   },
 
-  /** Chỉ dùng ở môi trường dev để xem giao diện của từng trạng thái. */
+  /** Chỉ dùng ở môi trường dev (khi chưa đăng nhập) để xem giao diện của từng trạng thái. */
   async setApplicationStatusForDemo(status: ApplicationStatus): Promise<PartnerApplication | null> {
     const application = readJson<PartnerApplication>(APPLICATION_KEY);
     if (!application) return null;
-    const updated: PartnerApplication = { ...application, status, reviewNotes: status === "NEEDS_INFO" ? SAMPLE_REVIEW_NOTES : [] };
+    const updated: PartnerApplication = { ...application, status, rejectReason: status === "REJECTED" ? SAMPLE_REJECT_REASON : null };
     writeJson(APPLICATION_KEY, updated);
     return updated;
   },

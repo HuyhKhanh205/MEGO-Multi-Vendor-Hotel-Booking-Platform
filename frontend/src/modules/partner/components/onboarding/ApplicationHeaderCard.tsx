@@ -4,8 +4,9 @@ import type { ApplicationStatus, PartnerApplication } from "../../types/partner.
 import { formatDate, formatTime } from "../../utils/formatters";
 
 const STATUS_CHIP: Record<ApplicationStatus, string> = {
-  PENDING_REVIEW: "bg-blue-50 text-[#1677FF]",
-  NEEDS_INFO: "bg-amber-100 text-amber-800",
+  PENDING: "bg-blue-50 text-[#1677FF]",
+  REJECTED: "bg-amber-100 text-amber-800",
+  SUSPENDED: "bg-red-100 text-red-700",
   APPROVED: "bg-emerald-100 text-emerald-700",
 };
 
